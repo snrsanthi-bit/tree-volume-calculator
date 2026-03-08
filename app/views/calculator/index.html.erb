@@ -1,0 +1,27 @@
+<div style="max-width:400px;margin:auto;text-align:center">
+
+<h1>Tree Volume Calculator</h1>
+
+<%= form_with url: "/calculate", method: :post, data: { turbo: false } do %>
+
+  <label>直径 (cm)</label><br>
+  <%= number_field_tag :dbh, params[:dbh], style:"width:100%;padding:10px;font-size:18px;" %>
+
+  <br><br>
+
+  <label>高さ (m)</label><br>
+  <%= number_field_tag :height, params[:height], style:"width:100%;padding:10px;font-size:18px;" %>
+
+  <br><br>
+
+  <%= submit_tag "計算", style:"width:100%;padding:12px;font-size:18px;" %>
+
+<% end %>
+
+<% if @volume %>
+  <h2 style="font-size:32px;margin-top:20px;">
+    材積: <%= @volume.round(3) %> m³
+  </h2>
+<% end %>
+
+</div>
