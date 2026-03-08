@@ -1,3 +1,12 @@
+<head>
+  <title>TreeCalculation</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= javascript_importmap_tags %>
+</head>
 <div style="max-width:400px;margin:auto;text-align:center">
 
 <h1>Tree Volume Calculator</h1>
@@ -24,4 +33,53 @@
   </h2>
 <% end %>
 
+
+
+<h1>Area Calculator (Triangle)</h1>
+<div id="triangles">
+  <div class="triangle">
+
+    <label>辺A</label><br>
+    <input type="number" class="a" style="width:100%;padding:10px">
+
+    <br><br>
+
+    <label>辺B</label><br>
+    <input type="number" class="b" style="width:100%;padding:10px">
+
+    <br><br>
+
+    <label>辺C</label><br>
+    <input type="number" class="c" style="width:100%;padding:10px">
+  </div>
 </div>
+
+<br>
+
+<button
+  type="button"
+  onclick="addTriangle()"
+  style="width:100%;padding:12px;font-size:18px;"
+>
+＋三角形追加
+</button>
+
+<br><br>
+
+<button
+  type="button"
+  onclick="calculateArea()"
+  style="width:100%;padding:12px;font-size:18px;"
+>
+面積計算
+</button>
+
+<hr>
+
+<h2 id="result"></h2>
+
+
+
+<% if flash[:alert] %>
+  <p style="color:red;"><%= flash[:alert] %></p>
+<% end %>
