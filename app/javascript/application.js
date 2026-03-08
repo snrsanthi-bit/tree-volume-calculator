@@ -27,32 +27,24 @@ window.addTriangle = function () {
 }
 
 
-window.calculateArea = function () {
+function triangleArea(a,b,c){
+  const s = (a + b + c) / 2;
+  return Math.sqrt(s * (s-a) * (s-b) * (s-c));
+}
 
-  console.log("clicked")
+function calculateArea(){
 
-  const triangles = document.querySelectorAll(".triangle")
+  const a = parseFloat(document.querySelector(".a").value) || 0;
+  const b = parseFloat(document.querySelector(".b").value) || 0;
+  const c = parseFloat(document.querySelector(".c").value) || 0;
 
-  let total = 0
+  let total = 0;
 
-  triangles.forEach(tri => {
+  if(a && b && c){
+    total = triangleArea(a,b,c);
+  }
 
-    const a = parseFloat(tri.querySelector(".a").value)
-    const b = parseFloat(tri.querySelector(".b").value)
-    const c = parseFloat(tri.querySelector(".c").value)
+  document.getElementById("areaResult").innerText = total.toFixed(2);
+  document.getElementById("haResult").innerText = (total / 10000).toFixed(4);
 
-    console.log(a,b,c)
-
-    if(!a || !b || !c) return
-
-    const s = (a + b + c) / 2
-    const area = Math.sqrt(s * (s-a) * (s-b) * (s-c))
-
-    total += area
-
-  })
-
-  console.log("area =", total)
-
-  document.getElementById("result").innerText ="合計面積: " + total.toFixed(2) + " m² "
 }

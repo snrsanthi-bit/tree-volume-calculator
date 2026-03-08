@@ -1,85 +1,279 @@
+<html class="dark">
 <head>
-  <title>TreeCalculation</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-  <%= javascript_importmap_tags %>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        primary: "#11d442",
+        "background-light": "#f6f8f6",
+        "background-dark": "#102215",
+        "neutral-dark": "#1c271e",
+        "neutral-border": "#3b5441"
+      },
+      fontFamily: {
+        display: ["Inter"]
+      }
+    }
+  }
+}
+</script>
+
 </head>
-<div style="max-width:400px;margin:auto;text-align:center">
 
-<h1>Tree Volume Calculator</h1>
+<body class="bg-background-dark font-display text-slate-100 min-h-screen">
+
+<div class="max-w-xl mx-auto px-4 py-8">
+
+<section class="mb-12">
+
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">forest</span>
+<h2 class="text-2xl font-bold tracking-tight">
+材積計算 (Tree Volume)
+</h2>
+</div>
+
+<div class="space-y-6 bg-neutral-dark/40 p-6 rounded-xl border border-neutral-border">
 
 <%= form_with url: "/calculate", method: :post, data: { turbo: false } do %>
 
-  <label>直径 (cm)</label><br>
-  <%= number_field_tag :dbh, params[:dbh], style:"width:100%;padding:10px;font-size:18px;" %>
+<div class="grid grid-cols-1 gap-6">
 
-  <br><br>
+<label class="block">
+<span class="text-slate-300 text-lg font-medium mb-2 block">
+太さ (直径 cm)
+</span>
 
-  <label>高さ (m)</label><br>
-  <%= number_field_tag :height, params[:height], style:"width:100%;padding:10px;font-size:18px;" %>
+<div class="relative">
 
-  <br><br>
+<%= number_field_tag :dbh, @dbh,
+class: "w-full bg-neutral-dark border border-neutral-border rounded-lg h-16 px-4 text-xl text-white focus:ring-2 focus:ring-primary placeholder:text-slate-500",
+placeholder: "例: 30",
+step: "any" %>
 
-  <%= submit_tag "計算", style:"width:100%;padding:12px;font-size:18px;" %>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+cm
+</span>
 
-<% end %>
+</div>
+</label>
 
-<% if @volume %>
-  <h2 style="font-size:32px;margin-top:20px;">
-    材積: <%= @volume.round(3) %> m³
-  </h2>
-<% end %>
+<label class="block">
 
+<span class="text-slate-300 text-lg font-medium mb-2 block">
+長さ (高さ m)
+</span>
 
+<div class="relative">
 
-<h1>Area Calculator (Triangle)</h1>
-<div id="triangles">
-  <div class="triangle">
+<%= number_field_tag :height, @height,
+class: "w-full bg-neutral-dark border border-neutral-border rounded-lg h-16 px-4 text-xl text-white focus:ring-2 focus:ring-primary placeholder:text-slate-500",
+placeholder: "例: 4.0",
+step: "any" %>
 
-    <label>辺A</label><br>
-    <input type="number" class="a" style="width:100%;padding:10px">
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+m
+</span>
 
-    <br><br>
+</div>
+</label>
 
-    <label>辺B</label><br>
-    <input type="number" class="b" style="width:100%;padding:10px">
-
-    <br><br>
-
-    <label>辺C</label><br>
-    <input type="number" class="c" style="width:100%;padding:10px">
-  </div>
 </div>
 
-<br>
+<%= submit_tag "計算する",
+class: "w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-5 rounded-lg text-xl shadow-lg transition-colors flex items-center justify-center gap-2 mt-4" %>
 
-<button
-  type="button"
-  onclick="addTriangle()"
-  style="width:100%;padding:12px;font-size:18px;"
->
-＋三角形追加
-</button>
-
-<br><br>
-
-<button
-  type="button"
-  onclick="calculateArea()"
-  style="width:100%;padding:12px;font-size:18px;"
->
-面積計算
-</button>
-
-<hr>
-
-<h2 id="result"></h2>
-
-
-
-<% if flash[:alert] %>
-  <p style="color:red;"><%= flash[:alert] %></p>
 <% end %>
+
+<div class="mt-6 p-6 bg-primary/10 rounded-xl border border-primary/30">
+
+<div class="flex justify-between items-start">
+
+<span class="text-slate-300 font-medium pt-1">
+材積:
+</span>
+
+<div class="text-right">
+
+<div class="flex items-baseline justify-end gap-1">
+
+<span class="text-3xl font-bold text-primary">
+<%= @volume ? @volume.round(3) : "0.000" %>
+</span>
+
+<span class="text-primary text-sm font-medium">
+m³
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+<!-- Divider -->
+<div class="h-px bg-neutral-border w-full my-8"></div>
+<!-- Area Calculator Section -->
+<section class="mb-12">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">landscape</span>
+<h2 class="text-2xl font-bold tracking-tight">地積計算 (Area Calculator)</h2>
+</div>
+<div class="space-y-6" id="triangle-list">
+<!-- Triangle Item 1 -->
+<div class="triangle bg-neutral-dark/40 p-6 rounded-xl border border-neutral-border relative">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-lg font-bold text-primary">三角形 1</h3>
+<button onclick="this.closest('.triangle').remove()" 
+class="text-slate-400 hover:text-red-400 transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<div class="grid grid-cols-3 gap-3 mb-4">
+<label>
+<span class="text-sm text-slate-400 block mb-1">辺 A (m)</span>
+<input class="a w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number" step="any">
+</label>
+<label>
+<span class="text-sm text-slate-400 block mb-1">辺 B (m)</span>
+<input class="b w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number" step="any">
+</label>
+<label>
+<span class="text-sm text-slate-400 block mb-1">辺 C (m)</span>
+<input class="c w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number" step="any">
+</label>
+</div>
+</div>
+</div>
+<div class="mt-6 space-y-4">
+<button onclick="addTriangle()" 
+class="w-full bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 font-bold py-4 rounded-lg text-lg transition-colors flex items-center justify-center gap-2">
+
+<span class="material-symbols-outlined">add_circle</span>
+
+三角形を追加
+
+</button>
+<button onclick="calculateArea()" 
+class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-5 rounded-lg text-xl shadow-lg transition-colors flex items-center justify-center gap-2">
+
+<span class="material-symbols-outlined">straighten</span>
+
+面積を計算する
+
+</button>
+</div>
+<!-- Results Display -->
+<div class="mt-8 p-6 bg-primary/10 rounded-xl border border-primary/30">
+<div class="flex justify-between items-start">
+<span class="text-slate-300 font-medium pt-1">合計面積:</span>
+<div class="text-right space-y-1">
+<div class="flex items-baseline justify-end gap-1">
+<span id="areaResult"class="text-3xl font-bold text-primary">0.00</span>
+<span class="text-primary text-sm font-medium">m²</span>
+</div>
+<div class="flex items-baseline justify-end gap-1 opacity-80">
+<span id="haResult"class="text-xl font-bold text-primary">0.0000</span>
+<span class="text-primary text-xs font-medium">ha</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+let triangleCount = 1;
+
+function triangleArea(a,b,c){
+  const s = (a + b + c) / 2;
+  return Math.sqrt(s * (s-a) * (s-b) * (s-c));
+}
+
+window.calculateArea = function(){
+
+  let total = 0;
+
+  document.querySelectorAll("#triangle-list .triangle").forEach(tri => {
+
+    const a = parseFloat(tri.querySelector(".a").value) || 0;
+    const b = parseFloat(tri.querySelector(".b").value) || 0;
+    const c = parseFloat(tri.querySelector(".c").value) || 0;
+
+    if(a && b && c){
+      total += triangleArea(a,b,c);
+    }
+
+  });
+
+  document.getElementById("areaResult").innerText = total.toFixed(2);
+  document.getElementById("haResult").innerText = (total / 10000).toFixed(4);
+
+}
+
+window.addTriangle = function(){
+
+  triangleCount++;
+
+  const html = `
+  <div class="triangle bg-neutral-dark/40 p-6 rounded-xl border border-neutral-border relative">
+
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-lg font-bold text-primary">三角形 ${triangleCount}</h3>
+
+<button onclick="this.closest('.triangle').remove()" 
+class="text-slate-400 hover:text-red-400 transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+
+</div>
+
+  <div class="grid grid-cols-3 gap-3 mb-4">
+
+  <label>
+  <span class="text-sm text-slate-400 block mb-1">辺 A</span>
+  <input class="a w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number">
+  </label>
+
+  <label>
+  <span class="text-sm text-slate-400 block mb-1">辺 B</span>
+  <input class="b w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number">
+  </label>
+
+  <label>
+  <span class="text-sm text-slate-400 block mb-1">辺 C</span>
+  <input class="c w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number">
+  </label>
+
+  </div>
+
+  </div>
+  `;
+
+  document.getElementById("triangle-list").insertAdjacentHTML("beforeend", html);
+
+}
+
+})
+</script>
+
+</div>
+
+</body>
+</html>
