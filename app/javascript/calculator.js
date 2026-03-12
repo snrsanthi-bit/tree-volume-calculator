@@ -60,7 +60,13 @@ document.addEventListener("turbo:load", function() {
       });
 
       // Send the data to the server using Turbo Stream
-      Turbo.visit(`/calculator/area?area=${total}`, { frame: "area-result" });
+      fetch(`/area?area=${total}`, {
+        headers: {
+          Accept: "text/vnd.turbo-stream.html"
+        }
+      })    
+      .then(response => response.text())
+      .then(html => Turbo.renderStreamMessage(html));
     });
   }
 });

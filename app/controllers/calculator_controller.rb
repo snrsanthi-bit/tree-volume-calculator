@@ -25,7 +25,7 @@ class CalculatorController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: turbo_stream.replace(
+        render turbo_stream: turbo_stream.update(
           "area-result",
           partial: "calculator/area_result",
           locals: { area: @area }
