@@ -1,0 +1,13 @@
+<div class="flex justify-between items-start">
+  <span class="text-slate-300 font-medium pt-1">合計面積:</span>
+  <div class="text-right space-y-1">
+    <div class="flex items-baseline justify-end gap-1">
+      <span id="areaResult" class="text-3xl font-bold text-primary"><%= area.round(2) %></span>
+      <span class="text-primary text-sm font-medium">m²</span>
+    </div>
+    <div class="flex items-baseline justify-end gap-1 opacity-80">
+      <span id="haResult" class="text-xl font-bold text-primary"><%= (area / 10000).round(4) %></span>
+      <span class="text-primary text-xs font-medium">ha</span>
+    </div>
+  </div>
+</div>

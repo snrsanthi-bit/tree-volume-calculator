@@ -1,50 +1,20 @@
-window.addTriangle = function () {
+// Configure Rails UJS
+import Rails from "@rails/ujs"
+Rails.start()
 
-  const container = document.getElementById("triangles")
+// Configure Turbolinks
+import Turbolinks from "turbolinks"
+Turbolinks.start()
 
-  const div = document.createElement("div")
-  div.className = "triangle"
-  div.style.marginTop = "20px"
+// Import specific controllers
+import HelloController from "./controllers/hello_controller"
 
-  div.innerHTML = `
-    <hr>
+// Eager load all controllers defined in the import map under controllers/*
+import { Application } from "@hotwired/stimulus"
+import { definitionsFromContext } from "@hotwired/stimulus-webpack-helpers"
 
-    <label>辺A</label><br>
-    <input type="number" class="a" style="width:100%;padding:10px">
+window.Stimulus = Application.start()
+const context = require.context("./controllers", true, /\.js$/)
+Stimulus.load(definitionsFromContext(context))
 
-    <br><br>
-
-    <label>辺B</label><br>
-    <input type="number" class="b" style="width:100%;padding:10px">
-
-    <br><br>
-
-    <label>辺C</label><br>
-    <input type="number" class="c" style="width:100%;padding:10px">
-  `
-
-  container.appendChild(div)
-}
-
-
-function triangleArea(a,b,c){
-  const s = (a + b + c) / 2;
-  return Math.sqrt(s * (s-a) * (s-b) * (s-c));
-}
-
-function calculateArea(){
-
-  const a = parseFloat(document.querySelector(".a").value) || 0;
-  const b = parseFloat(document.querySelector(".b").value) || 0;
-  const c = parseFloat(document.querySelector(".c").value) || 0;
-
-  let total = 0;
-
-  if(a && b && c){
-    total = triangleArea(a,b,c);
-  }
-
-  document.getElementById("areaResult").innerText = total.toFixed(2);
-  document.getElementById("haResult").innerText = (total / 10000).toFixed(4);
-
-}
+import "./calculator"

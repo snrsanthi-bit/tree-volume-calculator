@@ -162,7 +162,7 @@ class="text-slate-400 hover:text-red-400 transition-colors">
 </div>
 </div>
 <div class="mt-6 space-y-4">
-<button onclick="addTriangle()" 
+<button id="add-triangle-button"
 class="w-full bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 font-bold py-4 rounded-lg text-lg transition-colors flex items-center justify-center gap-2">
 
 <span class="material-symbols-outlined">add_circle</span>
@@ -170,7 +170,7 @@ class="w-full bg-primary/20 hover:bg-primary/30 text-primary border border-prima
 三角形を追加
 
 </button>
-<button onclick="calculateArea()" 
+<button id="calculate-area-button"
 class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-5 rounded-lg text-xl shadow-lg transition-colors flex items-center justify-center gap-2">
 
 <span class="material-symbols-outlined">straighten</span>
@@ -180,98 +180,10 @@ class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-5
 </button>
 </div>
 <!-- Results Display -->
-<div class="mt-8 p-6 bg-primary/10 rounded-xl border border-primary/30">
-<div class="flex justify-between items-start">
-<span class="text-slate-300 font-medium pt-1">合計面積:</span>
-<div class="text-right space-y-1">
-<div class="flex items-baseline justify-end gap-1">
-<span id="areaResult"class="text-3xl font-bold text-primary">0.00</span>
-<span class="text-primary text-sm font-medium">m²</span>
-</div>
-<div class="flex items-baseline justify-end gap-1 opacity-80">
-<span id="haResult"class="text-xl font-bold text-primary">0.0000</span>
-<span class="text-primary text-xs font-medium">ha</span>
-</div>
-</div>
-</div>
+<div id="area-result" class="mt-8 p-6 bg-primary/10 rounded-xl border border-primary/30">
+  <%= render partial: "calculator/area_result", locals: { area: @area || 0 } %>
 </div>
 </section>
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-
-let triangleCount = 1;
-
-function triangleArea(a,b,c){
-  const s = (a + b + c) / 2;
-  return Math.sqrt(s * (s-a) * (s-b) * (s-c));
-}
-
-window.calculateArea = function(){
-
-  let total = 0;
-
-  document.querySelectorAll("#triangle-list .triangle").forEach(tri => {
-
-    const a = parseFloat(tri.querySelector(".a").value) || 0;
-    const b = parseFloat(tri.querySelector(".b").value) || 0;
-    const c = parseFloat(tri.querySelector(".c").value) || 0;
-
-    if(a && b && c){
-      total += triangleArea(a,b,c);
-    }
-
-  });
-
-  document.getElementById("areaResult").innerText = total.toFixed(2);
-  document.getElementById("haResult").innerText = (total / 10000).toFixed(4);
-
-}
-
-window.addTriangle = function(){
-
-  triangleCount++;
-
-  const html = `
-  <div class="triangle bg-neutral-dark/40 p-6 rounded-xl border border-neutral-border relative">
-
-<div class="flex justify-between items-center mb-4">
-<h3 class="text-lg font-bold text-primary">三角形 ${triangleCount}</h3>
-
-<button onclick="this.closest('.triangle').remove()" 
-class="text-slate-400 hover:text-red-400 transition-colors">
-<span class="material-symbols-outlined">delete</span>
-</button>
-
-</div>
-
-  <div class="grid grid-cols-3 gap-3 mb-4">
-
-  <label>
-  <span class="text-sm text-slate-400 block mb-1">辺 A</span>
-  <input class="a w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number">
-  </label>
-
-  <label>
-  <span class="text-sm text-slate-400 block mb-1">辺 B</span>
-  <input class="b w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number">
-  </label>
-
-  <label>
-  <span class="text-sm text-slate-400 block mb-1">辺 C</span>
-  <input class="c w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number">
-  </label>
-
-  </div>
-
-  </div>
-  `;
-
-  document.getElementById("triangle-list").insertAdjacentHTML("beforeend", html);
-
-}
-
-})
-</script>
 
 </div>
 

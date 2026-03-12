@@ -14,35 +14,23 @@ class CalculatorController < ApplicationController
     dbh = params[:dbh].to_f
     height = params[:height].to_f
 
-    radius = dbh / 200.0
-    volume = Math::PI * radius**2 * height * 0.5
+    # Calculate the volume (example formula)
+    @volume = 0.5 * Math::PI * (dbh / 100)**2 * height
 
-    redirect_to root_path(
-      volume: volume,
-      dbh: dbh,
-      height: height
-    )
+    render :index
   end
 
   def area
-    a = params[:a].to_f
-    b = params[:b].to_f
-    c = params[:c].to_f
+    @area = params[:area].to_f
 
-    if a + b <= c || a + c <= b || b + c <= a
-      redirect_to root_path, alert: "三角形になりません"
-      return
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          "area-result",
+          partial: "calculator/area_result",
+          locals: { area: @area }
+        )
+      end
     end
-
-
-    s = (a + b + c) / 2.0
-    @area = Math.sqrt(s * (s - a) * (s - b) * (s - c))
-
-    redirect_to root_path(
-      area: @area,
-      a: a,
-      b: b,
-      c: c
-    )
   end
 end
