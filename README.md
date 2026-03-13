@@ -1,24 +1,24 @@
-# README
+# Tree Calculation
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+林業現場向けの簡易計算ツールです。
 
-Things you may want to cover:
+## 機能
 
-* Ruby version
+-材積計算　(直径・高さ)
+-地積計算  (三角測量)
+-複数三角形による面積合算
+-㎡ / ha 表示
 
-* System dependencies
+## 想定ユーザー
 
-* Configuration
+林業現場作業員
 
-* Database creation
+## 目的
 
-* Database initialization
+現場での材積計算や面積計算をスマホで簡単に行えるようにすること。
 
-* How to run the test suite
+## 今後の予定
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- 材積表対応（直径のみ計算）
+- GPS測量
+- 現場管理機能
