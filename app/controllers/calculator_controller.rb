@@ -15,7 +15,7 @@ class CalculatorController < ApplicationController
     height = params[:height].to_f
 
     # Calculate the volume (example formula)
-    @volume = 0.5 * Math::PI * (dbh / 100)**2 * height
+    @volume = TreeVolume.calculate(dbh: dbh, height: height)
 
     render :index
   end
