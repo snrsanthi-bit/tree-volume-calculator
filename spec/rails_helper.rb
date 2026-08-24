@@ -63,6 +63,16 @@ RSpec.configure do |config|
 
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
-  # arbitrary gems may also be filtered via:
-  # config.filter_gems_from_backtrace("gem name")
 end
+Capybara.register_driver :selenium_firefox do |app|
+  options = Selenium::WebDriver::Firefox::Options.new
+  options.add_argument("-headless")
+
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :firefox,
+    options: options
+  )
+end
+
+Capybara.javascript_driver = :selenium_firefox
