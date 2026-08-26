@@ -16,6 +16,45 @@ RSpec.describe "地積計算", type: :system do
       expect(page).to have_content("6.0")
       expect(page).to have_content("0.0006")
     end
+
+    it "辺が0の場合は0になる" do
+      visit root_path
+
+      fill_in "辺 A (m)", with: 0
+      fill_in "辺 B (m)", with: 0
+      fill_in "辺 C (m)", with: 0
+
+      click_button "面積を計算する"
+
+      expect(page).to have_content("0.0")
+      expect(page).to have_content("0.0")
+    end
+
+    it "小さい値でも計算できる" do
+      visit root_path
+
+      fill_in "辺 A (m)", with: 0.11
+      fill_in "辺 B (m)", with: 0.11
+      fill_in "辺 C (m)", with: 0.11
+
+      click_button "面積を計算する"
+
+      expect(page).to have_content("0.01")
+      expect(page).to have_content("0.0")
+    end
+
+    it "大きい数字でも計算できる" do
+      visit root_path
+
+      fill_in "辺 A (m)", with: 99999990
+      fill_in "辺 B (m)", with: 99999990
+      fill_in "辺 C (m)", with: 99999990
+
+      click_button "面積を計算する"
+
+      expect(page).to have_content("4330126152896832.5")
+      expect(page).to have_content("433012615289.6833")
+    end
   end
   describe "三角形複数の場合" do
     it "正しい面積が表示される" do
