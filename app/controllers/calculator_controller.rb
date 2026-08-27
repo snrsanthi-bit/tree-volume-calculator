@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CalculatorController < ApplicationController
   def index
     @volume = params[:volume]&.to_f
@@ -26,8 +28,8 @@ class CalculatorController < ApplicationController
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: turbo_stream.update(
-          "area-result",
-          partial: "calculator/area_result",
+          'area-result',
+          partial: 'calculator/area_result',
           locals: { area: @area }
         )
       end
