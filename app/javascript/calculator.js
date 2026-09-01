@@ -48,16 +48,46 @@ document.addEventListener("turbo:load", function() {
     calculateAreaButton.addEventListener("click", function(event) {
       event.preventDefault();
       let total = 0;
+      let error = null;
 
       document.querySelectorAll("#triangle-list .triangle").forEach(tri => {
-        const a = parseFloat(tri.querySelector(".a").value) || 0;
-        const b = parseFloat(tri.querySelector(".b").value) || 0;
-        const c = parseFloat(tri.querySelector(".c").value) || 0;
+        const a = parseFloat(tri.querySelector(".a").value);
+        const b = parseFloat(tri.querySelector(".b").value);
+        const c = parseFloat(tri.querySelector(".c").value);
 
-        if (a && b && c) {
-          total += triangleArea(a, b, c);
+        if (Number.isNaN(a) || a <= 0){
+          error = "side_a";
+          return;
         }
+
+        if (Number.isNaN(b) || b <= 0){
+          error = "side_b";
+          return;
+        }
+
+        if (Number.isNaN(c) || c <= 0){
+          error = "side_c"
+          return;
+        }
+
+        if (a + b <= c || a + c <= b || b + c <= a) {
+          error = "triangle_invalid";
+          return;
+        }
+
+        total += triangleArea(a, b, c);
       });
+
+      if (error){
+        fetch(`/area?error=${error}`, {
+          headers:{
+            Accept: "text/vnd.turbo-stream.html"
+          }
+        })
+        .then(response => response.text())
+        .then(html => Turbo.renderStreamMessage(html));
+        return;
+      }
 
       // Send the data to the server using Turbo Stream
       fetch(`/area?area=${total}`, {
