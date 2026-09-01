@@ -18,16 +18,36 @@ RSpec.describe TreeVolume do
       expect(volume).to be_within(0.0001).of(0.001)
     end
 
-    it '0㎥付近' do
-      volume = described_class.calculate(dbh: 0, height: 1)
-
-      expect(volume).to eq(0)
-    end
-
     it '大きい数字(39,269,908.17 m³付近)' do
       volume = described_class.calculate(dbh: 10_000, height: 10_000)
 
       expect(volume).to be_finite
+    end
+
+    context '不正な値の場合' do
+      it "直径が0以下の場合エラーになる" do
+        expect{
+          described_class.calculate(dbh: 0, height: 4)
+        }.to raise_error(ArgumentError, "dbh")
+      end
+      
+      it "高さが0以下の場合はエラーになる" do
+        expect {
+          described_class.calculate(dbh: 30, height: 0)
+        }.to raise_error(ArgumentError, "height")
+      end
+
+      it "直径が負の場合はエラーになる" do
+        expect {
+          described_class.calculate(dbh: -1, height: 4)
+        }.to raise_error(ArgumentError, "dbh")
+      end
+
+      it "高さが負の場合はエラーになる" do
+        expect {
+          described_class.calculate(dbh: 30, height: -1)
+        }.to raise_error(ArgumentError, "height")
+      end
     end
   end
 end

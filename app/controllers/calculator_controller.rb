@@ -20,18 +20,40 @@ class CalculatorController < ApplicationController
     @volume = TreeVolume.calculate(dbh: dbh, height: height)
 
     render :index
+
+    rescue ArgumentError => e
+    @error = I18n.t("calculator.errors.#{e.message}")
+    @volume = nil
+
+
+    render :index
   end
 
   def area
-    @area = params[:area].to_f
+    if params[:error]
+      @error = I18n.t("calculator.errors.#{params[:error]}")
+            
+      else
+        
+        @area =params[:area].to_f
+        
+      end
 
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: turbo_stream.update(
-          'area-result',
-          partial: 'calculator/area_result',
-          locals: { area: @area }
-        )
+        if @error
+          render turbo_stream: turbo_stream.update(
+            'area-result',
+            partial: 'calculator/error',
+            locals: { error: @error }
+          )
+        else
+          render turbo_stream:turbo_stream.update(
+            "area-result",
+            partial:"calculator/area_result",
+            locals: { area: @area }
+          )
+        end
       end
     end
   end

@@ -98,6 +98,9 @@ class: "w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-
 
 <% end %>
 
+<%= render "error",error: @error %>
+
+<%if @volume%>
 <div class="mt-6 p-6 bg-primary/10 rounded-xl border border-primary/30">
 
 <div class="flex justify-between items-start">
@@ -110,7 +113,7 @@ class: "w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-
 
 <div class="flex items-baseline justify-end gap-1">
 
-<span class="text-3xl font-bold text-primary">
+<span id="volum-value" class="text-3xl font-bold text-primary">
 <%= @volume ? @volume.round(3) : "0.000" %>
 </span>
 
@@ -125,6 +128,8 @@ m³
 </div>
 
 </div>
+
+<% end %>
 
 </div>
 
