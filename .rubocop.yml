@@ -11,6 +11,8 @@ AllCops:
     - "bin/**/*"
     - "db/schema.rb"
     - "test/**/*"
+    - "tmp/**/*"
+    - "vendor/**/*"
     - "Rakefile"
     - "app/channels/application_cable/**/*"
     - "app/controllers/application_controller.rb"

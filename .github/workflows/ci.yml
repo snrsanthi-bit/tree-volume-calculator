@@ -12,6 +12,19 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - run: bundle exec rails db:prepare 
+      - run: bundle exec rails db:prepare
+      - run: |
+          pwd
+          git rev-parse HEAD
+          echo "=== rubocop configs ==="
+          find /home/runner -name ".rubocop.yml" -o -name ".rubocop_todo.yml" 2>/dev/null
+          echo "=== repository search ==="
+          grep -Rni "rubocop-discourse" . --exclude-dir=.git --exclude-dir=vendor --exclude-dir=tmp || true
+          echo "=== local config ==="
+          cat .rubocop.yml
+          echo "=== rubocop version ==="
+          bundle exec rubocop --version
+
+      - run: bundle exec rubocop --config .rubocop.yml
       - run: bundle exec rspec
 

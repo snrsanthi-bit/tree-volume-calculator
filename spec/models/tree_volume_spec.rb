@@ -24,29 +24,29 @@ RSpec.describe TreeVolume do
       expect(volume).to be_finite
     end
 
-    context '不正な値の場合' do
-      it "直径が0以下の場合エラーになる" do
-        expect{
+    context 'when 不正な値の場合' do
+      it '直径が0以下の場合エラーになる' do
+        expect do
           described_class.calculate(dbh: 0, height: 4)
-        }.to raise_error(ArgumentError, "dbh")
+        end.to raise_error(ArgumentError, 'dbh')
       end
-      
-      it "高さが0以下の場合はエラーになる" do
-        expect {
+
+      it '高さが0以下の場合はエラーになる' do
+        expect do
           described_class.calculate(dbh: 30, height: 0)
-        }.to raise_error(ArgumentError, "height")
+        end.to raise_error(ArgumentError, 'height')
       end
 
-      it "直径が負の場合はエラーになる" do
-        expect {
+      it '直径が負の場合はエラーになる' do
+        expect do
           described_class.calculate(dbh: -1, height: 4)
-        }.to raise_error(ArgumentError, "dbh")
+        end.to raise_error(ArgumentError, 'dbh')
       end
 
-      it "高さが負の場合はエラーになる" do
-        expect {
+      it '高さが負の場合はエラーになる' do
+        expect do
           described_class.calculate(dbh: 30, height: -1)
-        }.to raise_error(ArgumentError, "height")
+        end.to raise_error(ArgumentError, 'height')
       end
     end
   end
