@@ -16,10 +16,15 @@ jobs:
       - run: |
           pwd
           git rev-parse HEAD
-          find .. -name ".rubocop.yml" -o -name ".rubocop_todo.yml"
+          echo "=== rubocop configs ==="
+          find /home/runner -name ".rubocop.yml" -o -name ".rubocop_todo.yml" 2>/dev/null
+          echo "=== repository search ==="
+          grep -Rni "rubocop-discourse" . --exclude-dir=.git --exclude-dir=vendor --exclude-dir=tmp || true
+          echo "=== local config ==="
           cat .rubocop.yml
+          echo "=== rubocop version ==="
           bundle exec rubocop --version
 
-      - run: bundle exec rubocop
+      - run: bundle exec rubocop --config .rubocop.yml
       - run: bundle exec rspec
 
