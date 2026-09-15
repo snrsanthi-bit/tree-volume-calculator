@@ -28,6 +28,9 @@ class CalculatorController < ApplicationController
   end
 
   def area
+  end
+
+  def calculate_area
     if params[:error]
       @error = I18n.t("calculator.errors.#{params[:error]}")
     else

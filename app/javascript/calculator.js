@@ -4,6 +4,15 @@ document.addEventListener("turbo:load", function() {
   const calculateAreaButton = document.getElementById("calculate-area-button");
   let triangleCount = 1;
 
+  const menuButton = document.querySelector('button[aria-label="メニュー"]');
+  const menu = document.getElementById("menu");
+
+   if (menuButton && menu) {
+    menuButton.addEventListener("click", function() {
+    menu.classList.toggle("hidden");
+    });
+  }
+
   function triangleArea(a, b, c) {
     const s = (a + b + c) / 2;
     return Math.sqrt(s * (s - a) * (s - b) * (s - c));
@@ -18,7 +27,7 @@ document.addEventListener("turbo:load", function() {
             <span class="material-symbols-outlined">delete</span>
           </button>
         </div>
-        <div class="grid grid-cols-3 gap-3 mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
           <label>
             <span class="text-sm text-slate-400 block mb-1">辺 A (m)</span>
             <input class="a w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number" step="any">
@@ -79,7 +88,7 @@ document.addEventListener("turbo:load", function() {
       });
 
       if (error){
-        fetch(`/area?error=${error}`, {
+        fetch(`/area/calculate?error=${error}`, {
           headers:{
             Accept: "text/vnd.turbo-stream.html"
           }
@@ -90,7 +99,7 @@ document.addEventListener("turbo:load", function() {
       }
 
       // Send the data to the server using Turbo Stream
-      fetch(`/area?area=${total}`, {
+      fetch(`/area/calculate?area=${total}`, {
         headers: {
           Accept: "text/vnd.turbo-stream.html"
         }
@@ -98,5 +107,6 @@ document.addEventListener("turbo:load", function() {
       .then(response => response.text())
       .then(html => Turbo.renderStreamMessage(html));
     });
-  }
+
+  };
 });

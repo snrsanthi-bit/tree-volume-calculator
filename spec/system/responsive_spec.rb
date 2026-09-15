@@ -49,6 +49,9 @@ RSpec.describe 'レスポンシブ対応', type: :system do
     end
 
     it '地積計算ができる' do
+      visit area_path
+
+      
       fill_in '辺 A (m)', with: 3
       fill_in '辺 B (m)', with: 4
       fill_in '辺 C (m)', with: 5
@@ -79,6 +82,57 @@ RSpec.describe 'レスポンシブ対応', type: :system do
 
     it '横スクロールが発生しない' do
       expect_no_horizontal_scroll
+    end
+  end
+
+  describe 'ヘッダー' do
+    before do
+      visit root_path
+    end
+
+    it 'TreeCalculationのロゴが表示される' do
+      expect(page).to have_css('header', text: 'TreeCalculation')
+    end
+
+    it 'ハンバーガーメニューが表示される' do
+      expect(page).to have_css('button[aria-label="メニュー"]')
+    end
+
+    it 'メニューから材積計算ページへ移動できる' do
+      find('button[aria-label="メニュー"]').click
+
+      click_link '材積計算'
+
+      expect(page).to have_current_path(root_path)
+    end
+
+    it 'メニューから地積計算ページへ移動できる' do
+      find('button[aria-label="メニュー"]').click
+
+      click_link '地積計算'
+
+      expect(page).to have_current_path(area_path)
+    end
+
+    it 'ハンバーガーメニューを開くとメニュー項目が表示される' do
+      find('button[aria-label="メニュー"]').click
+
+      expect(page).to have_link('材積計算')
+      expect(page).to have_link('地積計算')
+    end
+
+  end
+  describe 'ページ' do
+    it '材積計算ページを表示できる' do
+      visit root_path
+
+      expect(page).to have_content('材積計算')
+    end
+
+    it '地積計算ページを表示できる' do
+      visit area_path
+
+      expect(page).to have_content('地積計算')
     end
   end
 end

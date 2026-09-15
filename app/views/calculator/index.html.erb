@@ -134,64 +134,6 @@ m³
 </div>
 
 </section>
-<!-- Divider -->
-<div class="h-px bg-neutral-border w-full my-8"></div>
-<!-- Area Calculator Section -->
-<section class="mb-12">
-<div class="flex items-center gap-2 mb-6">
-<span class="material-symbols-outlined text-primary text-3xl">landscape</span>
-<h2 class="text-2xl font-bold tracking-tight">地積計算 (Area Calculator)</h2>
-</div>
-<div class="space-y-6" id="triangle-list">
-<!-- Triangle Item 1 -->
-<div class="triangle bg-neutral-dark/40 p-6 rounded-xl border border-neutral-border relative">
-<div class="flex justify-between items-center mb-4">
-<h3 class="text-lg font-bold text-primary">三角形 1</h3>
-<button onclick="this.closest('.triangle').remove()" 
-class="text-slate-400 hover:text-red-400 transition-colors">
-<span class="material-symbols-outlined">delete</span>
-</button>
-</div>
-<div class="grid grid-cols-3 gap-3 mb-4">
-<label>
-<span class="text-sm text-slate-400 block mb-1">辺 A (m)</span>
-<input class="a w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number" step="any">
-</label>
-<label>
-<span class="text-sm text-slate-400 block mb-1">辺 B (m)</span>
-<input class="b w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number" step="any">
-</label>
-<label>
-<span class="text-sm text-slate-400 block mb-1">辺 C (m)</span>
-<input class="c w-full bg-neutral-dark border border-neutral-border rounded-lg h-12 px-3 text-white text-center" type="number" step="any">
-</label>
-</div>
-</div>
-</div>
-<div class="mt-6 space-y-4">
-<button id="add-triangle-button"
-class="w-full bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 font-bold py-4 rounded-lg text-lg transition-colors flex items-center justify-center gap-2">
-
-<span class="material-symbols-outlined">add_circle</span>
-
-三角形を追加
-
-</button>
-<button id="calculate-area-button"
-class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-5 rounded-lg text-xl shadow-lg transition-colors flex items-center justify-center gap-2">
-
-<span class="material-symbols-outlined">straighten</span>
-
-面積を計算する
-
-</button>
-</div>
-<!-- Results Display -->
-<div id="area-result" class="mt-8 p-6 bg-primary/10 rounded-xl border border-primary/30">
-  <%= render partial: "calculator/area_result", locals: { area: @area || 0 } %>
-</div>
-</section>
-
 </div>
 
 </body>

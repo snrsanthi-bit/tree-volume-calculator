@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="dark">
   <head>
     <title>TreeCalculation</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9,9 +9,55 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <%= Sentry.get_trace_propagation_meta.html_safe %>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1,FILL@0..1&display=swap" rel="stylesheet"/>
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#11d442",
+              "background-light": "#f6f8f6",
+              "background-dark": "#102215",
+              "neutral-dark": "#1c271e",
+              "neutral-border": "#3b5441"
+            },
+            fontFamily: {
+              display: ["Inter"]
+            }
+          }
+        }
+      }
+    </script>
   </head>
 
-  <body>
+  <body class="bg-background-dark font-display text-slate-100 min-h-screen">
+
+    <header class="border-b border-neutral-border">
+      <div class="max-w-xl mx-auto px-4 py-4 flex items-center justify-between">
+        <%= link_to "TreeCalculation", root_path, class: "text-xl font-bold" %>
+
+        <button
+          type="button"
+          aria-label="メニュー"
+          class="p-2"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+      </div>
+      <nav id="menu" class="hidden">
+          <%= link_to "材積計算", root_path, class: "p-3 rounded-lg" %>
+          <%= link_to "地積計算", area_path, class: "p-3 rounded-lg" %>
+      </nav>
+
+    </header>
+
     <%= yield %>
+
   </body>
 </html>
