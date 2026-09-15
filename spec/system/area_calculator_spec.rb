@@ -14,7 +14,7 @@ RSpec.describe '地積計算', type: :system do
 
   describe '三角形1つの場合' do
     it '正しい面積が表示される' do
-      visit root_path
+      visit area_path
 
       fill_in '辺 A (m)', with: 3
       fill_in '辺 B (m)', with: 4
@@ -27,7 +27,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '辺Aが未入力の場合はエラーメッセージを表示する' do
-      visit root_path
+      visit area_path
 
       fill_triangle('', 4, 5)
 
@@ -39,7 +39,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '辺Bが未入力の場合はエラーメッセージを表示する' do
-      visit root_path
+      visit area_path
 
       fill_triangle(3, '', 5)
 
@@ -51,7 +51,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '辺Cが未入力の場合はエラーメッセージを表示する' do
-      visit root_path
+      visit area_path
 
       fill_triangle(3, 4, '')
 
@@ -63,7 +63,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '辺Aが0の場合はエラーメッセージを表示する' do
-      visit root_path
+      visit area_path
 
       fill_in '辺 A (m)', with: 0
       fill_in '辺 B (m)', with: 4
@@ -77,7 +77,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '辺Bが0の場合はエラーメッセージを表示する' do
-      visit root_path
+      visit area_path
 
       fill_in '辺 A (m)', with: 3
       fill_in '辺 B (m)', with: 0
@@ -91,7 +91,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '辺Cが0の場合はエラーメッセージを表示する' do
-      visit root_path
+      visit area_path
 
       fill_in '辺 A (m)', with: 3
       fill_in '辺 B (m)', with: 4
@@ -105,7 +105,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '辺Aが負の場合はエラーメッセージを表示する' do
-      visit root_path
+      visit area_path
 
       fill_in '辺 A (m)', with: -1
       fill_in '辺 B (m)', with: 4
@@ -119,7 +119,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '辺Bが負の場合はエラーメッセージを表示する' do
-      visit root_path
+      visit area_path
 
       fill_in '辺 A (m)', with: 3
       fill_in '辺 B (m)', with: -1
@@ -133,7 +133,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '辺Cが負の場合はエラーメッセージを表示する' do
-      visit root_path
+      visit area_path
 
       fill_in '辺 A (m)', with: 3
       fill_in '辺 B (m)', with: 4
@@ -147,7 +147,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '小さい値でも計算できる' do
-      visit root_path
+      visit area_path
 
       fill_in '辺 A (m)', with: 0.11
       fill_in '辺 B (m)', with: 0.11
@@ -160,7 +160,7 @@ RSpec.describe '地積計算', type: :system do
     end
 
     it '大きい数字でも計算できる' do
-      visit root_path
+      visit area_path
 
       fill_in '辺 A (m)', with: 99_999_990
       fill_in '辺 B (m)', with: 99_999_990
@@ -179,7 +179,7 @@ RSpec.describe '地積計算', type: :system do
         [10, 1, 2]
       ].each do |a, b, c|
         it "辺 #{a}, #{b}, #{c} では三角形を作れない" do
-          visit root_path
+          visit area_path
 
           fill_triangle(a, b, c)
 
@@ -195,7 +195,7 @@ RSpec.describe '地積計算', type: :system do
 
   describe '三角形複数の場合' do
     it '正しい面積が表示される' do
-      visit root_path
+      visit area_path
 
       within first('.triangle') do
         fill_triangle(3, 4, 5)
