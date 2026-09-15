@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'レスポンシブ対応', type: :system do
@@ -28,8 +30,8 @@ RSpec.describe 'レスポンシブ対応', type: :system do
     end
 
     it '材積計算の入力欄がタップしやすいサイズになっている' do
-      expect(page).to have_css('input[name="dbh"]')
-      expect(page).to have_css('input[name="height"]')
+      expect(page).to have_field('太さ (直径 cm)')
+      expect(page).to have_field('長さ (高さ m)')
 
       expect(page.find('input[name="dbh"]')[:class]).to include('h-16')
       expect(page.find('input[name="height"]')[:class]).to include('h-16')
@@ -51,7 +53,6 @@ RSpec.describe 'レスポンシブ対応', type: :system do
     it '地積計算ができる' do
       visit area_path
 
-      
       fill_in '辺 A (m)', with: 3
       fill_in '辺 B (m)', with: 4
       fill_in '辺 C (m)', with: 5
@@ -120,19 +121,19 @@ RSpec.describe 'レスポンシブ対応', type: :system do
       expect(page).to have_link('材積計算')
       expect(page).to have_link('地積計算')
     end
-
   end
+
   describe 'ページ' do
     it '材積計算ページを表示できる' do
       visit root_path
 
-      expect(page).to have_content('材積計算')
+      expect(page).to have_text('材積計算')
     end
 
     it '地積計算ページを表示できる' do
       visit area_path
 
-      expect(page).to have_content('地積計算')
+      expect(page).to have_text('地積計算')
     end
   end
 end
