@@ -62,6 +62,15 @@ RSpec.describe 'レスポンシブ対応', type: :system do
       expect(page).to have_css('#areaResult', text: '6.0')
       expect(page).to have_css('#haResult', text: '0.0006')
     end
+
+    it '使い方を開閉できる' do
+      visit root_path
+
+      find('summary', text: '使い方').click
+
+      expect(page).to have_css('details[open]')
+      expect_no_horizontal_scroll
+    end
   end
 
   describe 'タブレット' do
@@ -134,6 +143,15 @@ RSpec.describe 'レスポンシブ対応', type: :system do
       visit area_path
 
       expect(page).to have_text('地積計算')
+    end
+
+    it '使い方を開閉できる' do
+      visit root_path
+
+      find('summary', text: '使い方').click
+
+      expect(page).to have_css('details[open]')
+      expect_no_horizontal_scroll
     end
   end
 end
