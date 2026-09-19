@@ -43,6 +43,10 @@
       <div class="max-w-xl mx-auto px-4 py-4 flex items-center justify-between">
         <%= link_to "TreeCalculation", root_path, class: "text-xl font-bold" %>
 
+        <% if user_signed_in? %>
+          <span><%= current_user.name %></span>
+        <% end %>
+
         <button
           type="button"
           aria-label="メニュー"
@@ -51,9 +55,14 @@
           <span class="material-symbols-outlined">menu</span>
         </button>
       </div>
-      <nav id="menu" class="hidden">
+      <nav id="menu" class="hidden flex items-center gap-2">
           <%= link_to "材積計算", root_path, class: "p-3 rounded-lg" %>
           <%= link_to "地積計算", area_path, class: "p-3 rounded-lg" %>
+          <% if user_signed_in? %>
+            <%= button_to "ログアウト", destroy_user_session_path,method: :delete %>
+          <% else %>
+            <%= link_to "ログイン", new_user_session_path %>
+          <% end %>
       </nav>
 
     </header>
