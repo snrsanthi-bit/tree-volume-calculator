@@ -76,3 +76,7 @@ Capybara.register_driver :selenium_firefox do |app|
 end
 
 Capybara.javascript_driver = :selenium_firefox
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+RSpec.configure do |config|
+  config.include SystemHelpers, type: :system
+end
