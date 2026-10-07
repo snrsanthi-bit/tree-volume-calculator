@@ -218,11 +218,15 @@ RSpec.describe '地積計算', type: :system do
 
   describe 'マップ' do
     it '地図が表示される' do
-      
-    
       visit area_path
 
       expect(page).to have_css('#map')
+    end
+
+    it '地図の表示範囲が日本国内に制限されている' do
+      visit area_path
+
+      expect(page).to have_css('#map[data-map-bounds="japan"]')
     end
   end
 end
