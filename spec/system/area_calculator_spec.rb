@@ -215,4 +215,14 @@ RSpec.describe '地積計算', type: :system do
       expect(page).to have_css('#haResult', text: '0.0012')
     end
   end
+
+  describe 'マップ' do
+    it '地図が表示される' do
+      
+    
+      visit area_path
+
+      expect(page).to have_css('#map')
+    end
+  end
 end
