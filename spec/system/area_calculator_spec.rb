@@ -3,7 +3,7 @@
 require 'rails_helper'
 RSpec.describe '地積計算', type: :system do
   before do
-    driven_by :selenium_firefox
+    driven_by :firefox_japan
   end
 
   def fill_triangle(side_a, side_b, side_c)
@@ -229,10 +229,25 @@ RSpec.describe '地積計算', type: :system do
       expect(page).to have_css('#map[data-map-bounds="japan"]')
     end
 
-    it '現在地にマーカーが表示される' do
-      visit area_path
+    context 'when 日本国内にいる場合' do
+      it '現在地にマーカーが表示される' do
+        visit area_path
 
-      expect(page).to have_css('.current-location-marker')
+        expect(page).to have_css('.current-location-marker')
+      end
+    end
+
+    context 'when 国外にいる場合' do
+      before do
+        driven_by :firefox_abroad
+      end
+
+      it '現在地にマーカーが表示されない' do
+        visit area_path
+
+        expect(page).to have_css('#map')
+        expect(page).to have_no_css('.current-location-marker')
+      end
     end
   end
 end

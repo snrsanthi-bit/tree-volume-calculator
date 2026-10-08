@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe '材積計算', type: :system do
   before do
-    driven_by :selenium_firefox
+    driven_by :firefox_japan
   end
 
   context 'when 不正な値の場合' do

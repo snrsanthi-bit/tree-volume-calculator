@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'プラポリ', type: :system do
   before do
-    driven_by :selenium_firefox
+    driven_by :firefox_japan
   end
 
   describe '/terms が表示される' do

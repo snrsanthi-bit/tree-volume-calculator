@@ -64,14 +64,14 @@ RSpec.configure do |config|
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
 end
-Capybara.register_driver :selenium_firefox do |app|
+def firefox_driver(app, lat:, lng:)
   options = Selenium::WebDriver::Firefox::Options.new
   options.add_argument("-headless")
 
   mock_location = {
     location: {
-      lat: 34.3853,
-      lng: 132.4553
+      lat: lat,
+      lng: lng
     },
     accuracy: 10.0
   }.to_json
@@ -90,7 +90,15 @@ Capybara.register_driver :selenium_firefox do |app|
   )
 end
 
-Capybara.javascript_driver = :selenium_firefox
+Capybara.register_driver :firefox_japan do |app|
+  firefox_driver(app, lat: 34.3853, lng: 132.4553)
+end
+
+Capybara.register_driver :firefox_abroad do |app|
+  firefox_driver(app, lat: 37.7749, lng: -122.4194)
+end
+
+Capybara.javascript_driver = :firefox_japan
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 RSpec.configure do |config|
   config.include SystemHelpers, type: :system

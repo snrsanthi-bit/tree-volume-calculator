@@ -23,6 +23,11 @@ document.addEventListener("turbo:load", () => {
 
   navigator.geolocation.getCurrentPosition((position) => {
     const { latitude, longitude } = position.coords;
+
+    if (!japanBounds.contains([latitude, longitude])) {
+      return;
+    }
+
     const currentLocationIcon = L.divIcon({
       className: "current-location-marker",
       html: '<div class="marker-pin"></div>',

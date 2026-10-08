@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'レスポンシブ対応', type: :system do
   before do
-    driven_by :selenium_firefox
+    driven_by :firefox_japan
   end
 
   def set_viewport(width, height)
