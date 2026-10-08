@@ -6,7 +6,7 @@ RSpec.describe '認証', type: :system do
   include ActiveSupport::Testing::TimeHelpers
 
   before do
-    driven_by :selenium_firefox
+    driven_by :firefox_japan
   end
 
   def create_user
