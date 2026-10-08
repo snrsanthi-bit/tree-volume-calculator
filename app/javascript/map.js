@@ -20,4 +20,19 @@ document.addEventListener("turbo:load", () => {
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
+
+  navigator.geolocation.getCurrentPosition((position) => {
+    const { latitude, longitude } = position.coords;
+    const currentLocationIcon = L.divIcon({
+      className: "current-location-marker",
+      html: '<div class="marker-pin"></div>',
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
+    });
+    map.setView([latitude, longitude], 16);
+
+    L.marker([latitude, longitude], {
+      icon: currentLocationIcon
+    }).addTo(map);
+  });
 });

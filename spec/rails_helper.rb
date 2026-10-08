@@ -68,6 +68,21 @@ Capybara.register_driver :selenium_firefox do |app|
   options = Selenium::WebDriver::Firefox::Options.new
   options.add_argument("-headless")
 
+  mock_location = {
+    location: {
+      lat: 34.3853,
+      lng: 132.4553
+    },
+    accuracy: 10.0
+  }.to_json
+
+  options.add_preference(
+    "geo.provider.network.url",
+    "data:application/json,#{mock_location}"
+  )
+  options.add_preference("geo.prompt.testing", true)
+  options.add_preference("geo.prompt.testing.allow", true)
+
   Capybara::Selenium::Driver.new(
     app,
     browser: :firefox,

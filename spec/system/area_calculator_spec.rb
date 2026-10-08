@@ -228,5 +228,11 @@ RSpec.describe '地積計算', type: :system do
 
       expect(page).to have_css('#map[data-map-bounds="japan"]')
     end
+
+    it '現在地にマーカーが表示される' do
+      visit area_path
+
+      expect(page).to have_css('.current-location-marker')
+    end
   end
 end
