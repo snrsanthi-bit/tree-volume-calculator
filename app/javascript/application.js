@@ -1,3 +1,3 @@
 import "@hotwired/turbo-rails"
-import "./calculator";
-import "./map";
+import "calculator"
+import "map"
