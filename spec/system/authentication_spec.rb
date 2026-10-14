@@ -10,11 +10,13 @@ RSpec.describe '認証', type: :system do
   end
 
   def create_user
+    organization = Organization.create!(name: '林業会社A')
     User.create!(
       name: '山田太郎',
       email: 'user@example.com',
       password: 'password123',
-      password_confirmation: 'password123'
+      password_confirmation: 'password123',
+      organization: organization
     )
   end
 

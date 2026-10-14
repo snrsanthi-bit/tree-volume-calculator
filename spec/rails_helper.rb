@@ -102,4 +102,5 @@ Capybara.javascript_driver = :firefox_japan
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 RSpec.configure do |config|
   config.include SystemHelpers, type: :system
+  config.include Devise::Test::IntegrationHelpers, type: :request
 end
