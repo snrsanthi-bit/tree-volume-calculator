@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe WorkLocation, type: :model do
-
   let(:organization) { Organization.create!(name: '林業会社A') }
+
   describe 'バリデーション' do
     it '地点名と緯度、経度があれば有効' do
       work_location = described_class.new(

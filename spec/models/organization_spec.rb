@@ -28,4 +28,30 @@ RSpec.describe Organization, type: :model do
       expect(association.macro).to eq(:has_many)
     end
   end
+
+  describe '利用状態' do
+    it '作成直後は利用停止になっていない' do
+      organization = described_class.new(name: '林業会社A')
+
+      expect(organization.deactivated_at).to be_nil
+    end
+
+    it '利用停止日時を設定できる' do
+      organization = described_class.new(
+        name: '林業会社A',
+        deactivated_at: Time.current
+      )
+
+      expect(organization.deactivated_at).to be_present
+    end
+
+    it '利用停止日時が設定されていれば利用停止状態になる' do
+      organization = described_class.new(
+        name: '林業会社A',
+        deactivated_at: Time.current
+      )
+
+      expect(organization.deactivated?).to be true
+    end
+  end
 end
