@@ -33,8 +33,6 @@ RSpec.describe '認証', type: :system do
 
       login(user)
 
-      visit new_user_session_path
-
       expect(page).to have_current_path(root_path)
       expect(page).to have_text(user.name)
 
