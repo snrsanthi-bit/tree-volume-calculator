@@ -7,3 +7,7 @@ ja:
       side_b: "辺Bは0より大きい値を入力してください"
       side_c: "辺Cは0より大きい値を入力してください"
       triangle_invalid: "この辺の長さでは三角形を作れません"
+  work_locations:
+    create:
+      success: "作業地点を登録しました。"
+      failure: "作業地点を登録できませんでした。"

@@ -44,3 +44,5 @@ RSpec/MultipleExpectations:
 
 RSpecRails/InferredSpecType:
   Enabled: false
+Rails/NotNullColumn:
+  Enabled: false
