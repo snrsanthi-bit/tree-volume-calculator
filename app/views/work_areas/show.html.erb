@@ -1,0 +1,22 @@
+<h1>作業範囲詳細</h1>
+
+<p>作業地点：<%= @work_location.name %></p>
+<p>作業範囲名：<%= @work_area.name %></p>
+
+<div
+  id="map"
+  class="w-full h-96 rounded-xl mb-6"
+  data-map-bounds="japan"
+  data-work-area-coordinates="<%= @work_area.coordinates.to_json %>"
+  data-map-mode="show"
+></div>
+
+<p id="work-area-vertex-count">
+  頂点数：<%= @work_area.coordinates.length %>点
+</p>
+
+<%= link_to '作業範囲を編集する',
+            edit_work_location_work_areas_path(@work_location) %>
+
+<%= link_to '作業地点詳細に戻る',
+            work_location_path(@work_location) %>

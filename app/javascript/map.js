@@ -4,7 +4,6 @@ document.addEventListener("turbo:load", () => {
   const mapElement = document.getElementById("map");
 
   if (!mapElement) return;
-
   if (mapElement._leaflet_id) return;
 
   const japanBounds = L.latLngBounds(
@@ -21,6 +20,104 @@ document.addEventListener("turbo:load", () => {
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
 
+  const outlineVertices = [];
+  let outlineLine = null;
+  let outlinePolygon = null;
+  const vertexMarkers = [];
+
+  const vertexCountElement = document.getElementById(
+    "work-area-vertex-count"
+  );
+  const messageElement = document.getElementById("work-area-message");
+  const mapMode = mapElement.dataset.mapMode || "edit";
+
+  function addOutlineVertex(latlng) {
+    const vertexIcon = L.divIcon({
+      className: "outline-vertex",
+      html: "",
+      iconSize: [12, 12],
+      iconAnchor: [6, 6]
+    });
+
+    const marker = L.marker(latlng, {
+      icon: vertexIcon
+    }).addTo(map);
+
+    vertexMarkers.push(marker);
+  }
+
+  function renderOutline() {
+    if (outlineLine) {
+      map.removeLayer(outlineLine);
+    }
+
+    if (outlinePolygon) {
+      map.removeLayer(outlinePolygon);
+    }
+
+    outlineLine = L.polyline(outlineVertices, {
+      color: "#11d442",
+      weight: 3,
+      className: "work-area-outline"
+    }).addTo(map);
+
+    if (outlineVertices.length >= 3) {
+      outlinePolygon = L.polygon(outlineVertices, {
+        color: "#11d442",
+        weight: 3,
+        fillColor: "#11d442",
+        fillOpacity: 0.2,
+        className: "work-area-polygon"
+      }).addTo(map);
+    }
+
+    if (vertexCountElement) {
+      vertexCountElement.textContent =
+        `頂点数：${outlineVertices.length}点`;
+    }
+  }
+
+// 保存済みの座標があれば復元する
+  const savedCoordinates = mapElement.dataset.workAreaCoordinates;
+
+  if (savedCoordinates) {
+    try {
+      const coordinates = JSON.parse(savedCoordinates);
+
+      coordinates.forEach((coordinate) => {
+        const latlng = L.latLng(
+          Number(coordinate.lat),
+          Number(coordinate.lng)
+        );
+
+        outlineVertices.push(latlng);
+        addOutlineVertex(latlng);
+      });
+
+      if (outlineVertices.length > 0) {
+        renderOutline();
+        map.fitBounds(L.latLngBounds(outlineVertices), {
+          padding: [20, 20]
+        });
+      }
+    } catch (error) {
+      console.error("作業範囲の座標を読み込めませんでした", error);
+    }
+  }
+
+// 詳細画面では編集させない
+  if (mapMode !== "show") {
+    map.on("click", (event) => {
+      outlineVertices.push(event.latlng);
+      addOutlineVertex(event.latlng);
+      renderOutline();
+
+      if (messageElement) {
+        messageElement.textContent = "作業範囲を指定中";
+      }
+    });
+  }
+  // 現在地マーカー
   navigator.geolocation.getCurrentPosition((position) => {
     const { latitude, longitude } = position.coords;
 
@@ -34,6 +131,7 @@ document.addEventListener("turbo:load", () => {
       iconSize: [30, 30],
       iconAnchor: [15, 15]
     });
+
     map.setView([latitude, longitude], 16);
 
     L.marker([latitude, longitude], {

@@ -235,6 +235,49 @@ RSpec.describe '地積計算', type: :system do
 
         expect(page).to have_css('.current-location-marker')
       end
+
+      it '地図上のクリックで頂点が追加される' do
+        visit area_path
+
+        map = find_by_id('map')
+        page.driver.browser.action.move_to(map.native, 20, 20).click.perform
+
+        expect(page).to have_css('.outline-vertex', count: 1)
+      end
+
+      it '複数の頂点を線で結ぶ' do
+        visit area_path
+
+        map = find_by_id('map')
+        action = page.driver.browser.action
+
+        action.move_to(map.native, 20, 20).click.perform
+        action.move_to(map.native, 100, 100).click.perform
+
+        expect(page).to have_css('.outline-vertex', count: 2)
+        expect(page).to have_css('.work-area-outline')
+      end
+
+      it '3つ以上の頂点で作業範囲をポリゴン表示する' do
+        visit area_path
+        map = find_by_id('map')
+        action = page.driver.browser.action
+
+        action.move_to(map.native, 20, 20).click.perform
+        action.move_to(map.native, 100, 100).click.perform
+        action.move_to(map.native, 150, 50).click.perform
+
+        expect(page).to have_css('.outline-vertex', count: 3)
+        expect(page).to have_css('.work-area-polygon')
+      end
+
+      it '作業範囲の指定状態と頂点数を表示する' do
+        visit area_path
+
+        expect(page).to have_css('#work-area-status')
+        expect(page).to have_text('頂点数：0点')
+        expect(page).to have_text('地図をクリックして作業範囲を指定してください')
+      end
     end
 
     context 'when 国外にいる場合' do

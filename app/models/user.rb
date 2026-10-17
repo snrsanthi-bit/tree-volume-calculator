@@ -7,4 +7,10 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   belongs_to :organization
+
+  enum :role, {
+    operator: 0,
+    admin: 1,
+    worker: 2
+  }, default: :worker
 end
