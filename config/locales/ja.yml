@@ -1,4 +1,10 @@
 ja:
+  errors:
+    messages:
+      not_saved:
+        one: "保存できませんでした。エラーが1件あります。"
+        other: "保存できませんでした。エラーが%{count}件あります。"
+
   calculator:
     errors:
       dbh: "直径は0より大きい値を入力してください"
@@ -7,7 +13,17 @@ ja:
       side_b: "辺Bは0より大きい値を入力してください"
       side_c: "辺Cは0より大きい値を入力してください"
       triangle_invalid: "この辺の長さでは三角形を作れません"
+
+  activerecord:
+    errors:
+      messages:
+        required: "を入力してください。"
+
   work_locations:
     create:
       success: "作業地点を登録しました。"
       failure: "作業地点を登録できませんでした。"
+  work_areas:
+    create:
+      success: "作業範囲を保存しました"
+      failure: "作業範囲を保存できませんでした"

@@ -1,0 +1,14 @@
+
+<h1>作業地点一覧</h1>
+
+<% if @work_locations.any? %>
+  <ul>
+    <% @work_locations.each do |work_location| %>
+      <li>
+        <%= link_to work_location.name, work_location_path(work_location) %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>作業地点が登録されていません。</p>
+<% end %>

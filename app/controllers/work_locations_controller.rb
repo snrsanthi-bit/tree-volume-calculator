@@ -3,6 +3,14 @@
 class WorkLocationsController < ApplicationController
   before_action :authenticate_user!
 
+  def index
+    @work_locations = current_user.organization.work_locations
+  end
+
+  def show
+    @work_location = current_user.organization.work_locations.find(params.expect(:id))
+  end
+
   def create
     work_location = current_user.organization.work_locations.new(work_location_params)
 

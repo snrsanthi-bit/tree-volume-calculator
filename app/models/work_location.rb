@@ -6,4 +6,6 @@ class WorkLocation < ApplicationRecord
   validates :name, presence: true
   validates :latitude, presence: true, numericality: { in: -90..90 }
   validates :longitude, presence: true, numericality: { in: -180..180 }
+
+  has_many :work_areas, dependent: :destroy
 end

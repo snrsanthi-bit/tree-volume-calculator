@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_14_094232) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_17_062257) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -30,10 +30,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_094232) do
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.integer "role", default: 2, null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["organization_id"], name: "index_users_on_organization_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "work_areas", force: :cascade do |t|
+    t.jsonb "coordinates"
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.datetime "updated_at", null: false
+    t.bigint "work_location_id", null: false
+    t.index ["work_location_id"], name: "index_work_areas_on_work_location_id"
   end
 
   create_table "work_locations", force: :cascade do |t|
@@ -47,5 +57,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_094232) do
   end
 
   add_foreign_key "users", "organizations"
+  add_foreign_key "work_areas", "work_locations"
   add_foreign_key "work_locations", "organizations"
 end

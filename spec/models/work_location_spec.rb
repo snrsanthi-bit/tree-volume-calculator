@@ -120,5 +120,12 @@ RSpec.describe WorkLocation, type: :model do
 
       expect(association.macro).to eq(:belongs_to)
     end
+
+    it '複数の作業範囲を持つ' do
+      association = described_class.reflect_on_association(:work_areas)
+
+      expect(association).not_to be_nil
+      expect(association.macro).to eq(:has_many)
+    end
   end
 end

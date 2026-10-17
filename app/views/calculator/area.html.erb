@@ -6,12 +6,37 @@
 <h2 class="text-2xl font-bold tracking-tight">地積計算 (Area Calculator)</h2>
 </div>
 
+
+<% if @work_locations.present? %>
+  <div class="mb-4">
+    <label for="work-location-select">作業地点</label>
+    <select id="work-location-select" class="w-full rounded-lg">
+      <% @work_locations.each do |work_location| %>
+        <option value="<%= work_location.id %>">
+          <%= work_location.name %>
+        </option>
+      <% end %>
+    </select>
+  </div>
+<% end %>
+
+
 <div
   id="map"
   class="w-full h-96 rounded-xl mb-6"
   data-map-bounds="japan"
-></div>
-<div id="map"></div>
+  ></div>
+
+<div
+  id="work-area-status"
+  class="mb-6 p-4 rounded-lg border border-neutral-border"
+  aria-live="polite"
+>
+  <p id="work-area-vertex-count">頂点数：0点</p>
+  <p id="work-area-message">
+    地図をクリックして作業範囲を指定してください
+  </p>
+</div>
 
 
 <details>
