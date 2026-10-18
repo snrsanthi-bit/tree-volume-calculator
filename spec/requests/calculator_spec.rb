@@ -42,6 +42,17 @@ RSpec.describe 'Calculator', type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('作業地点A')
+      expect(response.body).to include(work_location.id.to_s)
+    end
+
+    it '地図に作業地点のID・緯度・経度を渡す' do
+      get area_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('data-work-locations')
+      expect(response.body).to include(work_location.id.to_s)
+      expect(response.body).to include('34.3853')
+      expect(response.body).to include('132.4553')
     end
   end
 end

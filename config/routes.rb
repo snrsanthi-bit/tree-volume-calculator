@@ -6,8 +6,8 @@ Rails.application.routes.draw do
   get "/area/calculate", to: "calculator#calculate_area"
   get "/terms", to: "legal_pages#terms"
   get "/privacy_policy", to: "legal_pages#privacy_policy"
-  resources :work_locations, only: %i[index show create] do
-    resources :work_areas, only: %i[create index show], shallow: false do
+  resources :work_locations, only: %i[index show create update] do
+    resources :work_areas, only: %i[create index show update], shallow: false do
       collection do
         get :edit
       end

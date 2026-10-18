@@ -29,6 +29,8 @@ class WorkAreasController < ApplicationController
       params.expect(:work_location_id)
     )
 
+    head :forbidden and return unless current_user.admin?
+
     work_area = work_location.work_areas.new(work_area_params)
 
     if work_area.save
@@ -37,6 +39,17 @@ class WorkAreasController < ApplicationController
 
       redirect_to edit_work_location_work_areas_path(work_location), alert: t('.failure')
     end
+  end
+
+  def update
+    work_location = current_user.organization.work_locations.find(
+      params.expect(:work_location_id)
+    )
+    work_area = work_location.work_areas.find(params.expect(:id))
+
+    head :forbidden and return unless current_user.admin?
+
+    update_work_area(work_location, work_area)
   end
 
   private
@@ -48,5 +61,15 @@ class WorkAreasController < ApplicationController
         { coordinates: [%i[lat lng]] }
       ]
     )
+  end
+
+  def update_work_area(work_location, work_area)
+    if work_area.update(work_area_params)
+      redirect_to work_location_work_area_path(work_location, work_area),
+                  notice: t('.success')
+    else
+      redirect_to work_location_work_area_path(work_location, work_area),
+                  alert: t('.failure')
+    end
   end
 end

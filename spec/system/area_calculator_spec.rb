@@ -217,6 +217,28 @@ RSpec.describe '地積計算', type: :system do
   end
 
   describe 'マップ' do
+    def create_map_test_organization
+      organization = Organization.create!(name: '林業会社A')
+
+      organization.work_locations.create!(
+        name: '作業地点A',
+        latitude: 34.3853,
+        longitude: 132.4553
+      )
+
+      organization
+    end
+
+    def create_map_test_user(organization)
+      User.create!(
+        name: '山田太郎',
+        email: 'map-test@example.com',
+        password: 'password123',
+        password_confirmation: 'password123',
+        organization: organization
+      )
+    end
+
     it '地図が表示される' do
       visit area_path
 
@@ -277,6 +299,20 @@ RSpec.describe '地積計算', type: :system do
         expect(page).to have_css('#work-area-status')
         expect(page).to have_text('頂点数：0点')
         expect(page).to have_text('地図をクリックして作業範囲を指定してください')
+      end
+
+      it '登録済みの作業地点をマーカーで表示する' do
+        organization = create_map_test_organization
+        create_map_test_user(organization)
+
+        visit new_user_session_path
+        fill_in 'Email', with: 'map-test@example.com'
+        fill_in 'Password', with: 'password123'
+        click_button 'Log in'
+        visit area_path
+
+        expect(page).to have_css('#map[data-work-locations]')
+        expect(page).to have_css('.leaflet-marker-icon', minimum: 2)
       end
     end
 

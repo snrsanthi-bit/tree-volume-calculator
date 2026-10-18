@@ -20,6 +20,44 @@ document.addEventListener("turbo:load", () => {
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
 
+  const workLocationsData = mapElement.dataset.workLocations;
+
+  if (workLocationsData) {
+    try {
+      const workLocations = JSON.parse(workLocationsData);
+
+      workLocations.forEach((location) => {
+        const latlng = [
+          Number(location.latitude),
+          Number(location.longitude)
+        ];
+
+        const marker = L.marker(latlng, {
+          title: location.name
+        }).addTo(map);
+
+        const popupContent = document.createElement("div");
+
+        const nameElement = document.createElement("div");
+        nameElement.textContent = location.name;
+
+        const latitudeElement = document.createElement("div");
+        latitudeElement.textContent = `緯度: ${location.latitude}`;
+
+        const longitudeElement = document.createElement("div");
+        longitudeElement.textContent = `経度: ${location.longitude}`;
+
+        popupContent.append(nameElement, latitudeElement, longitudeElement);
+
+        marker.bindPopup(popupContent);
+
+      });
+
+    } catch (error) {
+      console.error("作業地点を読み込めませんでした", error);
+    }
+  }
+
   const outlineVertices = [];
   let outlineLine = null;
   let outlinePolygon = null;

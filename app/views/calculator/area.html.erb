@@ -25,7 +25,15 @@
   id="map"
   class="w-full h-96 rounded-xl mb-6"
   data-map-bounds="japan"
-  ></div>
+  data-work-locations="<%= @work_locations.map { |location|
+    {
+      id: location.id,
+      name: location.name,
+      latitude: location.latitude,
+      longitude: location.longitude
+    }
+  }.to_json %>"
+></div>
 
 <div
   id="work-area-status"
