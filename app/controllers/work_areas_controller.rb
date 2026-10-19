@@ -22,6 +22,10 @@ class WorkAreasController < ApplicationController
     @work_location = current_user.organization.work_locations.find(
       params.expect(:work_location_id)
     )
+
+    if params[:id].present?
+      @work_area = @work_location.work_areas.find(params.expect(:id))
+    end
   end
 
   def create

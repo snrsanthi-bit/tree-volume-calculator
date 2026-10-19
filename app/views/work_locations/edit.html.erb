@@ -1,0 +1,22 @@
+<h1>作業地点の編集</h1>
+
+<%= form_with model: @work_location do |form| %>
+  <div>
+    <%= form.label :name, "作業地点名" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :latitude, "緯度" %>
+    <%= form.number_field :latitude, step: :any %>
+  </div>
+
+  <div>
+    <%= form.label :longitude, "経度" %>
+    <%= form.number_field :longitude, step: :any %>
+  </div>
+
+  <%= form.submit "更新する" %>
+<% end %>
+
+<%= link_to "詳細に戻る", work_location_path(@work_location) %>

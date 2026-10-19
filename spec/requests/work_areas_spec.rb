@@ -14,7 +14,6 @@ RSpec.describe 'WorkAreas', type: :request do
       ]
     )
   end
-  attr_writer :attr_names
 
   def create_another_organization_location
     Organization.create!(name: '林業会社B').work_locations.create!(

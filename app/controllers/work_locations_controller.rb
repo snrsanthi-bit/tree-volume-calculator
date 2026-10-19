@@ -11,6 +11,18 @@ class WorkLocationsController < ApplicationController
     @work_location = current_user.organization.work_locations.find(params.expect(:id))
   end
 
+  def new
+    head :forbidden and return unless current_user.admin?
+
+    @work_location = current_user.organization.work_locations.new
+  end
+
+  def edit
+    head :forbidden and return unless current_user.admin?
+
+    @work_location = current_user.organization.work_locations.find(params.expect(:id))
+  end
+
   def create
     work_location = current_user.organization.work_locations.new(work_location_params)
 

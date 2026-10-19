@@ -1,12 +1,31 @@
-<h1>作業範囲の編集</h1>
+<h1><%= @work_area ? '作業範囲の編集' : '作業範囲の新規作成' %></h1>
 
 <p>作業地点：<%= @work_location.name %></p>
 
-<div
-  id="map"
-  class="w-full h-96 rounded-xl mb-6"
-  data-map-bounds="japan"
-></div>
+<%= form_with(
+      model: [@work_location, @work_area || WorkArea.new],
+      local: true
+    ) do |form| %>
+  <div>
+    <%= form.label :name, '作業範囲名' %>
+    <%= form.text_field :name, required: true %>
+  </div>
 
-<p id="work-area-vertex-count">頂点数：0点</p>
-<p id="work-area-message">地図をクリックして作業範囲を指定してください。</p>
+  <%= form.hidden_field :coordinates, value: @work_area&.coordinates&.to_json,
+        id: 'work-area-coordinates' %>
+
+  <div
+    id="map"
+    class="w-full h-96 rounded-xl mb-6"
+    data-map-bounds="japan"
+    data-map-mode="edit"
+    data-work-area-coordinates="<%= @work_area&.coordinates&.to_json %>"
+  ></div>
+
+  <p id="work-area-vertex-count">
+    頂点数：<%= @work_area&.coordinates&.length || 0 %>点
+  </p>
+  <p id="work-area-message">地図をクリックして作業範囲を指定してください。</p>
+
+  <%= form.submit '保存する' %>
+<% end %>

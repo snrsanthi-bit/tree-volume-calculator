@@ -20,6 +20,40 @@ document.addEventListener("turbo:load", () => {
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
 
+    const mapMode = mapElement.dataset.mapMode || "edit";
+
+  if (mapMode === "location-select") {
+    const latitudeInput = document.getElementById(
+      "work-location-latitude"
+    );
+    const longitudeInput = document.getElementById(
+      "work-location-longitude"
+    );
+    const messageElement = document.getElementById("location-message");
+
+    let locationMarker = null;
+
+    map.on("click", (event) => {
+      const { lat, lng } = event.latlng;
+
+      latitudeInput.value = lat;
+      longitudeInput.value = lng;
+
+      if (locationMarker) {
+        locationMarker.setLatLng(event.latlng);
+      } else {
+        locationMarker = L.marker(event.latlng).addTo(map);
+      }
+
+      if (messageElement) {
+        messageElement.textContent =
+          `選択した位置：緯度 ${lat.toFixed(6)}、経度 ${lng.toFixed(6)}`;
+      }
+    });
+
+    return;
+  }
+
   const workLocationsData = mapElement.dataset.workLocations;
 
   if (workLocationsData) {
@@ -67,8 +101,7 @@ document.addEventListener("turbo:load", () => {
     "work-area-vertex-count"
   );
   const messageElement = document.getElementById("work-area-message");
-  const mapMode = mapElement.dataset.mapMode || "edit";
-
+ 
   function addOutlineVertex(latlng) {
     const vertexIcon = L.divIcon({
       className: "outline-vertex",

@@ -1,0 +1,25 @@
+<h1>作業地点の登録</h1>
+
+<%= form_with model: @work_location do |form| %>
+
+  <div>
+    <%= form.label :name, "作業地点名" %>
+    <%= form.text_field :name, required: true %>
+  </div>
+
+  <div
+    id="map"
+    class="w-full h-96 rounded-xl my-6"
+    data-map-bounds="japan"
+    data-map-mode="location-select"
+  ></div>
+
+  <p id="location-message">地図をクリックして作業地点を指定してください。</p>
+
+<%= form.hidden_field :latitude, id: "work-location-latitude" %>
+<%= form.hidden_field :longitude, id: "work-location-longitude" %>
+
+<%= form.submit "登録する" %>
+<% end %>
+
+<%= link_to "一覧に戻る", work_locations_path %>

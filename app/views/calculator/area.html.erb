@@ -1,9 +1,16 @@
 <div class="max-w-xl mx-auto px-4 py-8">
 <!-- Area Calculator Section -->
 <section class="mb-12">
-<div class="flex items-center gap-2 mb-6">
-<span class="material-symbols-outlined text-primary text-3xl">landscape</span>
-<h2 class="text-2xl font-bold tracking-tight">地積計算 (Area Calculator)</h2>
+<div class="flex items-center justify-between gap-4 mb-6">
+  <div class="flex items-center gap-2">
+    <span class="material-symbols-outlined text-primary text-3xl">landscape</span>
+    <h2 class="text-2xl font-bold tracking-tight">
+      地積計算 (Area Calculator)
+    </h2>
+  </div>
+
+  <%= link_to "作業地点一覧", work_locations_path,
+      class: "text-primary underline underline-offset-4" %>
 </div>
 
 
@@ -19,7 +26,52 @@
     </select>
   </div>
 <% end %>
+<div class="mb-6 rounded-xl border border-neutral-border p-4">
+  <h3 class="text-lg font-bold mb-4">作業地点の登録</h3>
 
+  <%= form_with scope: :work_location,
+                url: work_locations_path,
+                method: :post,
+                id: "work-location-form" do |form| %>
+
+    <div class="mb-4">
+      <%= form.label :name, "作業地点名" %>
+      <%= form.text_field :name,
+          id: "work-location-name",
+          required: true,
+          class: "w-full rounded-lg" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :latitude, "緯度" %>
+      <%= form.number_field :latitude,
+          id: "work-location-latitude",
+          step: :any,
+          required: true,
+          class: "w-full rounded-lg" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :longitude, "経度" %>
+      <%= form.number_field :longitude,
+          id: "work-location-longitude",
+          step: :any,
+          required: true,
+          class: "w-full rounded-lg" %>
+    </div>
+
+    <button
+      type="button"
+      id="select-work-location-button"
+      class="w-full rounded-lg border border-primary p-3 mb-3"
+    >
+      地図で位置を選ぶ
+    </button>
+
+    <%= form.submit "作業地点を保存",
+        class: "w-full rounded-lg bg-primary p-3 font-bold" %>
+  <% end %>
+</div>
 
 <div
   id="map"

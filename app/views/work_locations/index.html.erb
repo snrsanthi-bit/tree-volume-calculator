@@ -1,5 +1,8 @@
-
 <h1>作業地点一覧</h1>
+
+<% if current_user.admin? %>
+  <%= link_to "作業地点を登録", new_work_location_path %>
+<% end %>
 
 <% if @work_locations.any? %>
   <ul>

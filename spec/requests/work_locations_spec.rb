@@ -162,6 +162,54 @@ RSpec.describe 'WorkLocations', type: :request do
     end
   end
 
+  describe 'GET /work_locations/:id/edit' do
+    let(:organization) { Organization.create!(name: '林業会社A') }
+
+    let(:user) do
+      User.create!(
+        name: '山田太郎',
+        email: 'user@example.com',
+        password: 'password123',
+        password_confirmation: 'password123',
+        organization: organization
+      )
+    end
+
+    let!(:work_location) do
+      organization.work_locations.create!(
+        name: '作業地点A',
+        latitude: 34.3853,
+        longitude: 132.4553
+      )
+    end
+
+    before { sign_in user }
+
+    it '作業地点の編集画面を表示できる' do
+      sign_in_admin(organization, email: 'admin@example.com')
+
+      get edit_work_location_path(work_location)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('作業地点A')
+    end
+
+    it '別組織の作業地点の編集画面にはアクセスできない' do
+      sign_in_admin(organization, email: 'admin2@example.com')
+
+      another_organization = Organization.create!(name: '林業会社B')
+      another_location = another_organization.work_locations.create!(
+        name: '別会社の作業地点',
+        latitude: 35.0,
+        longitude: 135.0
+      )
+
+      get edit_work_location_path(another_location)
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
   describe 'PATCH /work_locations/:id' do
     let(:organization) { Organization.create!(name: '林業会社A') }
 
@@ -254,6 +302,37 @@ RSpec.describe 'WorkLocations', type: :request do
       expect(response).to have_http_status(:redirect)
       expect(work_location.reload.latitude).to eq(BigDecimal('34.3900'))
       expect(work_location.longitude).to eq(BigDecimal('132.4600'))
+    end
+  end
+
+  describe 'GET /work_locations/new' do
+    let(:organization) { Organization.create!(name: '林業会社A') }
+
+    let(:user) do
+      User.create!(
+        name: '山田太郎',
+        email: 'user@example.com',
+        password: 'password123',
+        password_confirmation: 'password123',
+        organization: organization
+      )
+    end
+
+    before { sign_in user }
+
+    it '管理者は作業地点の登録画面を表示できる' do
+      sign_in_admin(organization, email: 'admin@example.com')
+
+      get new_work_location_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('作業地点の登録')
+    end
+
+    it '一般ユーザーは登録画面を表示できない' do
+      get new_work_location_path
+
+      expect(response).to have_http_status(:forbidden)
     end
   end
 end

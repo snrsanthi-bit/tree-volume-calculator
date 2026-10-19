@@ -4,4 +4,11 @@
 <p>緯度：<%= @work_location.latitude %></p>
 <p>経度：<%= @work_location.longitude %></p>
 
+<% if current_user.admin? %>
+  <%= link_to '作業地点を編集', edit_work_location_path(@work_location) %>
+
+  <%= link_to '作業範囲を登録',
+              edit_work_location_work_areas_path(@work_location) %>
+<% end %>
+
 <%= link_to '作業地点一覧に戻る', work_locations_path %>
