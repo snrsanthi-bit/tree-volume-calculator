@@ -18,11 +18,6 @@ ja:
     errors:
       messages:
         required: "を入力してください。"
-
-  work_locations:
-    create:
-      success: "作業地点を登録しました。"
-      failure: "作業地点を登録できませんでした。"
   work_areas:
     create:
       success: "作業範囲を保存しました"

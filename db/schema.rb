@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_17_062257) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_19_175608) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -41,22 +41,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_17_062257) do
     t.jsonb "coordinates"
     t.datetime "created_at", null: false
     t.string "name"
-    t.datetime "updated_at", null: false
-    t.bigint "work_location_id", null: false
-    t.index ["work_location_id"], name: "index_work_areas_on_work_location_id"
-  end
-
-  create_table "work_locations", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.decimal "latitude", precision: 10, scale: 7, null: false
-    t.decimal "longitude", precision: 10, scale: 7, null: false
-    t.string "name", null: false
     t.bigint "organization_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["organization_id"], name: "index_work_locations_on_organization_id"
+    t.index ["organization_id"], name: "index_work_areas_on_organization_id"
   end
 
   add_foreign_key "users", "organizations"
-  add_foreign_key "work_areas", "work_locations"
-  add_foreign_key "work_locations", "organizations"
+  add_foreign_key "work_areas", "organizations"
 end

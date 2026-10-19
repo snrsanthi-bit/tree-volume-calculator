@@ -22,8 +22,8 @@ RSpec.describe Organization, type: :model do
       expect(association.macro).to eq(:has_many)
     end
 
-    it '複数の作業地点を持てる' do
-      association = described_class.reflect_on_association(:work_locations)
+    it '複数の作業区域を持てる' do
+      association = described_class.reflect_on_association(:work_areas)
 
       expect(association.macro).to eq(:has_many)
     end

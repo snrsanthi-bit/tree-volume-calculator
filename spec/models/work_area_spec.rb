@@ -5,14 +5,6 @@ require 'rails_helper'
 RSpec.describe WorkArea, type: :model do
   describe '保存' do
     let(:organization) { Organization.create!(name: '林業会社A') }
-    let(:work_location) do
-      WorkLocation.create!(
-        name: '作業地点A',
-        latitude: 34.3853,
-        longitude: 132.4553,
-        organization: organization
-      )
-    end
 
     let(:coordinates) do
       [
@@ -26,20 +18,20 @@ RSpec.describe WorkArea, type: :model do
       work_area = described_class.create!(
         name: '北側作業範囲',
         coordinates: coordinates,
-        work_location: work_location
+        organization: organization
       )
 
       saved_work_area = described_class.find(work_area.id)
 
       expect(saved_work_area.name).to eq('北側作業範囲')
       expect(saved_work_area.coordinates).to eq(coordinates)
-      expect(saved_work_area.work_location).to eq(work_location)
+      expect(saved_work_area.organization).to eq(organization)
     end
   end
 
   describe 'アソシエーション' do
-    it '作業地点に所属する' do
-      association = described_class.reflect_on_association(:work_location)
+    it '組織に所属する' do
+      association = described_class.reflect_on_association(:organization)
 
       expect(association.macro).to eq(:belongs_to)
     end
