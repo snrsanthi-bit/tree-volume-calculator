@@ -27,9 +27,7 @@ class CalculatorController < ApplicationController
     render :index
   end
 
-  def area
-    @work_locations = current_user&.organization&.work_locations || []
-  end
+  def area; end
 
   def calculate_area
     if params[:error]

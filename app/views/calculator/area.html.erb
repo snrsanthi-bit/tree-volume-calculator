@@ -6,21 +6,6 @@
 <h2 class="text-2xl font-bold tracking-tight">地積計算 (Area Calculator)</h2>
 </div>
 
-
-<% if @work_locations.present? %>
-  <div class="mb-4">
-    <label for="work-location-select">作業地点</label>
-    <select id="work-location-select" class="w-full rounded-lg">
-      <% @work_locations.each do |work_location| %>
-        <option value="<%= work_location.id %>">
-          <%= work_location.name %>
-        </option>
-      <% end %>
-    </select>
-  </div>
-<% end %>
-
-
 <div
   id="map"
   class="w-full h-96 rounded-xl mb-6"
