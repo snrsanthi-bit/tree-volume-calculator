@@ -68,7 +68,7 @@ RSpec.describe 'WorkAreas', type: :request do
     it '自組織の作業区域を取得できる' do
       area = work_area
 
-      get work_areas_path
+      get work_areas_path(format: :json)
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include(

@@ -1,29 +1,39 @@
+
 import L from "leaflet";
 
-document.addEventListener("turbo:load", () => {
+function initializeMap() {
   const mapElement = document.getElementById("map");
 
-  if (!mapElement) return;
-  if (mapElement._leaflet_id) return;
+  if (!mapElement || mapElement._leaflet_id) return;
 
   const japanBounds = L.latLngBounds(
     [24.0, 122.0],
     [46.0, 154.0]
   );
 
-  const map = L.map(mapElement, {
-    maxBounds: japanBounds,
-    maxBoundsViscosity: 1.0
-  }).setView([35.6762, 139.6503], 13);
+  let map;
+
+  try {
+    map = L.map(mapElement, {
+      maxBounds: japanBounds,
+      maxBoundsViscosity: 1.0
+    }).setView([35.6762, 139.6503], 13);
+    mapElement._leaflet_map = map;
+  } catch (error) {
+    console.error("地図の初期化に失敗しました", error);
+    return;
+  }
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
 
   const outlineVertices = [];
+  const vertexMarkers = [];
+
   let outlineLine = null;
   let outlinePolygon = null;
-  const vertexMarkers = [];
+  let selectedVertex = null;
 
   const vertexCountElement = document.getElementById(
     "work-area-vertex-count"
@@ -31,19 +41,30 @@ document.addEventListener("turbo:load", () => {
   const messageElement = document.getElementById("work-area-message");
   const mapMode = mapElement.dataset.mapMode || "edit";
 
-  function addOutlineVertex(latlng) {
-    const vertexIcon = L.divIcon({
-      className: "outline-vertex",
-      html: "",
-      iconSize: [12, 12],
-      iconAnchor: [6, 6]
+  const coordinatesInput = document.querySelector(
+    'input[name="work_area[coordinates]"]'
+  );
+
+  const workAreaForm = coordinatesInput?.closest("form");
+
+  function syncCoordinates() {
+    if (!coordinatesInput) return;
+
+    coordinatesInput.value = JSON.stringify(
+      outlineVertices.map((vertex) => ({
+        lat: vertex.lat,
+        lng: vertex.lng
+      }))
+    );
+  }
+
+  function selectVertex(marker) {
+    vertexMarkers.forEach((vertexMarker) => {
+      vertexMarker.getElement()?.classList.remove("is-selected");
     });
 
-    const marker = L.marker(latlng, {
-      icon: vertexIcon
-    }).addTo(map);
-
-    vertexMarkers.push(marker);
+    marker.getElement()?.classList.add("is-selected");
+    selectedVertex = marker;
   }
 
   function renderOutline() {
@@ -53,6 +74,7 @@ document.addEventListener("turbo:load", () => {
 
     if (outlinePolygon) {
       map.removeLayer(outlinePolygon);
+      outlinePolygon = null;
     }
 
     outlineLine = L.polyline(outlineVertices, {
@@ -77,18 +99,86 @@ document.addEventListener("turbo:load", () => {
     }
   }
 
-// 保存済みの座標があれば復元する
-  const savedCoordinates = mapElement.dataset.workAreaCoordinates;
+  function addOutlineVertex(latlng) {
+    const vertexIcon = L.divIcon({
+      className: "outline-vertex",
+      html: "",
+      iconSize: [12, 12],
+      iconAnchor: [6, 6]
+    });
 
-  if (savedCoordinates) {
+    const marker = L.marker(latlng, {
+      icon: vertexIcon,
+      draggable: mapMode !== "show"
+    }).addTo(map);
+
+    marker.on("click", (event) => {
+      L.DomEvent.stopPropagation(event);
+      selectVertex(marker);
+    });
+
+    marker.on("dragstart", () => {
+      selectVertex(marker);
+    });
+
+    marker.on("drag", (event) => {
+      const index = vertexMarkers.indexOf(marker);
+
+      if (index === -1) return;
+
+      outlineVertices[index] = event.target.getLatLng();
+      renderOutline();
+      syncCoordinates();
+    });
+
+    marker.on("dragend", () => {
+      if (messageElement) {
+        messageElement.textContent = "頂点の位置を変更しました";
+      }
+    });
+
+    vertexMarkers.push(marker);
+    selectVertex(marker);
+  }
+
+  function deleteSelectedVertex() {
+    if (!selectedVertex || mapMode === "show") return;
+
+    const index = vertexMarkers.indexOf(selectedVertex);
+
+    if (index === -1) return;
+
+    map.removeLayer(selectedVertex);
+    vertexMarkers.splice(index, 1);
+    outlineVertices.splice(index, 1);
+
+    selectedVertex = null;
+
+    renderOutline();
+    syncCoordinates();
+
+    if (messageElement) {
+      messageElement.textContent = "頂点を削除しました";
+    }
+  }
+
+  function restoreCoordinates() {
+    const savedCoordinates = mapElement.dataset.workAreaCoordinates;
+
+    if (!savedCoordinates) return;
+
     try {
       const coordinates = JSON.parse(savedCoordinates);
 
+      if (!Array.isArray(coordinates)) return;
+
       coordinates.forEach((coordinate) => {
-        const latlng = L.latLng(
-          Number(coordinate.lat),
-          Number(coordinate.lng)
-        );
+        const lat = Number(coordinate.lat);
+        const lng = Number(coordinate.lng);
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+        const latlng = L.latLng(lat, lng);
 
         outlineVertices.push(latlng);
         addOutlineVertex(latlng);
@@ -96,6 +186,8 @@ document.addEventListener("turbo:load", () => {
 
       if (outlineVertices.length > 0) {
         renderOutline();
+        syncCoordinates();
+
         map.fitBounds(L.latLngBounds(outlineVertices), {
           padding: [20, 20]
         });
@@ -105,37 +197,73 @@ document.addEventListener("turbo:load", () => {
     }
   }
 
-// 詳細画面では編集させない
+  // 詳細画面では頂点の削除・追加・移動を禁止する
   if (mapMode !== "show") {
+    document.addEventListener("keydown", (event) => {
+      if (event.key.toLowerCase() !== "d") return;
+
+      const activeElement = document.activeElement;
+
+      if (
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement?.isContentEditable
+      ) {
+        return;
+      }
+
+      deleteSelectedVertex();
+    });
+
     map.on("click", (event) => {
       outlineVertices.push(event.latlng);
       addOutlineVertex(event.latlng);
       renderOutline();
+      syncCoordinates();
 
       if (messageElement) {
         messageElement.textContent = "作業範囲を指定中";
       }
     });
   }
-  // 現在地マーカー
-  navigator.geolocation.getCurrentPosition((position) => {
-    const { latitude, longitude } = position.coords;
 
-    if (!japanBounds.contains([latitude, longitude])) {
-      return;
-    }
+  restoreCoordinates();
 
-    const currentLocationIcon = L.divIcon({
-      className: "current-location-marker",
-      html: '<div class="marker-pin"></div>',
-      iconSize: [30, 30],
-      iconAnchor: [15, 15]
+  // DOMの描画後に地図サイズを再計算する
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      map.invalidateSize();
     });
-
-    map.setView([latitude, longitude], 16);
-
-    L.marker([latitude, longitude], {
-      icon: currentLocationIcon
-    }).addTo(map);
   });
-});
+
+  // 現在地が取得できた場合はマーカーを表示する
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+
+        if (!japanBounds.contains([latitude, longitude])) return;
+
+        const currentLocationIcon = L.divIcon({
+          className: "current-location-marker",
+          html: '<div class="marker-pin"></div>',
+          iconSize: [30, 30],
+          iconAnchor: [15, 15]
+        });
+
+        map.setView([latitude, longitude], 16);
+
+        L.marker([latitude, longitude], {
+          icon: currentLocationIcon
+        }).addTo(map);
+      }
+    );
+  }
+
+  if (workAreaForm) {
+    workAreaForm.addEventListener("submit", syncCoordinates);
+  }
+}
+
+document.addEventListener("turbo:load", initializeMap);
+

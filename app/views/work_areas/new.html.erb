@@ -1,0 +1,33 @@
+
+<h1>作業範囲の新規作成</h1>
+
+<% if flash[:alert].present? %>
+  <p class="text-red-500"><%= flash[:alert] %></p>
+<% end %>
+
+<%= form_with model: @work_area do |form| %>
+  <div>
+    <%= form.label :name, "作業範囲名" %>
+    <%= form.text_field :name, required: true %>
+  </div>
+
+  <div
+    id="map"
+    class="w-full h-96 rounded-xl mb-6"
+    data-map-bounds="japan"
+    data-work-area-coordinates="<%= (@work_area.coordinates || []).to_json %>"
+    data-debug-coordinates="<%= @work_area.coordinates.to_json %>"
+  ></div>
+
+  <p id="work-area-vertex-count">頂点数：0点</p>
+  <p id="work-area-message">
+    地図をクリックして作業範囲を指定してください。
+  </p>
+
+  <%= form.hidden_field :coordinates, value: "[]" %>
+
+  <%= form.submit "作業範囲を保存" %>
+<% end %>
+
+<%= link_to "一覧に戻る", work_areas_path %>
+

@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   get "/area/calculate", to: "calculator#calculate_area"
   get "/terms", to: "legal_pages#terms"
   get "/privacy_policy", to: "legal_pages#privacy_policy"
-  resources :work_areas, only: %i[index show create edit]
+  resources :work_areas, only: %i[index new show create edit update]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

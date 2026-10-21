@@ -34,3 +34,9 @@
   border-radius: 50%;
   box-shadow: 0 0 0 1px #2563eb;
 }
+
+.outline-vertex.is-selected {
+  background: #f97316;
+  border: 3px solid white;
+  box-shadow: 0 0 0 4px rgb(249 115 22 / 30%);
+}
