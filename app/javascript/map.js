@@ -58,6 +58,76 @@ function initializeMap() {
     );
   }
 
+  let triangulationLayers = [];
+
+  let highlightedEdge = null;
+
+  document.addEventListener("edge:highlight", (event) => {
+    if (highlightedEdge) {
+      map.removeLayer(highlightedEdge);
+      highlightedEdge = null;
+    }
+
+    const edge = event.detail;
+    if (!edge) return;
+
+    highlightedEdge = L.polyline(
+      [edge.start, edge.end],
+      {
+        color: "#f97316",
+        weight: 6,
+        opacity: 1,
+        interactive: false
+      }
+    ).addTo(map);
+  });
+
+  async function updateTriangulation() {
+    triangulationLayers.forEach((layer) => map.removeLayer(layer));
+    triangulationLayers = [];
+
+    if (outlineVertices.length < 3) return;
+
+    try {
+      const response = await fetch("/area/triangulate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector(
+            'meta[name="csrf-token"]'
+          ).content
+        },
+        body: JSON.stringify({
+          points: outlineVertices.map((vertex) => ({
+            lat: vertex.lat,
+            lng: vertex.lng
+          }))
+        })
+      });
+
+      if (!response.ok) throw new Error("三角分割に失敗しました");
+
+      const { triangles } = await response.json();
+      document.dispatchEvent(
+        new CustomEvent("triangulation:updated", {
+          detail: { triangles }
+        })
+      );
+
+      triangles.forEach((triangle) => {
+        const layer = L.polygon(triangle, {
+          color: "#2563eb",
+          weight: 2,
+          fillOpacity: 0.05
+        }).addTo(map);
+
+        triangulationLayers.push(layer);
+      });
+    } catch (error) {
+      console.error("三角分割の更新に失敗しました", error);
+    }
+  }
+
   function selectVertex(marker) {
     vertexMarkers.forEach((vertexMarker) => {
       vertexMarker.getElement()?.classList.remove("is-selected");
@@ -70,6 +140,7 @@ function initializeMap() {
   function renderOutline() {
     if (outlineLine) {
       map.removeLayer(outlineLine);
+      outlineLine = null;
     }
 
     if (outlinePolygon) {
@@ -77,20 +148,23 @@ function initializeMap() {
       outlinePolygon = null;
     }
 
-    outlineLine = L.polyline(outlineVertices, {
-      color: "#11d442",
-      weight: 3,
-      className: "work-area-outline"
-    }).addTo(map);
-
-    if (outlineVertices.length >= 3) {
-      outlinePolygon = L.polygon(outlineVertices, {
+  // 編集画面では外周線を表示する
+    if (mapMode !== "show") {
+      outlineLine = L.polyline(outlineVertices, {
         color: "#11d442",
         weight: 3,
-        fillColor: "#11d442",
-        fillOpacity: 0.2,
-        className: "work-area-polygon"
+        className: "work-area-outline"
       }).addTo(map);
+
+      if (outlineVertices.length >= 3) {
+        outlinePolygon = L.polygon(outlineVertices, {
+          color: "#11d442",
+          weight: 3,
+          fillColor: "#11d442",
+          fillOpacity: 0.2,
+          className: "work-area-polygon"
+        }).addTo(map);
+      }
     }
 
     if (vertexCountElement) {
@@ -98,7 +172,6 @@ function initializeMap() {
         `頂点数：${outlineVertices.length}点`;
     }
   }
-
   function addOutlineVertex(latlng) {
     const vertexIcon = L.divIcon({
       className: "outline-vertex",
@@ -131,7 +204,10 @@ function initializeMap() {
       syncCoordinates();
     });
 
+
+
     marker.on("dragend", () => {
+      updateTriangulation();
       if (messageElement) {
         messageElement.textContent = "頂点の位置を変更しました";
       }
@@ -191,6 +267,9 @@ function initializeMap() {
         map.fitBounds(L.latLngBounds(outlineVertices), {
           padding: [20, 20]
         });
+        if (mapMode !== "show"){
+          updateTriangulation();
+        }
       }
     } catch (error) {
       console.error("作業範囲の座標を読み込めませんでした", error);
@@ -220,6 +299,7 @@ function initializeMap() {
       addOutlineVertex(event.latlng);
       renderOutline();
       syncCoordinates();
+      updateTriangulation();
 
       if (messageElement) {
         messageElement.textContent = "作業範囲を指定中";

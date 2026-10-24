@@ -29,6 +29,19 @@ class CalculatorController < ApplicationController
 
   def area; end
 
+  def triangulate
+    points = params.require(:points).map do |point|
+      [Float(point[:lat]), Float(point[:lng])]
+    end
+
+    boundary_points = PolygonBoundaryBuilder.new(points).build
+    triangles = PolygonTriangulator.new(boundary_points).triangulate
+
+    render json: { triangles: triangles }
+  rescue ArgumentError, ActionController::ParameterMissing => e
+    render json: { error: e.message }, status: :unprocessable_content
+  end
+
   def calculate_area
     if params[:error]
       @error = I18n.t("calculator.errors.#{params[:error]}")

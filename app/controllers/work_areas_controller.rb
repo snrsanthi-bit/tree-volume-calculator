@@ -49,11 +49,14 @@ class WorkAreasController < ApplicationController
   def work_area_params
     params.expect(work_area: [:name]).to_h
           .symbolize_keys
-          .merge(coordinates: parsed_coordinates)
+          .merge(
+            coordinates: parsed_coordinates,
+            survey_data: parsed_survey_data
+          )
   rescue JSON::ParserError, TypeError
     params.expect(work_area: [:name]).to_h
           .symbolize_keys
-          .merge(coordinates: [])
+          .merge(coordinates: [], survey_data: {})
   end
 
   def parsed_coordinates
@@ -67,5 +70,20 @@ class WorkAreasController < ApplicationController
     else
       []
     end
+  end
+
+  def parsed_survey_data
+    raw = params.dig(:work_area, :survey_data)
+
+    return raw.to_unsafe_h if raw.is_a?(ActionController::Parameters)
+    return raw if raw.is_a?(Hash)
+    return parse_survey_data_json(raw) if raw.is_a?(String)
+
+    {}
+  end
+
+  def parse_survey_data_json(raw_survey_data)
+    parsed = JSON.parse(raw_survey_data)
+    parsed.is_a?(Hash) ? parsed : {}
   end
 end

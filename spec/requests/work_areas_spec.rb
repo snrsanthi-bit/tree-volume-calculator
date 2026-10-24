@@ -3,6 +3,85 @@
 require 'rails_helper'
 
 RSpec.describe 'WorkAreas', type: :request do
+  def survey_edges
+    [survey_edge_a, survey_edge_b, survey_edge_c]
+  end
+
+  def survey_edge_a
+    {
+      'name' => 'a',
+      'start' => [34.3853, 132.4553],
+      'end' => [34.3860, 132.4560],
+      'estimated_length' => 100.5,
+      'measured_length' => nil
+    }
+  end
+
+  def survey_edge_b
+    {
+      'name' => 'b',
+      'start' => [34.3860, 132.4560],
+      'end' => [34.3865, 132.4550],
+      'estimated_length' => 120.3,
+      'measured_length' => nil
+    }
+  end
+
+  def survey_edge_c
+    {
+      'name' => 'c',
+      'start' => [34.3865, 132.4550],
+      'end' => [34.3853, 132.4553],
+      'estimated_length' => 90.2,
+      'measured_length' => nil
+    }
+  end
+
+  def work_area_params_with_survey_data
+    {
+      work_area: {
+        name: '測量データ付き作業範囲',
+        coordinates: coordinates,
+        survey_data: expected_survey_data.to_json
+      }
+    }
+  end
+
+  def expected_survey_data
+    {
+      'triangles' => [expected_triangle]
+    }
+  end
+
+  def expected_triangle
+    {
+      'number' => 1,
+      'vertices' => [
+        [34.3853, 132.4553],
+        [34.3860, 132.4560],
+        [34.3865, 132.4550]
+      ],
+      'edges' => survey_edges
+    }
+  end
+
+  def update_params(area)
+    survey_data = expected_survey_data
+    survey_data.dig('triangles', 0, 'edges', 0)['measured_length'] = 98.7
+
+    {
+      work_area: {
+        name: area.name,
+        coordinates: coordinates,
+        survey_data: survey_data.to_json
+      }
+    }
+  end
+
+  def saved_edge(area)
+    area.reload.survey_data.dig('triangles', 0, 'edges', 0)
+  end
+
   let(:organization) { Organization.create!(name: '林業会社A') }
 
   let(:user) do
@@ -62,6 +141,24 @@ RSpec.describe 'WorkAreas', type: :request do
       )
       expect(created_work_area.organization).to eq(organization)
     end
+
+    it '三角形と各辺の測量データを保存できる' do
+      post work_areas_path, params: work_area_params_with_survey_data
+
+      expect(WorkArea.last.survey_data).to eq(expected_survey_data)
+    end
+  end
+
+  describe 'PATCH /work_areas/:id' do
+    it '推定値と実測値を分けて保存できる' do
+      area = work_area
+      patch work_area_path(area), params: update_params(area)
+
+      expect(saved_edge(area)).to include(
+        'estimated_length' => 100.5,
+        'measured_length' => 98.7
+      )
+    end
   end
 
   describe 'GET /work_areas' do
@@ -113,6 +210,20 @@ RSpec.describe 'WorkAreas', type: :request do
       get work_area_path(other_area)
 
       expect(response).to have_http_status(:not_found)
+    end
+
+    it '保存済みの測量データを詳細画面に渡す' do
+      area = work_area
+      area.update!(survey_data: expected_survey_data)
+
+      get work_area_path(area)
+
+      expect(response).to have_http_status(:ok)
+
+      document = response.parsed_body
+      survey_data = JSON.parse(document.at_css('#triangle-list')['data-survey-data'])
+
+      expect(survey_data).to eq(expected_survey_data)
     end
   end
 

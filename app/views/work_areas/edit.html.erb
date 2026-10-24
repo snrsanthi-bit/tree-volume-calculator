@@ -8,31 +8,44 @@
   </div>
 <% end %>
 
+
 <%= form_with model: @work_area, data: { turbo: false } do |form| %>
-  <div>
+  <div class="mb-4">
     <%= form.label :name, "作業範囲名" %>
     <%= form.text_field :name, required: true %>
   </div>
 
-  <div
-    id="map"
-    class="w-full h-96 rounded-xl mb-6"
-    data-map-bounds="japan"
-    data-work-area-coordinates="<%= @work_area.coordinates.to_json %>"
-  ></div>
+  <div class="flex flex-col min-h-0">
+    <div
+      id="map"
+      class="w-full h-56 sm:h-72 shrink-0 rounded-xl mb-3"
+      data-map-bounds="japan"
+      data-work-area-coordinates="<%= @work_area.coordinates.to_json %>"
+    ></div>
 
-  <p id="work-area-vertex-count">
-    頂点数：<%= @work_area.coordinates.length %>点
-  </p>
+    <p id="work-area-vertex-count" class="shrink-0">
+      頂点数：<%= @work_area.coordinates.length %>点
+    </p>
 
-  <p id="work-area-message">
-    地図をクリックして頂点を追加できます。
-  </p>
+    <p id="work-area-message" class="shrink-0">
+      地図をクリックして頂点を追加できます。
+    </p>
+
+    <div
+      id="triangle-list"
+      class="space-y-6 mt-3 overflow-y-auto min-h-0 flex-1"
+    ></div>
+  </div>
 
   <%= form.hidden_field :coordinates, value: @work_area.coordinates.to_json %>
+  <%= form.hidden_field :survey_data, value: (@work_area.survey_data || {}).to_json, id: "work-area-survey-data" %>
 
-  <%= form.submit "変更を保存" %>
+  <div class="mt-4">
+    <%= form.submit "変更を保存" %>
+  </div>
 <% end %>
 
-<%= link_to "詳細に戻る", work_area_path(@work_area) %>
-<%= link_to "一覧に戻る", work_areas_path %>
+<div class="mt-4 flex gap-4">
+  <%= link_to "詳細に戻る", work_area_path(@work_area) %>
+  <%= link_to "一覧に戻る", work_areas_path %>
+</div>

@@ -58,6 +58,22 @@ RSpec.describe '作業範囲の地図操作', type: :system do
     JAVASCRIPT
   end
 
+  def monitor_triangulation_api
+    page.execute_script(<<~JAVASCRIPT)
+      window.triangulationApiCalls = 0;
+
+      const originalFetch = window.fetch.bind(window);
+
+      window.fetch = (...args) => {
+        if (args[0].toString().includes('/area/triangulate')) {
+          window.triangulationApiCalls += 1;
+        }
+
+        return originalFetch(...args);
+      };
+    JAVASCRIPT
+  end
+
   it '地図の空白をクリックすると頂点が追加される' do
     expect(page).to have_css('#work-area-vertex-count', text: '頂点数：3点')
 
@@ -131,5 +147,18 @@ RSpec.describe '作業範囲の地図操作', type: :system do
 
     expect(page).to have_css('#work-area-vertex-count', text: '頂点数：2点')
     expect(page).to have_css('.outline-vertex', count: 2)
+  end
+
+  context 'when viewing the detail page' do
+    it '初期表示時に三角分割APIを呼び出さない' do
+      monitor_triangulation_api
+
+      page.execute_script(
+        "Turbo.visit(#{work_area_path(work_area).to_json})"
+      )
+
+      expect(page).to have_css('#map')
+      expect(page.evaluate_script('window.triangulationApiCalls')).to eq(0)
+    end
   end
 end

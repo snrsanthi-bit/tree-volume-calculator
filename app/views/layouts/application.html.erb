@@ -58,10 +58,11 @@
       </div>
       <nav id="menu" class="hidden flex items-center gap-2">
           <%= link_to "材積計算", root_path, class: "p-3 rounded-lg" %>
-          <%= link_to "地積計算", area_path, class: "p-3 rounded-lg" %>
           <% if user_signed_in? %>
+            <%= link_to "作業範囲一覧", work_areas_path, class: "p-3 rounded-lg" %>
             <%= button_to "ログアウト", destroy_user_session_path,method: :delete %>
           <% else %>
+            <%= link_to "地積計算", area_path, class: "p-3 rounded-lg" %>
             <%= link_to "ログイン", new_user_session_path %>
           <% end %>
       </nav>

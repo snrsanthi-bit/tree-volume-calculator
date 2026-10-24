@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   devise_for :users, skip: [:registrations]
   root "calculator#index"
   post "calculate", to: "calculator#calculate"
+  post "/area/triangulate", to: "calculator#triangulate"
   get "/area", to: "calculator#area"
   get "/area/calculate", to: "calculator#calculate_area"
   get "/terms", to: "legal_pages#terms"

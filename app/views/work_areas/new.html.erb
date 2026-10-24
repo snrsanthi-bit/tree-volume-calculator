@@ -25,6 +25,7 @@
   </p>
 
   <%= form.hidden_field :coordinates, value: "[]" %>
+  <%= form.hidden_field :survey_data, value: (@work_area.survey_data || {}).to_json, id: "work-area-survey-data" %>
 
   <%= form.submit "作業範囲を保存" %>
 <% end %>
