@@ -149,6 +149,68 @@ RSpec.describe '作業範囲の地図操作', type: :system do
     expect(page).to have_css('.outline-vertex', count: 2)
   end
 
+  context 'when in auxiliary point mode' do
+    before do
+      click_button '補助点'
+    end
+
+    it '地図をクリックすると補助点が追加されるが外周点数は変わらない' do
+      coordinates_input = 'input[name="work_area[coordinates]"]'
+      original_coordinates = page.find(coordinates_input, visible: :all).value
+
+      click_map_at(34.38593, 132.45543)
+
+      expect(page).to have_css('.auxiliary-point', count: 1)
+      expect(page).to have_css(
+        '#work-area-vertex-count',
+        text: '頂点数：3点'
+      )
+      expect(
+        page.find(
+          'input[name="work_area[coordinates]"]',
+          visible: :all
+        ).value
+      ).to eq(original_coordinates)
+    end
+
+    it '補助点をクリックすると選択状態になる' do
+      click_map_at(34.38593, 132.45543)
+
+      page.execute_script(<<~JAVASCRIPT)
+        document.querySelector(".auxiliary-point").click();
+      JAVASCRIPT
+
+      expect(page).to have_css('.auxiliary-point.is-selected')
+    end
+
+    it 'Dキーを押すと選択中の補助点が削除される' do
+      click_map_at(34.38593, 132.45543)
+
+      page.execute_script(<<~JAVASCRIPT)
+        document.querySelector(".auxiliary-point").click();
+      JAVASCRIPT
+
+      page.find('body').send_keys('d')
+
+      expect(page).to have_no_css('.auxiliary-point')
+      expect(page).to have_css('.outline-vertex', count: 3)
+      expect(page).to have_css(
+        '#work-area-vertex-count',
+        text: '頂点数：3点'
+      )
+    end
+
+    it '外周の外側をクリックすると補助点が追加されずメッセージが表示される' do
+      click_map_at(34.3900, 132.4600)
+
+      expect(page).to have_no_css('.auxiliary-point')
+      expect(page).to have_css(
+        '#work-area-message',
+        text: '外周の内側に配置してください'
+      )
+    end
+  end
+
   context 'when viewing the detail page' do
     it '初期表示時に三角分割APIを呼び出さない' do
       monitor_triangulation_api

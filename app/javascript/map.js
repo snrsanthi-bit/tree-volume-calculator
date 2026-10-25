@@ -4,8 +4,9 @@ import L from "leaflet";
 function initializeMap() {
   const mapElement = document.getElementById("map");
 
-  if (!mapElement || mapElement._leaflet_id) return;
-
+  if (!mapElement || mapElement._leaflet_id) {
+    return;
+  }
   const japanBounds = L.latLngBounds(
     [24.0, 122.0],
     [46.0, 154.0]
@@ -30,6 +31,23 @@ function initializeMap() {
 
   const outlineVertices = [];
   const vertexMarkers = [];
+
+  const auxiliaryPoints = [];
+  const auxiliaryPointMarkers = [];
+
+  let selectedAuxiliaryPoint = null;
+  let currentMode = "outline";
+
+  const outlineModeButton = document.getElementById(
+    "outline-mode-button"
+  );
+  const auxiliaryPointModeButton = document.getElementById(
+    "auxiliary-point-mode-button"
+  );
+
+  const surveyDataInput = document.getElementById(
+    "work-area-survey-data"
+  );
 
   let outlineLine = null;
   let outlinePolygon = null;
@@ -137,6 +155,193 @@ function initializeMap() {
     selectedVertex = marker;
   }
 
+  function selectAuxiliaryPoint(marker) {
+    vertexMarkers.forEach((vertexMarker) => {
+      vertexMarker.getElement()?.classList.remove("is-selected");
+    });
+
+    auxiliaryPointMarkers.forEach((pointMarker) => {
+      pointMarker.getElement()?.classList.remove("is-selected");
+    });
+
+    marker.getElement()?.classList.add("is-selected");
+    selectedVertex = null;
+    selectedAuxiliaryPoint = marker;
+  }
+
+  function isInsideOutline(point) {
+    if (outlineVertices.length < 3) return false;
+
+    const polygon = L.polygon(outlineVertices);
+
+    return polygon.getBounds().contains(point) &&
+      isPointInPolygon(point, outlineVertices);
+  }
+
+  function isPointInPolygon(point, vertices) {
+    let inside = false;
+
+    for (
+      let i = 0, j = vertices.length - 1;
+      i < vertices.length;
+      j = i++
+    ) {
+      const a = vertices[i];
+      const b = vertices[j];
+
+      const intersects =
+        (a.lat > point.lat) !== (b.lat > point.lat) &&
+        point.lng <
+          ((b.lng - a.lng) * (point.lat - a.lat)) /
+            (b.lat - a.lat) +
+            a.lng;
+
+      if (intersects) inside = !inside;
+    }
+
+    return inside;
+  }
+
+    function addAuxiliaryPoint(latlng) {
+      if (!isInsideOutline(latlng)) {
+        if (messageElement) {
+          messageElement.textContent = "外周の内側に配置してください";
+        }
+
+        return;
+      }
+      const icon = L.divIcon({
+        className: "auxiliary-point",
+        html: '<div class="auxiliary-point-marker"></div>',
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
+      });
+
+      const marker = L.marker(latlng, {
+        icon,
+        draggable: true
+      }).addTo(map);
+
+      marker.on("click", (event) => {
+        L.DomEvent.stopPropagation(event);
+        selectAuxiliaryPoint(marker);
+      });
+
+      marker.on("dragstart", () => {
+        selectAuxiliaryPoint(marker);
+      });
+
+      marker.on("dragend", () => {
+        const index = auxiliaryPointMarkers.indexOf(marker);
+
+        if (index === -1) return;
+
+        auxiliaryPoints[index] = marker.getLatLng();
+        syncAuxiliaryPoints();
+
+      if (messageElement) {
+        messageElement.textContent = "補助点の位置を変更しました";
+      }
+    });
+
+    auxiliaryPoints.push(latlng);
+    auxiliaryPointMarkers.push(marker);
+    selectAuxiliaryPoint(marker);
+    syncAuxiliaryPoints();
+
+    if (messageElement) {
+      messageElement.textContent = "補助点を追加しました";
+    }
+  }
+
+  function syncAuxiliaryPoints() {
+    if (!surveyDataInput) return;
+
+    let surveyData = {};
+
+    try {
+      surveyData = JSON.parse(surveyDataInput.value || "{}");
+    } catch (error) {
+      console.error("測量データを読み込めませんでした", error);
+    }
+
+    surveyData.auxiliary_points = auxiliaryPoints.map((point, index) => ({
+      id: `point-${index + 1}`,
+      lat: point.lat,
+      lng: point.lng
+    }));
+
+    surveyDataInput.value = JSON.stringify(surveyData);
+  }
+
+  const triangleListElement = document.getElementById("triangle-list");
+
+  function getSurveyData() {
+    try {
+      if (surveyDataInput) {
+        return JSON.parse(surveyDataInput.value || "{}");
+      }
+
+      if (triangleListElement) {
+        return JSON.parse(
+          triangleListElement.dataset.surveyData || "{}"
+        );
+      }
+    } catch (error) {
+      console.error("測量データを読み込めませんでした", error);
+    }
+
+    return {};
+  }
+
+  function restoreAuxiliaryPoints() {
+    const surveyData = getSurveyData();
+    const savedPoints = surveyData.auxiliary_points;
+
+    if (!Array.isArray(savedPoints)) return;
+
+    savedPoints.forEach((point) => {
+      const lat = Number(point.lat);
+      const lng = Number(point.lng);
+
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+      const icon = L.divIcon({
+        className: "auxiliary-point",
+        html: '<div class="auxiliary-point-marker"></div>',
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
+      });
+
+      const marker = L.marker([lat, lng], {
+        icon,
+        draggable: mapMode !== "show"
+      }).addTo(map);
+
+      auxiliaryPoints.push(L.latLng(lat, lng));
+      auxiliaryPointMarkers.push(marker);
+    });
+  }
+
+  function deleteSelectedAuxiliaryPoint() {
+    if (!selectedAuxiliaryPoint) return;
+
+    const index = auxiliaryPointMarkers.indexOf(selectedAuxiliaryPoint);
+
+    if (index === -1) return;
+
+    map.removeLayer(selectedAuxiliaryPoint);
+    auxiliaryPointMarkers.splice(index, 1);
+    auxiliaryPoints.splice(index, 1);
+
+    selectedAuxiliaryPoint = null;
+    syncAuxiliaryPoints();
+
+    if (messageElement) {
+      messageElement.textContent = "補助点を削除しました";
+    }
+  }
+
   function renderOutline() {
     if (outlineLine) {
       map.removeLayer(outlineLine);
@@ -214,8 +419,38 @@ function initializeMap() {
     });
 
     vertexMarkers.push(marker);
-    selectVertex(marker);
+    if (mapMode !== "show") {
+      selectVertex(marker);
+    }
   }
+
+  function setMapMode(mode) {
+    currentMode = mode;
+
+    outlineModeButton?.setAttribute(
+      "aria-pressed",
+      String(mode === "outline")
+    );
+
+    auxiliaryPointModeButton?.setAttribute(
+      "aria-pressed",
+      String(mode === "auxiliary")
+    );
+
+    if (messageElement) {
+      messageElement.textContent = mode === "auxiliary"
+        ? "地図をクリックして補助点を追加できます"
+        : "地図をクリックして外周点を追加できます";
+    }
+  }
+
+  outlineModeButton?.addEventListener("click", () => {
+    setMapMode("outline");
+  });
+
+  auxiliaryPointModeButton?.addEventListener("click", () => {
+    setMapMode("auxiliary");
+  });
 
   function deleteSelectedVertex() {
     if (!selectedVertex || mapMode === "show") return;
@@ -232,6 +467,7 @@ function initializeMap() {
 
     renderOutline();
     syncCoordinates();
+    updateTriangulation();
 
     if (messageElement) {
       messageElement.textContent = "頂点を削除しました";
@@ -291,10 +527,22 @@ function initializeMap() {
         return;
       }
 
+      if (selectedAuxiliaryPoint) {
+        deleteSelectedAuxiliaryPoint();
+        return;
+      }
+
       deleteSelectedVertex();
     });
 
     map.on("click", (event) => {
+      if (currentMode === "auxiliary") {
+        addAuxiliaryPoint(event.latlng);
+        return;
+      }
+
+      selectedAuxiliaryPoint = null;
+
       outlineVertices.push(event.latlng);
       addOutlineVertex(event.latlng);
       renderOutline();
@@ -308,6 +556,7 @@ function initializeMap() {
   }
 
   restoreCoordinates();
+  restoreAuxiliaryPoints();
 
   // DOMの描画後に地図サイズを再計算する
   requestAnimationFrame(() => {
@@ -345,5 +594,7 @@ function initializeMap() {
   }
 }
 
-document.addEventListener("turbo:load", initializeMap);
+document.addEventListener("turbo:load", () => {
+  initializeMap();
+});
 

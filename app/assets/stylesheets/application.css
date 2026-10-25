@@ -36,7 +36,23 @@
 }
 
 .outline-vertex.is-selected {
-  background: #f97316;
+  background-color: #ef4444;
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3px #b91c1c;
+}
+
+.auxiliary-point-marker {
+  width: 14px;
+  height: 14px;
+  background-color: #f97316;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #c2410c;
+}
+
+.auxiliary-point.is-selected .auxiliary-point-marker {
+  background-color: #ef4444;
   border: 3px solid white;
-  box-shadow: 0 0 0 4px rgb(249 115 22 / 30%);
+  box-shadow: 0 0 0 3px #b91c1c;
+  transform: scale(1.25);
 }

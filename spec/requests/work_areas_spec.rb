@@ -49,8 +49,27 @@ RSpec.describe 'WorkAreas', type: :request do
 
   def expected_survey_data
     {
-      'triangles' => [expected_triangle]
+      'triangles' => [expected_triangle],
+      'auxiliary_points' => expected_auxiliary_points,
+      'auxiliary_lines' => expected_auxiliary_lines
     }
+  end
+
+  def expected_auxiliary_points
+    [
+      { 'id' => 'point-1', 'lat' => 34.3862, 'lng' => 132.4557 },
+      { 'id' => 'point-2', 'lat' => 34.3864, 'lng' => 132.4562 }
+    ]
+  end
+
+  def expected_auxiliary_lines
+    [
+      {
+        'id' => 'line-1',
+        'start_point_id' => 'point-1',
+        'end_point_id' => 'point-2'
+      }
+    ]
   end
 
   def expected_triangle
@@ -158,6 +177,15 @@ RSpec.describe 'WorkAreas', type: :request do
         'estimated_length' => 100.5,
         'measured_length' => 98.7
       )
+    end
+
+    it '補助点と補助線を含む測量データを保存できる' do
+      post work_areas_path, params: work_area_params_with_survey_data
+
+      saved_data = WorkArea.last.survey_data
+
+      expect(saved_data['auxiliary_points']).to eq(expected_auxiliary_points)
+      expect(saved_data['auxiliary_lines']).to eq(expected_auxiliary_lines)
     end
   end
 

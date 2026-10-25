@@ -73,9 +73,13 @@ document.addEventListener("turbo:load", function() {
       });
 
       if (surveyDataInput) {
-        surveyDataInput.value = JSON.stringify({
-          triangles: surveyTriangles
-        });
+        const surveyData = JSON.parse(
+          surveyDataInput.value || "{}"
+        );
+
+        surveyData.triangles = surveyTriangles;
+
+        surveyDataInput.value = JSON.stringify(surveyData);
       }
 
       const sharedEdges = findSharedEdges();
@@ -283,9 +287,13 @@ document.addEventListener("turbo:load", function() {
       }
     );
 
-    surveyDataInput.value = JSON.stringify({
-      triangles: surveyTriangles
-    });
+    const surveyData = JSON.parse(
+      surveyDataInput.value || "{}"
+    );
+
+    surveyData.triangles = surveyTriangles;
+
+    surveyDataInput.value = JSON.stringify(surveyData);
   }
 
   const workAreaForm = surveyDataInput?.closest("form");

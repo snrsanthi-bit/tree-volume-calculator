@@ -37,6 +37,10 @@ RSpec.describe PolygonTriangulator do
       triangles = described_class.new(points).triangulate
 
       expect(triangles.size).to eq(2)
+
+      total_area = triangles.sum { |triangle| triangle_area(triangle) }
+
+      expect(total_area).to eq(12.0)
     end
 
     it '凹多角形を三角形に分割する' do

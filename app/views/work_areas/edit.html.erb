@@ -15,6 +15,26 @@
     <%= form.text_field :name, required: true %>
   </div>
 
+  <div class="flex gap-2 mb-3">
+    <button
+      type="button"
+      id="outline-mode-button"
+      aria-pressed="true"
+      class="px-4 py-2 rounded-lg border"
+    >
+      外周点
+    </button>
+
+    <button
+      type="button"
+      id="auxiliary-point-mode-button"
+      aria-pressed="false"
+      class="px-4 py-2 rounded-lg border"
+    >
+      補助点
+    </button>
+  </div>
+
   <div class="flex flex-col min-h-0">
     <div
       id="map"
@@ -38,7 +58,9 @@
   </div>
 
   <%= form.hidden_field :coordinates, value: @work_area.coordinates.to_json %>
-  <%= form.hidden_field :survey_data, value: (@work_area.survey_data || {}).to_json, id: "work-area-survey-data" %>
+  <%= form.hidden_field :survey_data,
+    value: (@work_area.survey_data || {}).to_json,
+    id: "work-area-survey-data" %>
 
   <div class="mt-4">
     <%= form.submit "変更を保存" %>
