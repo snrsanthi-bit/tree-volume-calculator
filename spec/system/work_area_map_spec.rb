@@ -3,6 +3,51 @@
 require 'rails_helper'
 
 RSpec.describe '作業範囲の地図操作', type: :system do
+  def delete_first_auxiliary_point
+    click_button '補助点'
+
+    page.execute_script(<<~JAVASCRIPT)
+      document.querySelectorAll(".auxiliary-point")[0].click();
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "d",
+          bubbles: true
+        })
+      );
+    JAVASCRIPT
+  end
+
+  def create_auxiliary_line
+    click_button '補助点'
+    click_map_at(34.3857, 132.4555)
+    click_map_at(34.3858, 132.4557)
+    click_button '補助線'
+
+    page.execute_script(<<~JAVASCRIPT)
+      const points = document.querySelectorAll(".auxiliary-point");
+      points[0].click();
+      points[1].click();
+    JAVASCRIPT
+  end
+
+  def auxiliary_line_survey_data
+    JSON.parse(
+      page.find_by_id(
+        'work-area-survey-data',
+        visible: :all
+      ).value
+    )
+  end
+
+  def expect_auxiliary_line_saved(survey_data)
+    expect(survey_data['auxiliary_lines']).to contain_exactly(
+      hash_including(
+        'start_point_id' => 'point-1',
+        'end_point_id' => 'point-2'
+      )
+    )
+  end
+
   let(:organization) do
     Organization.create!(name: '林業会社A')
   end
@@ -30,6 +75,22 @@ RSpec.describe '作業範囲の地図操作', type: :system do
       name: '北側作業範囲',
       coordinates: coordinates
     )
+  end
+
+  let(:survey_data_with_auxiliary_line) do
+    {
+      auxiliary_points: [
+        { id: 'point-1', lat: 34.3857, lng: 132.4555 },
+        { id: 'point-2', lat: 34.3858, lng: 132.4557 }
+      ],
+      auxiliary_lines: [
+        {
+          id: 'line-1',
+          start_point_id: 'point-1',
+          end_point_id: 'point-2'
+        }
+      ]
+    }
   end
 
   before do
@@ -212,6 +273,22 @@ RSpec.describe '作業範囲の地図操作', type: :system do
   end
 
   context 'when viewing the detail page' do
+    let(:survey_data_with_auxiliary_line) do
+      {
+        auxiliary_points: [
+          { id: 'point-1', lat: 34.3857, lng: 132.4555 },
+          { id: 'point-2', lat: 34.3858, lng: 132.4557 }
+        ],
+        auxiliary_lines: [
+          {
+            id: 'line-1',
+            start_point_id: 'point-1',
+            end_point_id: 'point-2'
+          }
+        ]
+      }
+    end
+
     it '初期表示時に三角分割APIを呼び出さない' do
       monitor_triangulation_api
 
@@ -222,5 +299,108 @@ RSpec.describe '作業範囲の地図操作', type: :system do
       expect(page).to have_css('#map')
       expect(page.evaluate_script('window.triangulationApiCalls')).to eq(0)
     end
+
+    it '保存済みの補助線を詳細画面に表示する' do
+      work_area.update!(survey_data: survey_data_with_auxiliary_line)
+
+      visit work_area_path(work_area)
+
+      expect(page).to have_css('.auxiliary-line', count: 1)
+    end
+  end
+
+  context 'when in auxiliary line mode' do
+    it '補助線モードのボタンが表示される' do
+      expect(page).to have_button('補助線')
+    end
+  end
+
+  it '補助線ボタンを押すと補助線モードに切り替わる' do
+    click_button '補助線'
+
+    expect(
+      page.find_by_id('auxiliary-line-mode-button')['aria-pressed']
+    ).to eq('true')
+
+    expect(
+      page.find_by_id('outline-mode-button')['aria-pressed']
+    ).to eq('false')
+
+    expect(page).to have_css(
+      '#work-area-message',
+      text: '補助線モード'
+    )
+  end
+
+  it '補助線モードで補助点を2つ選択すると補助線が作成される' do
+    click_button '補助点'
+    click_map_at(34.3857, 132.4555)
+    click_map_at(34.3858, 132.4557)
+
+    expect(page).to have_css('.auxiliary-point', count: 2)
+
+    click_button '補助線'
+
+    page.execute_script(<<~JAVASCRIPT)
+      const points = document.querySelectorAll(".auxiliary-point");
+      points[0].click();
+      points[1].click();
+    JAVASCRIPT
+
+    expect(page).to have_css('.auxiliary-line', count: 1)
+  end
+
+  it '作成した補助線が保存用データに記録される' do
+    create_auxiliary_line
+
+    survey_data = auxiliary_line_survey_data
+    expect(survey_data['auxiliary_lines']).to contain_exactly(
+      hash_including(
+        'start_point' => {
+          'type' => 'auxiliary',
+          'id' => 'point-1'
+        },
+        'end_point' => {
+          'type' => 'auxiliary',
+          'id' => 'point-2'
+        }
+      )
+    )
+  end
+
+  it '補助点を削除すると接続している補助線も削除される' do
+    create_auxiliary_line
+    expect(page).to have_css('.auxiliary-line', count: 1)
+
+    delete_first_auxiliary_point
+
+    expect(page).to have_css('.auxiliary-point', count: 1)
+    expect(page).to have_no_css('.auxiliary-line')
+    expect(auxiliary_line_survey_data['auxiliary_lines']).to be_empty
+  end
+
+  it '保存済みの補助線を編集画面に表示する' do
+    work_area.update!(survey_data: survey_data_with_auxiliary_line)
+
+    visit edit_work_area_path(work_area)
+
+    expect(page).to have_css('.auxiliary-line', count: 1)
+  end
+
+  it '外周点と補助点を選択すると補助線が作成される' do
+    click_button '補助点'
+    click_map_at(34.3857, 132.4555)
+
+    click_button '補助線'
+
+    page.execute_script(<<~JAVASCRIPT)
+      const outlinePoint = document.querySelector(".outline-vertex");
+      const auxiliaryPoint = document.querySelector(".auxiliary-point");
+
+      outlinePoint.click();
+      auxiliaryPoint.click();
+    JAVASCRIPT
+
+    expect(page).to have_css('.auxiliary-line', count: 1)
   end
 end

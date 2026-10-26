@@ -7,6 +7,7 @@ function initializeMap() {
   if (!mapElement || mapElement._leaflet_id) {
     return;
   }
+
   const japanBounds = L.latLngBounds(
     [24.0, 122.0],
     [46.0, 154.0]
@@ -19,6 +20,7 @@ function initializeMap() {
       maxBounds: japanBounds,
       maxBoundsViscosity: 1.0
     }).setView([35.6762, 139.6503], 13);
+
     mapElement._leaflet_map = map;
   } catch (error) {
     console.error("地図の初期化に失敗しました", error);
@@ -34,15 +36,24 @@ function initializeMap() {
 
   const auxiliaryPoints = [];
   const auxiliaryPointMarkers = [];
+  const auxiliaryPointIds = [];
+  let nextAuxiliaryPointId = 1;
 
   let selectedAuxiliaryPoint = null;
   let currentMode = "outline";
+
+  const auxiliaryLines = [];
+  let auxiliaryLineStartPoint = null;
 
   const outlineModeButton = document.getElementById(
     "outline-mode-button"
   );
   const auxiliaryPointModeButton = document.getElementById(
     "auxiliary-point-mode-button"
+  );
+
+  const auxiliaryLineModeButton = document.getElementById(
+    "auxiliary-line-mode-button"
   );
 
   const surveyDataInput = document.getElementById(
@@ -202,6 +213,56 @@ function initializeMap() {
     return inside;
   }
 
+  function updateConnectedAuxiliaryLines(marker) {
+    auxiliaryLines.forEach(({ layer, startPoint, endPoint }) => {
+      if (startPoint !== marker && endPoint !== marker) return;
+
+      layer.setLatLngs([
+        startPoint.getLatLng(),
+        endPoint.getLatLng()
+      ]);
+    });
+  }
+
+  function handleAuxiliaryLinePointClick(marker) {
+    if (currentMode !== "auxiliary-line") return false;
+
+    if (!auxiliaryLineStartPoint) {
+      auxiliaryLineStartPoint = marker;
+
+      if (messageElement) {
+        messageElement.textContent = "補助線の終点を選択してください";
+      }
+
+      return true;
+    }
+
+    if (auxiliaryLineStartPoint === marker) return true;
+
+    const startPoint = auxiliaryLineStartPoint;
+    const endPoint = marker;
+
+    const line = L.polyline(
+      [startPoint.getLatLng(), endPoint.getLatLng()],
+      {
+        color: "#f97316",
+        weight: 3,
+        className: "auxiliary-line"
+      }
+    ).addTo(map);
+
+    auxiliaryLines.push({ layer: line, startPoint, endPoint });
+
+    syncAuxiliaryPoints();
+    auxiliaryLineStartPoint = null;
+
+    if (messageElement) {
+      messageElement.textContent = "補助線を作成しました";
+    }
+
+    return true;
+  }
+
     function addAuxiliaryPoint(latlng) {
       if (!isInsideOutline(latlng)) {
         if (messageElement) {
@@ -210,6 +271,7 @@ function initializeMap() {
 
         return;
       }
+
       const icon = L.divIcon({
         className: "auxiliary-point",
         html: '<div class="auxiliary-point-marker"></div>',
@@ -224,11 +286,16 @@ function initializeMap() {
 
       marker.on("click", (event) => {
         L.DomEvent.stopPropagation(event);
-        selectAuxiliaryPoint(marker);
+        if (handleAuxiliaryLinePointClick(marker)) return;
+        selectVertex(marker);
       });
 
       marker.on("dragstart", () => {
         selectAuxiliaryPoint(marker);
+      });
+
+      marker.on("drag", () => {
+        updateConnectedAuxiliaryLines(marker);
       });
 
       marker.on("dragend", () => {
@@ -239,19 +306,42 @@ function initializeMap() {
         auxiliaryPoints[index] = marker.getLatLng();
         syncAuxiliaryPoints();
 
+        if (messageElement) {
+          messageElement.textContent = "補助点の位置を変更しました";
+        }
+      });
+
+      auxiliaryPoints.push(latlng);
+      auxiliaryPointMarkers.push(marker);
+      auxiliaryPointIds.push(`point-${nextAuxiliaryPointId++}`);
+
+      selectAuxiliaryPoint(marker);
+      syncAuxiliaryPoints();
+
       if (messageElement) {
-        messageElement.textContent = "補助点の位置を変更しました";
+        messageElement.textContent = "補助点を追加しました";
       }
-    });
-
-    auxiliaryPoints.push(latlng);
-    auxiliaryPointMarkers.push(marker);
-    selectAuxiliaryPoint(marker);
-    syncAuxiliaryPoints();
-
-    if (messageElement) {
-      messageElement.textContent = "補助点を追加しました";
     }
+  function getPointReference(marker) {
+    const auxiliaryIndex = auxiliaryPointMarkers.indexOf(marker);
+
+    if (auxiliaryIndex !== -1) {
+      return {
+        type: "auxiliary",
+        id: auxiliaryPointIds[auxiliaryIndex]
+      };
+    }
+
+    const outlineIndex = vertexMarkers.indexOf(marker);
+
+    if (outlineIndex !== -1) {
+      return {
+        type: "outline",
+        index: outlineIndex
+      };
+    }
+
+    return null;
   }
 
   function syncAuxiliaryPoints() {
@@ -266,11 +356,18 @@ function initializeMap() {
     }
 
     surveyData.auxiliary_points = auxiliaryPoints.map((point, index) => ({
-      id: `point-${index + 1}`,
+      id: auxiliaryPointIds[index],
       lat: point.lat,
       lng: point.lng
     }));
 
+    surveyData.auxiliary_lines = auxiliaryLines.map(
+      ({ startPoint, endPoint }, index) => ({
+        id: `line-${index + 1}`,
+        start_point: getPointReference(startPoint),
+        end_point: getPointReference(endPoint)
+      })
+    );
     surveyDataInput.value = JSON.stringify(surveyData);
   }
 
@@ -292,6 +389,41 @@ function initializeMap() {
     }
 
     return {};
+  }
+
+  function restoreAuxiliaryLines() {
+    const data = getSurveyData();
+    const lines = data.auxiliary_lines || [];
+
+    lines.forEach((lineData) => {
+      const startIndex = auxiliaryPointIds.indexOf(
+        lineData.start_point_id
+      );
+      const endIndex = auxiliaryPointIds.indexOf(
+        lineData.end_point_id
+      );
+
+    // 接続先の補助点が存在しない線は復元しない
+      if (startIndex === -1 || endIndex === -1) return;
+
+      const startPoint = auxiliaryPointMarkers[startIndex];
+      const endPoint = auxiliaryPointMarkers[endIndex];
+
+      const line = L.polyline(
+        [startPoint.getLatLng(), endPoint.getLatLng()],
+        {
+          color: "orange",
+          weight: 3,
+          className: "auxiliary-line"
+        }
+      ).addTo(map);
+
+      auxiliaryLines.push({
+        layer: line,
+        startPoint,
+        endPoint
+      });
+    });
   }
 
   function restoreAuxiliaryPoints() {
@@ -318,8 +450,20 @@ function initializeMap() {
         draggable: mapMode !== "show"
       }).addTo(map);
 
+      const pointId = point.id || `point-${nextAuxiliaryPointId}`;
+
       auxiliaryPoints.push(L.latLng(lat, lng));
       auxiliaryPointMarkers.push(marker);
+      auxiliaryPointIds.push(pointId);
+
+      const numericId = Number(pointId.replace("point-", ""));
+
+      if (Number.isInteger(numericId)) {
+        nextAuxiliaryPointId = Math.max(
+          nextAuxiliaryPointId,
+          numericId + 1
+        );
+      }
     });
   }
 
@@ -330,9 +474,24 @@ function initializeMap() {
 
     if (index === -1) return;
 
+    const pointToDelete = selectedAuxiliaryPoint;
+
+    for (let i = auxiliaryLines.length - 1; i >= 0; i--) {
+      const auxiliaryLine = auxiliaryLines[i];
+
+      if (
+        auxiliaryLine.startPoint === pointToDelete ||
+        auxiliaryLine.endPoint === pointToDelete
+      ) {
+        map.removeLayer(auxiliaryLine.layer);
+        auxiliaryLines.splice(i, 1);
+      }
+    }
+
     map.removeLayer(selectedAuxiliaryPoint);
     auxiliaryPointMarkers.splice(index, 1);
     auxiliaryPoints.splice(index, 1);
+    auxiliaryPointIds.splice(index, 1);
 
     selectedAuxiliaryPoint = null;
     syncAuxiliaryPoints();
@@ -392,19 +551,20 @@ function initializeMap() {
 
     marker.on("click", (event) => {
       L.DomEvent.stopPropagation(event);
+
+      if (handleAuxiliaryLinePointClick(marker)) return;
+
       selectVertex(marker);
     });
-
-    marker.on("dragstart", () => {
-      selectVertex(marker);
-    });
-
     marker.on("drag", (event) => {
       const index = vertexMarkers.indexOf(marker);
 
       if (index === -1) return;
 
       outlineVertices[index] = event.target.getLatLng();
+
+      updateConnectedAuxiliaryLines(marker);
+
       renderOutline();
       syncCoordinates();
     });
@@ -437,10 +597,19 @@ function initializeMap() {
       String(mode === "auxiliary")
     );
 
+    auxiliaryLineModeButton?.setAttribute(
+      "aria-pressed",
+      String(mode === "auxiliary-line")
+    );
+
     if (messageElement) {
-      messageElement.textContent = mode === "auxiliary"
-        ? "地図をクリックして補助点を追加できます"
-        : "地図をクリックして外周点を追加できます";
+      const messages = {
+        outline: "地図をクリックして外周点を追加できます",
+        auxiliary: "地図をクリックして補助点を追加できます",
+        "auxiliary-line": "補助線モード：始点と終点を選択してください"
+      };
+
+      messageElement.textContent = messages[mode];
     }
   }
 
@@ -450,6 +619,10 @@ function initializeMap() {
 
   auxiliaryPointModeButton?.addEventListener("click", () => {
     setMapMode("auxiliary");
+  });
+
+  auxiliaryLineModeButton?.addEventListener("click", () => {
+    setMapMode("auxiliary-line");
   });
 
   function deleteSelectedVertex() {
@@ -536,6 +709,9 @@ function initializeMap() {
     });
 
     map.on("click", (event) => {
+      if (currentMode === "auxiliary-line") {
+        return;
+      }
       if (currentMode === "auxiliary") {
         addAuxiliaryPoint(event.latlng);
         return;
@@ -557,6 +733,7 @@ function initializeMap() {
 
   restoreCoordinates();
   restoreAuxiliaryPoints();
+  restoreAuxiliaryLines();
 
   // DOMの描画後に地図サイズを再計算する
   requestAnimationFrame(() => {
