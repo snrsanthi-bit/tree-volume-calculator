@@ -2,7 +2,7 @@
 
 class WorkAreasController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_work_area, only: %i[show edit update]
+  before_action :set_work_area, only: %i[show edit update measurements]
 
   def index
     @work_areas = current_user.organization.work_areas
@@ -40,7 +40,41 @@ class WorkAreasController < ApplicationController
     end
   end
 
+  # show 画面で入力した実測値だけを保存する。
+  # 外周(coordinates)や点・線の構造には触れない（edit の update とは分けている）。
+  def measurements
+    data = survey_data_with_measurements
+    return head :unprocessable_content unless data
+
+    if @work_area.update(survey_data: data)
+      render json: { status: 'ok' }
+    else
+      render json: { errors: @work_area.errors.full_messages }, status: :unprocessable_content
+    end
+  rescue ArgumentError, TypeError
+    head :unprocessable_content
+  end
+
   private
+
+  # 保存済みの survey_data に、送られた実測値だけを反映したものを返す(不正な入力なら nil)
+  def survey_data_with_measurements
+    raw = params[:measurements]
+    data = (@work_area.survey_data || {}).deep_stringify_keys
+    return unless raw.respond_to?(:to_unsafe_h) && data['lines'].is_a?(Array)
+
+    apply_measurements(data['lines'], raw.to_unsafe_h)
+    data
+  end
+
+  def apply_measurements(lines, values)
+    lines.each do |line|
+      next unless values.key?(line['id'])
+
+      value = values[line['id']]
+      line['measured_length'] = value.nil? || value == '' ? nil : Float(value)
+    end
+  end
 
   def set_work_area
     @work_area = current_user.organization.work_areas.find(params.expect(:id))
