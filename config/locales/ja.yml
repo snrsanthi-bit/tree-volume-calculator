@@ -22,3 +22,5 @@ ja:
     create:
       success: "作業範囲を保存しました"
       failure: "作業範囲を保存できませんでした"
+    update:
+      success: "作業範囲を更新しました"

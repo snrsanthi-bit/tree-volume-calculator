@@ -1,10 +1,85 @@
 <h1>作業範囲の編集</h1>
 
-<div
-  id="map"
-  class="w-full h-96 rounded-xl mb-6"
-  data-map-bounds="japan"
-></div>
+<% if @work_area.errors.any? %>
+  <div class="text-red-500">
+    <% @work_area.errors.full_messages.each do |message| %>
+      <p><%= message %></p>
+    <% end %>
+  </div>
+<% end %>
 
-<p id="work-area-vertex-count">頂点数：0点</p>
-<p id="work-area-message">地図をクリックして作業範囲を指定してください。</p>
+
+<%= form_with model: @work_area, data: { turbo: false } do |form| %>
+  <div class="mb-4">
+    <%= form.label :name, "作業範囲名" %>
+    <%= form.text_field :name, required: true %>
+  </div>
+
+  <div class="flex gap-2 mb-3">
+    <button
+      type="button"
+      id="outline-mode-button"
+      aria-pressed="true"
+      class="px-4 py-2 rounded-lg border"
+    >
+      外周点
+    </button>
+
+    <button
+      type="button"
+      id="auxiliary-point-mode-button"
+      aria-pressed="false"
+      class="px-4 py-2 rounded-lg border"
+    >
+      補助点
+    </button>
+
+    <button
+      type="button"
+      id="auxiliary-line-mode-button"
+      aria-pressed="false"
+      class="px-4 py-2 rounded-lg border"
+    >
+      補助線
+    </button>
+  </div>
+
+  <div class="flex flex-col min-h-0">
+    <div
+      id="map"
+      class="w-full h-56 sm:h-72 shrink-0 rounded-xl mb-3"
+      data-map-bounds="japan"
+      data-work-area-coordinates="<%= @work_area.coordinates.to_json %>"
+    ></div>
+
+    <p id="work-area-vertex-count" class="shrink-0">
+      頂点数：<%= @work_area.coordinates.length %>点
+    </p>
+
+    <p id="work-area-message" class="shrink-0">
+      地図をクリックして頂点を追加できます。
+    </p>
+
+    <p id="survey-area-estimated" class="shrink-0 text-sm text-slate-300"></p>
+
+    <div
+      id="triangle-list"
+      class="space-y-6 mt-3 overflow-y-auto min-h-0 flex-1"
+      data-survey-cards="edit"
+    ></div>
+  </div>
+
+  <%= form.hidden_field :coordinates, value: @work_area.coordinates.to_json %>
+  <%= form.hidden_field :survey_data,
+    value: (@work_area.survey_data || {}).to_json,
+    id: "work-area-survey-data" %>
+
+  <div class="mt-4">
+    <%= form.submit "変更を保存" %>
+  </div>
+<% end %>
+
+<div class="mt-4 flex gap-4">
+  <%= link_to "詳細に戻る", work_area_path(@work_area) %>
+  <%= link_to "一覧に戻る", work_areas_path %>
+</div>

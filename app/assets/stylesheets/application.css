@@ -34,3 +34,34 @@
   border-radius: 50%;
   box-shadow: 0 0 0 1px #2563eb;
 }
+
+.outline-vertex.is-selected {
+  background-color: #ef4444;
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3px #b91c1c;
+}
+
+.auxiliary-point-marker {
+  width: 14px;
+  height: 14px;
+  background-color: #f97316;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #c2410c;
+}
+
+.auxiliary-point.is-selected .auxiliary-point-marker {
+  background-color: #ef4444;
+  border: 3px solid white;
+  box-shadow: 0 0 0 3px #b91c1c;
+  transform: scale(1.25);
+}
+
+.outline-vertex.is-error, .auxiliary-point.is-error {
+  outline: 3px solid #ef4444;
+  border-radius: 9999px;
+}
+.auxiliary-line-error {
+  stroke:
+#ef4444 !important;
+}

@@ -1,3 +1,5 @@
+// /area（地積の手入力計算）とメニューだけを担当する。
+// 作業範囲の edit / show の三角形カードは survey_cards.js に移した。
 document.addEventListener("turbo:load", function() {
   const triangleList = document.getElementById("triangle-list");
   const addTriangleButton = document.getElementById("add-triangle-button");
@@ -7,9 +9,9 @@ document.addEventListener("turbo:load", function() {
   const menuButton = document.querySelector('button[aria-label="メニュー"]');
   const menu = document.getElementById("menu");
 
-   if (menuButton && menu) {
+  if (menuButton && menu) {
     menuButton.addEventListener("click", function() {
-    menu.classList.toggle("hidden");
+      menu.classList.toggle("hidden");
     });
   }
 
@@ -45,7 +47,7 @@ document.addEventListener("turbo:load", function() {
     `;
   }
 
-  if (addTriangleButton) {
+  if (addTriangleButton && triangleList) {
     addTriangleButton.addEventListener("click", function(event) {
       event.preventDefault();
       triangleCount++;
@@ -64,18 +66,18 @@ document.addEventListener("turbo:load", function() {
         const b = parseFloat(tri.querySelector(".b").value);
         const c = parseFloat(tri.querySelector(".c").value);
 
-        if (Number.isNaN(a) || a <= 0){
+        if (Number.isNaN(a) || a <= 0) {
           error = "side_a";
           return;
         }
 
-        if (Number.isNaN(b) || b <= 0){
+        if (Number.isNaN(b) || b <= 0) {
           error = "side_b";
           return;
         }
 
-        if (Number.isNaN(c) || c <= 0){
-          error = "side_c"
+        if (Number.isNaN(c) || c <= 0) {
+          error = "side_c";
           return;
         }
 
@@ -87,26 +89,20 @@ document.addEventListener("turbo:load", function() {
         total += triangleArea(a, b, c);
       });
 
-      if (error){
+      if (error) {
         fetch(`/area/calculate?error=${error}`, {
-          headers:{
-            Accept: "text/vnd.turbo-stream.html"
-          }
+          headers: { Accept: "text/vnd.turbo-stream.html" }
         })
-        .then(response => response.text())
-        .then(html => Turbo.renderStreamMessage(html));
+          .then(response => response.text())
+          .then(html => Turbo.renderStreamMessage(html));
         return;
       }
 
-      // Send the data to the server using Turbo Stream
       fetch(`/area/calculate?area=${total}`, {
-        headers: {
-          Accept: "text/vnd.turbo-stream.html"
-        }
-      })    
-      .then(response => response.text())
-      .then(html => Turbo.renderStreamMessage(html));
+        headers: { Accept: "text/vnd.turbo-stream.html" }
+      })
+        .then(response => response.text())
+        .then(html => Turbo.renderStreamMessage(html));
     });
-
-  };
+  }
 });
