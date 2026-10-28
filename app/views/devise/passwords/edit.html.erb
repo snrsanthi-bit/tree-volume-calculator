@@ -1,0 +1,33 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-4 text-2xl font-bold">パスワードを設定</h1>
+  <p class="mb-6 text-sm text-slate-400">
+    新しいパスワードを設定すると、そのままログインします。
+    （<%= User.password_length.min %>文字以上）
+  </p>
+
+  <%= form_for(resource, as: resource_name, url: password_path(resource_name),
+                html: { method: :put }, data: { turbo: false }) do |f| %>
+    <% if resource.errors.any? %>
+      <div id="password-errors" class="mb-4 text-red-500">
+        <% resource.errors.full_messages.each do |message| %>
+          <p><%= message %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= f.hidden_field :reset_password_token, autocomplete: "off" %>
+
+    <div class="mb-4">
+      <%= f.label :password, "新しいパスワード" %>
+      <%= f.password_field :password, autofocus: true, autocomplete: "new-password", required: true, class: "w-full" %>
+    </div>
+
+    <div class="mb-4">
+      <%= f.label :password_confirmation, "新しいパスワード（確認）" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", required: true, class: "w-full" %>
+    </div>
+
+    <%= f.submit "パスワードを設定してログイン",
+        class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+  <% end %>
+</div>

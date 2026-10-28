@@ -1,0 +1,7 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">ユーザーの編集</h1>
+
+  <%= render "form", user: @user, submit_label: "変更を保存" %>
+
+  <div class="mt-6"><%= link_to "ユーザー管理に戻る", admin_users_path %></div>
+</div>

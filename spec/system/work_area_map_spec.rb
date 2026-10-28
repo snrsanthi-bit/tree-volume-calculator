@@ -66,7 +66,7 @@ RSpec.describe '作業範囲の地図操作', type: :system do
 
   let(:user) do
     User.create!(
-      name: '山田太郎', email: 'map-test@example.com',
+      name: '山田太郎', email: 'map-test@example.com', role: :admin,
       password: 'password123', password_confirmation: 'password123',
       organization: organization
     )

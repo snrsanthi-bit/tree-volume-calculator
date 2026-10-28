@@ -1,0 +1,15 @@
+<% if flash[:invitation].present? %>
+  <%# 招待URLは一度だけ表示する。Turbo のキャッシュにも残さない %>
+  <div id="invitation-box" data-turbo-temporary
+       class="mb-6 p-4 rounded-xl border border-primary/50 bg-primary/10 space-y-2">
+    <p class="font-bold">
+      <%= flash[:invitation]["name"] %> さんに、次の招待URLを渡してください。
+    </p>
+    <p class="text-sm">
+      7日間・1回だけ使えます。URLを開いてパスワードを設定すると、そのままログインできます。
+      この画面を閉じると再表示できません（必要なら「招待URLを再発行」してください）。
+    </p>
+    <input id="invitation-url" type="text" readonly value="<%= flash[:invitation]["url"] %>"
+           class="w-full font-mono text-sm">
+  </div>
+<% end %>

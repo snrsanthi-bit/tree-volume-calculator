@@ -1,0 +1,21 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">組織の管理（運営）</h1>
+
+  <% if notice.present? %>
+    <p class="mb-4 text-primary"><%= notice %></p>
+  <% end %>
+
+  <div class="mb-4">
+    <%= link_to "組織を追加", new_operator_organization_path,
+        class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+  </div>
+
+  <ul id="operator-organization-list" class="space-y-2">
+    <% @organizations.each do |organization| %>
+      <li class="flex items-center justify-between gap-3 p-3 rounded-lg border border-neutral-border">
+        <%= link_to organization.name, operator_organization_path(organization), class: "font-bold" %>
+        <span class="text-sm text-slate-400">ユーザー <%= organization.users.size %>人</span>
+      </li>
+    <% end %>
+  </ul>
+</div>
