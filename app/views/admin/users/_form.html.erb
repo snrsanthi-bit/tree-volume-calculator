@@ -1,0 +1,21 @@
+<%= form_with model: [:admin, user], data: { turbo: false } do |form| %>
+  <% if user.errors.any? %>
+    <div class="mb-4 text-red-500">
+      <% user.errors.full_messages.each do |message| %>
+        <p><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <%= form.label :name, "名前" %>
+    <%= form.text_field :name, required: true, class: "w-full" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :email, "メールアドレス" %>
+    <%= form.email_field :email, required: true, class: "w-full" %>
+  </div>
+
+  <%= form.submit submit_label, class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+<% end %>

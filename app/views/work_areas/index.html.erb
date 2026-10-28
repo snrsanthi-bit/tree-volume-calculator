@@ -1,13 +1,17 @@
 <h1>作業範囲一覧</h1>
 
-<%= link_to "作業範囲を新規作成", new_work_area_path %>
+<% if current_user.admin? %>
+  <%= link_to "作業範囲を新規作成", new_work_area_path %>
+<% end %>
 
 <% if @work_areas.any? %>
   <ul>
     <% @work_areas.each do |work_area| %>
       <li>
         <%= link_to work_area.name, work_area_path(work_area) %>
-        <%= link_to "編集", edit_work_area_path(work_area) %>
+        <% if current_user.admin? %>
+          <%= link_to "編集", edit_work_area_path(work_area) %>
+        <% end %>
       </li>
     <% end %>
   </ul>

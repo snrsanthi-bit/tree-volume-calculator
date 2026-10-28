@@ -1,0 +1,22 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">組織の編集</h1>
+
+  <%= form_with model: [:operator, @organization], data: { turbo: false } do |form| %>
+    <% if @organization.errors.any? %>
+      <div class="mb-4 text-red-500">
+        <% @organization.errors.full_messages.each do |message| %>
+          <p><%= message %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="mb-4">
+      <%= form.label :name, "組織名" %>
+      <%= form.text_field :name, required: true, class: "w-full" %>
+    </div>
+
+    <%= form.submit "変更を保存", class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+  <% end %>
+
+  <div class="mt-6"><%= link_to "組織に戻る", operator_organization_path(@organization) %></div>
+</div>

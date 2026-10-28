@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 class WorkAreasController < ApplicationController
+  include RoleAuthorization
+
   before_action :authenticate_user!
+  # 運営(operator)は作業範囲を扱わない / 作業地点・範囲の作成と編集は管理者(admin)だけ
+  # （作業者は一覧・詳細の閲覧と、現場で測った実測値の入力ができる）
+  before_action { require_roles!(:admin, :worker) }
+  before_action(only: %i[new create edit update]) { require_roles!(:admin) }
   before_action :set_work_area, only: %i[show edit update measurements]
 
   def index

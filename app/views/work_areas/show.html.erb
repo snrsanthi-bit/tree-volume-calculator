@@ -51,6 +51,8 @@
   <%= link_to "一覧に戻る", work_areas_path,
       class: "px-4 py-2 rounded-lg border border-neutral-border hover:bg-neutral-dark" %>
 
-  <%= link_to "編集する", edit_work_area_path(@work_area),
-      class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold hover:opacity-80" %>
+  <% if current_user.admin? %>
+    <%= link_to "編集する", edit_work_area_path(@work_area),
+        class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold hover:opacity-80" %>
+  <% end %>
 </div>

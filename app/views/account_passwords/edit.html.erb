@@ -1,0 +1,30 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">パスワードの変更</h1>
+
+  <%= form_with model: current_user, url: account_password_path, method: :patch, data: { turbo: false } do |form| %>
+    <% if current_user.errors.any? %>
+      <div class="mb-4 text-red-500">
+        <% current_user.errors.full_messages.each do |message| %>
+          <p><%= message %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="mb-4">
+      <%= form.label :current_password, "現在のパスワード" %>
+      <%= form.password_field :current_password, autocomplete: "current-password", required: true, class: "w-full" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :password, "新しいパスワード" %>
+      <%= form.password_field :password, autocomplete: "new-password", required: true, class: "w-full" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :password_confirmation, "新しいパスワード（確認）" %>
+      <%= form.password_field :password_confirmation, autocomplete: "new-password", required: true, class: "w-full" %>
+    </div>
+
+    <%= form.submit "パスワードを変更する", class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+  <% end %>
+</div>
