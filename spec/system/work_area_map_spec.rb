@@ -426,6 +426,37 @@ RSpec.describe '作業範囲の地図操作', type: :system do
       end
     end
 
+    describe '三角分割APIが失敗したとき' do
+      def fail_triangulation_api
+        page.execute_script(<<~JAVASCRIPT)
+          window.fetch = () => Promise.resolve(
+            new Response(JSON.stringify({ error: "三角分割に失敗しました" }), { status: 500 })
+          );
+        JAVASCRIPT
+      end
+
+      it '既存の線と実測値を消さず、エラーメッセージを表示する' do
+        open_edit_with_measured_triangle
+        fail_triangulation_api
+
+        click_map_at(34.3870, 132.4570)
+
+        expect(page).to have_css('#work-area-message', text: '既存の線・実測値は変更していません')
+        expect(page).to have_css('#map[data-triangulation-stage="error"]')
+        expect(measured_by_pair).to eq('p-1|p-2' => 3, 'p-2|p-3' => 4, 'p-1|p-3' => 5)
+      end
+
+      it '通信エラー(fetch が reject)でも既存の線と実測値を消さない' do
+        open_edit_with_measured_triangle
+        page.execute_script('window.fetch = () => Promise.reject(new Error("network down"))')
+
+        click_map_at(34.3870, 132.4570)
+
+        expect(page).to have_css('#work-area-message', text: '既存の線・実測値は変更していません')
+        expect(measured_by_pair).to eq('p-1|p-2' => 3, 'p-2|p-3' => 4, 'p-1|p-3' => 5)
+      end
+    end
+
     describe '実測値が無い場合' do
       it '確認を出さずに頂点を動かせる' do
         work_area.update!(survey_data: centroid_survey_data)
