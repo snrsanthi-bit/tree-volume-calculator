@@ -1,0 +1,71 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">見積の設定</h1>
+
+  <% if notice.present? %>
+    <p class="mb-4 text-primary"><%= notice %></p>
+  <% end %>
+
+  <p class="mb-6 text-sm text-slate-400">
+    見積を作るときに、この設定が使われます。原価と利益率は管理者だけが見られます（作業者には表示されません）。
+  </p>
+
+  <%= form_with model: @estimate_setting, url: admin_estimate_setting_path, data: { turbo: false } do |form| %>
+    <% if @estimate_setting.errors.any? %>
+      <div class="mb-4 text-red-500" role="alert">
+        <% @estimate_setting.errors.full_messages.each do |message| %>
+          <p><%= message %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <fieldset class="mb-6">
+      <legend class="mb-2 font-bold">利益率の定義</legend>
+      <div class="space-y-2">
+        <% EstimateSetting.margin_bases.each_key do |basis| %>
+          <label class="flex items-center gap-2">
+            <%= form.radio_button :margin_basis, basis %>
+            <%= margin_basis_label(basis) %>
+          </label>
+        <% end %>
+      </div>
+      <p class="mt-2 text-sm text-slate-400">
+        例: 原価100円で利益率30%のとき、「売価に対する割合」なら売価は約142.9円、「原価に上乗せ」なら130円です。
+      </p>
+    </fieldset>
+
+    <div class="mb-4">
+      <%= form.label :margin_rate, "利益率（%）" %>
+      <%= form.text_field :margin_rate, inputmode: :decimal, required: true, class: "w-full" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :overhead_rate, "諸経費率（直接費に対して %）" %>
+      <%= form.text_field :overhead_rate, inputmode: :decimal, required: true, class: "w-full" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :rounding_unit, "売価の端数の単位" %>
+      <%= form.select :rounding_unit, rounding_unit_options, {}, class: "w-full" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :rounding_mode, "端数の処理" %>
+      <%= form.select :rounding_mode, rounding_mode_options, {}, class: "w-full" %>
+    </div>
+
+    <div class="mb-6">
+      <%= form.label :area_price_rounding_unit, "㎡単価の端数の単位" %>
+      <%= form.select :area_price_rounding_unit, area_price_rounding_unit_options, {}, class: "w-full" %>
+      <p class="mt-2 text-sm text-slate-400">
+        売価を面積で割った㎡単価の端数です。端数の処理（切り上げなど）は、売価と同じです。
+      </p>
+    </div>
+
+    <%= form.submit "設定を保存", class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+  <% end %>
+
+  <ul class="mt-8 space-y-2">
+    <li><%= link_to "区分を管理する（伐採費・整理費など）", admin_cost_categories_path %></li>
+    <li><%= link_to "単価マスタを管理する（人工・機械・処分など）", admin_cost_items_path %></li>
+  </ul>
+</div>

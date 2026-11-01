@@ -10,9 +10,44 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_23_142810) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_01_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "cost_categories", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "organization_id", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id", "name"], name: "index_cost_categories_on_organization_id_and_name", unique: true
+    t.index ["organization_id"], name: "index_cost_categories_on_organization_id"
+  end
+
+  create_table "cost_items", force: :cascade do |t|
+    t.bigint "cost_category_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "organization_id", null: false
+    t.string "unit", null: false
+    t.integer "unit_price", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["cost_category_id"], name: "index_cost_items_on_cost_category_id"
+    t.index ["organization_id"], name: "index_cost_items_on_organization_id"
+  end
+
+  create_table "estimate_settings", force: :cascade do |t|
+    t.decimal "area_price_rounding_unit", precision: 4, scale: 1, default: "1.0", null: false
+    t.datetime "created_at", null: false
+    t.integer "margin_basis", default: 0, null: false
+    t.decimal "margin_rate", precision: 5, scale: 2, default: "30.0", null: false
+    t.bigint "organization_id", null: false
+    t.decimal "overhead_rate", precision: 5, scale: 2, default: "0.0", null: false
+    t.integer "rounding_mode", default: 0, null: false
+    t.integer "rounding_unit", default: 1000, null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_estimate_settings_on_organization_id", unique: true
+  end
 
   create_table "organizations", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -47,6 +82,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_142810) do
     t.index ["organization_id"], name: "index_work_areas_on_organization_id"
   end
 
+  add_foreign_key "cost_categories", "organizations"
+  add_foreign_key "cost_items", "cost_categories"
+  add_foreign_key "cost_items", "organizations"
+  add_foreign_key "estimate_settings", "organizations"
   add_foreign_key "users", "organizations"
   add_foreign_key "work_areas", "organizations"
 end

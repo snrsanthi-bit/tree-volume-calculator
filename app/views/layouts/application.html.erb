@@ -36,6 +36,23 @@
         }
       }
     </script>
+
+    <style type="text/tailwindcss">
+      @layer base {
+        html.dark { color-scheme: dark; }
+
+        input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="range"]):not([type="hidden"]),
+        select,
+        textarea {
+          @apply rounded-lg border-neutral-border bg-neutral-dark text-slate-100;
+        }
+
+        input[type="checkbox"],
+        input[type="radio"] {
+          @apply text-primary;
+        }
+      }
+    </style>
   </head>
 
   <body class="bg-background-dark font-display text-slate-100 min-h-screen">
@@ -66,6 +83,7 @@
             <% end %>
             <% if current_user.admin? %>
               <%= link_to "作業者の管理", admin_users_path, class: "p-3 rounded-lg" %>
+              <%= link_to "見積の設定", edit_admin_estimate_setting_path, class: "p-3 rounded-lg" %>
             <% end %>
             <%= link_to "パスワード変更", edit_account_password_path, class: "p-3 rounded-lg" %>
             <%= button_to "ログアウト", destroy_user_session_path,method: :delete %>

@@ -1,0 +1,41 @@
+ja:
+  errors:
+    format: "%{attribute}%{message}"
+    messages:
+      blank: "を入力してください"
+      taken: "はすでに使われています"
+      invalid: "は正しくありません"
+      inclusion: "は一覧にある値を選んでください"
+      not_a_number: "は数値で入力してください"
+      not_an_integer: "は整数で入力してください"
+      greater_than: "は%{count}より大きい値にしてください"
+      greater_than_or_equal_to: "は%{count}以上にしてください"
+      less_than: "は%{count}未満にしてください"
+      less_than_or_equal_to: "は%{count}以下にしてください"
+      too_long: "は%{count}文字以内で入力してください"
+
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "バリデーションに失敗しました: %{errors}"
+        restrict_dependent_destroy:
+          has_many: "関連する%{record}があるため削除できません"
+    models:
+      estimate_setting: "見積の設定"
+      cost_category: "区分"
+      cost_item: "単価マスタの項目"
+    attributes:
+      estimate_setting:
+        overhead_rate: "諸経費率"
+        margin_rate: "利益率"
+        margin_basis: "利益率の定義"
+        rounding_unit: "端数の単位"
+        rounding_mode: "端数の処理"
+        area_price_rounding_unit: "㎡単価の端数の単位"
+      cost_category:
+        name: "区分の名前"
+      cost_item:
+        name: "項目名"
+        unit: "単位"
+        unit_price: "単価"
+        cost_category: "区分"

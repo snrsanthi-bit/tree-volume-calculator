@@ -1,0 +1,31 @@
+<%= form_with model: cost_item, url: form_url, data: { turbo: false } do |form| %>
+  <% if cost_item.errors.any? %>
+    <div class="mb-4 text-red-500" role="alert">
+      <% cost_item.errors.full_messages.each do |message| %>
+        <p><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <%= form.label :name, "項目名" %>
+    <%= form.text_field :name, required: true, maxlength: 50, class: "w-full" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :cost_category_id, "区分" %>
+    <%= form.select :cost_category_id, categories.map { |category| [category.name, category.id] }, {}, class: "w-full" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :unit, "単位（人日・日・台・㎡・式など）" %>
+    <%= form.text_field :unit, required: true, maxlength: 10, class: "w-full" %>
+  </div>
+
+  <div class="mb-6">
+    <%= form.label :unit_price, "単価（円）" %>
+    <%= form.text_field :unit_price, inputmode: :numeric, required: true, class: "w-full" %>
+  </div>
+
+  <%= form.submit submit_label, class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+<% end %>
