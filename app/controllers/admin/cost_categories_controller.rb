@@ -2,7 +2,7 @@
 
 module Admin
   # 見積の内訳の区分（伐採費・整理費など）を管理する。会社ごと。
-  # 他社の区分は find で見つからず 404 になる。単価マスタで使われている区分は削除できない。
+  # 他社の区分は find で見つからず 404 になる。単価マスタや見積の明細で使われている区分は削除できない。
   class CostCategoriesController < BaseController
     before_action :set_cost_category, only: %i[edit update destroy]
 
@@ -36,7 +36,7 @@ module Admin
       if @cost_category.destroy
         redirect_to admin_cost_categories_path, notice: t('.success', default: '区分を削除しました'), status: :see_other
       else
-        message = t('.failure', default: 'この区分は単価マスタで使われているため削除できません。先に項目の区分を変えてください')
+        message = t('.failure', default: 'この区分は単価マスタか見積で使われているため削除できません')
         redirect_to admin_cost_categories_path, alert: message, status: :see_other
       end
     end

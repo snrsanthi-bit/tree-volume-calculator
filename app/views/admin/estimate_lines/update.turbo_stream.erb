@@ -1,0 +1,6 @@
+<%# 入力欄は置き換えない（入力中のカーソルを動かさないため）。金額・エラー・集計だけを更新する %>
+<%= turbo_stream.update dom_id(@estimate_line, :error), h(@estimate_line.errors.full_messages.join(" ")) %>
+<% if @estimate_line.errors.empty? %>
+  <%= turbo_stream.update dom_id(@estimate_line, :amount), number_with_delimiter(@estimate_line.amount) %>
+  <%= turbo_stream.update "estimate_summary", partial: "admin/estimates/summary", locals: { estimate: @estimate } %>
+<% end %>

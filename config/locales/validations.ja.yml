@@ -24,6 +24,8 @@ ja:
       estimate_setting: "見積の設定"
       cost_category: "区分"
       cost_item: "単価マスタの項目"
+      estimate: "見積"
+      estimate_line: "明細"
     attributes:
       estimate_setting:
         overhead_rate: "諸経費率"
@@ -37,5 +39,20 @@ ja:
       cost_item:
         name: "項目名"
         unit: "単位"
+        unit_price: "単価"
+        cost_category: "区分"
+      estimate:
+        name: "現場名"
+        area: "面積"
+        overhead_rate: "諸経費率"
+        margin_rate: "利益率"
+        margin_basis: "利益率の定義"
+        rounding_unit: "端数の単位"
+        rounding_mode: "端数の処理"
+        area_price_rounding_unit: "㎡単価の端数の単位"
+      estimate_line:
+        name: "項目名"
+        unit: "単位"
+        quantity: "数量"
         unit_price: "単価"
         cost_category: "区分"

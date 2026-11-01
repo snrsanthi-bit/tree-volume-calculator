@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 # 見積の内訳の区分（伐採費・整理費・機械費・処分費など）。会社ごと。
-# 単価マスタの項目が使っている区分は削除できない。
+# 単価マスタの項目や、見積の明細が使っている区分は削除できない。
 class CostCategory < ApplicationRecord
   belongs_to :organization
   has_many :cost_items, -> { order(:id) }, dependent: :restrict_with_error, inverse_of: :cost_category
+  has_many :estimate_lines, dependent: :restrict_with_error
 
   validates :name, presence: true, length: { maximum: 30 }, uniqueness: { scope: :organization_id }
 

@@ -1,0 +1,12 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">見積を作る</h1>
+
+  <p class="mb-6 text-sm text-slate-400">
+    いまの見積の設定が、この見積にコピーされます（<%= terms_text(@estimate) %>）。
+    あとで<%= link_to "見積の設定", edit_admin_estimate_setting_path %>を変えても、作成済みの見積は変わりません。
+  </p>
+
+  <%= render "form", estimate: @estimate, submit_label: "作成して明細を足す" %>
+
+  <div class="mt-6"><%= link_to "見積の一覧に戻る", admin_estimates_path %></div>
+</div>

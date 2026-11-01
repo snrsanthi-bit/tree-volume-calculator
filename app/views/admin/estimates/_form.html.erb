@@ -1,0 +1,22 @@
+<%= form_with model: [:admin, estimate], data: { turbo: false } do |form| %>
+  <% if estimate.errors.any? %>
+    <div class="mb-4 text-red-500" role="alert">
+      <% estimate.errors.full_messages.each do |message| %>
+        <p><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <%= form.label :name, "現場名（見積の名前）" %>
+    <%= form.text_field :name, required: true, maxlength: 50, class: "w-full" %>
+  </div>
+
+  <div class="mb-6">
+    <%= form.label :area, "面積（㎡）" %>
+    <%= form.text_field :area, inputmode: :decimal, class: "w-full" %>
+    <p class="mt-1 text-sm text-slate-400">任意です。㎡単価で提出するときに使います。</p>
+  </div>
+
+  <%= form.submit submit_label, class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+<% end %>
