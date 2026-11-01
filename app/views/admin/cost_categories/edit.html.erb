@@ -1,0 +1,22 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">区分の編集</h1>
+
+  <%= form_with model: @cost_category, url: admin_cost_category_path(@cost_category), data: { turbo: false } do |form| %>
+    <% if @cost_category.errors.any? %>
+      <div class="mb-4 text-red-500" role="alert">
+        <% @cost_category.errors.full_messages.each do |message| %>
+          <p><%= message %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="mb-4">
+      <%= form.label :name, "区分の名前" %>
+      <%= form.text_field :name, required: true, maxlength: 30, class: "w-full" %>
+    </div>
+
+    <%= form.submit "変更を保存", class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+  <% end %>
+
+  <div class="mt-6"><%= link_to "区分の一覧に戻る", admin_cost_categories_path %></div>
+</div>

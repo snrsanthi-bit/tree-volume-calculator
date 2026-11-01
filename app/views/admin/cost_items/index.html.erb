@@ -1,0 +1,54 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">単価マスタ</h1>
+
+  <% if notice.present? %>
+    <p class="mb-4 text-primary"><%= notice %></p>
+  <% end %>
+  <% if alert.present? %>
+    <p class="mb-4 text-red-500" role="alert"><%= alert %></p>
+  <% end %>
+
+  <p class="mb-4 text-sm text-slate-400">
+    見積の明細に足す項目と単価です（人工・機械・処分など）。区分ごとにまとめて表示します。
+  </p>
+
+  <% if @cost_categories.empty? %>
+    <p class="mb-4">先に<%= link_to "区分を登録", admin_cost_categories_path %>してください。</p>
+  <% else %>
+    <div class="mb-6">
+      <%= link_to "項目を追加", new_admin_cost_item_path,
+          class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+    </div>
+
+    <% @cost_categories.each do |category| %>
+      <section class="mb-6">
+        <h2 class="mb-2 font-bold"><%= category.name %></h2>
+
+        <% if category.cost_items.empty? %>
+          <p class="text-sm text-slate-400">項目はまだありません。</p>
+        <% else %>
+          <ul class="space-y-2">
+            <% category.cost_items.each do |item| %>
+              <li class="flex items-center justify-between gap-3 p-3 rounded-lg border border-neutral-border">
+                <div>
+                  <p class="font-bold"><%= item.name %></p>
+                  <p class="text-sm text-slate-400"><%= number_with_delimiter(item.unit_price) %>円 / <%= item.unit %></p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <%= link_to "編集", edit_admin_cost_item_path(item) %>
+                  <%= button_to "削除", admin_cost_item_path(item), method: :delete,
+                      form: { data: { turbo_confirm: "「#{item.name}」を削除しますか？" } }, class: "text-sm underline" %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </section>
+    <% end %>
+  <% end %>
+
+  <ul class="mt-8 space-y-2">
+    <li><%= link_to "区分", admin_cost_categories_path %></li>
+    <li><%= link_to "見積の設定に戻る", edit_admin_estimate_setting_path %></li>
+  </ul>
+</div>

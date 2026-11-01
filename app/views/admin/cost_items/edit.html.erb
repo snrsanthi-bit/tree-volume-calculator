@@ -1,0 +1,8 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">項目の編集</h1>
+
+  <%= render "form", cost_item: @cost_item, categories: @cost_categories, form_url: admin_cost_item_path(@cost_item),
+      submit_label: "変更を保存" %>
+
+  <div class="mt-6"><%= link_to "単価マスタに戻る", admin_cost_items_path %></div>
+</div>
