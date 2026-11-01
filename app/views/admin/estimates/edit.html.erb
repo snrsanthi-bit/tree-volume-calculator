@@ -1,0 +1,7 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">見積の編集</h1>
+
+  <%= render "form", estimate: @estimate, submit_label: "変更を保存" %>
+
+  <div class="mt-6"><%= link_to "見積に戻る", admin_estimate_path(@estimate) %></div>
+</div>

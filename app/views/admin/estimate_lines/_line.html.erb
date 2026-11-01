@@ -1,0 +1,28 @@
+<div id="<%= dom_id(line) %>" class="rounded-lg border border-neutral-border p-3">
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="min-w-[10rem] flex-1">
+      <p class="font-bold"><%= line.name %></p>
+      <p class="text-sm text-slate-400"><%= line.cost_category.name %></p>
+    </div>
+
+    <%# 数量と単価は、入力すると少し待って自動で保存される（集計だけが更新される） %>
+    <%= form_with model: line, url: admin_estimate_estimate_line_path(estimate, line), method: :patch,
+        class: "flex items-center gap-2",
+        data: { controller: "auto-submit", action: "input->auto-submit#submit" } do |form| %>
+      <%= form.text_field :quantity, value: quantity_text(line.quantity), inputmode: :decimal,
+          class: "w-24 text-right", "aria-label": "#{line.name}の数量" %>
+      <span class="whitespace-nowrap text-sm"><%= line.unit %> ×</span>
+      <%= form.text_field :unit_price, inputmode: :numeric,
+          class: "w-28 text-right", "aria-label": "#{line.name}の単価（円）" %>
+      <span class="text-sm">円 =</span>
+    <% end %>
+
+    <p class="w-32 text-right font-bold">
+      <span id="<%= dom_id(line, :amount) %>"><%= number_with_delimiter(line.amount) %></span>円
+    </p>
+
+    <%= button_to "削除", admin_estimate_estimate_line_path(estimate, line), method: :delete,
+        form: { data: { turbo_confirm: "「#{line.name}」を削除しますか？" } }, class: "text-sm underline" %>
+  </div>
+  <p id="<%= dom_id(line, :error) %>" class="mt-1 text-sm text-red-500" role="alert"></p>
+</div>

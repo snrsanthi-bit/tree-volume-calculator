@@ -1,0 +1,7 @@
+<% if @estimate_line.errors.empty? %>
+  <%= turbo_stream.update "add_line_error", "" %>
+  <%= turbo_stream.replace "estimate_lines", partial: "admin/estimates/lines", locals: { estimate: @estimate } %>
+  <%= turbo_stream.update "estimate_summary", partial: "admin/estimates/summary", locals: { estimate: @estimate } %>
+<% else %>
+  <%= turbo_stream.update "add_line_error", h(@estimate_line.errors.full_messages.join(" ")) %>
+<% end %>

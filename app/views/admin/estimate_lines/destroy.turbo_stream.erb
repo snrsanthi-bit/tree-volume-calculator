@@ -1,0 +1,2 @@
+<%= turbo_stream.replace "estimate_lines", partial: "admin/estimates/lines", locals: { estimate: @estimate } %>
+<%= turbo_stream.update "estimate_summary", partial: "admin/estimates/summary", locals: { estimate: @estimate } %>

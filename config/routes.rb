@@ -17,6 +17,9 @@ Rails.application.routes.draw do
     resources :users, only: %i[index new create edit update] do
       member { post :invitation }
     end
+    resources :estimates, only: %i[index show new create edit update destroy] do
+      resources :estimate_lines, path: 'lines', only: %i[create update destroy]
+    end
     resource :estimate_setting, only: %i[edit update]
     resources :cost_categories, only: %i[index edit create update destroy]
     resources :cost_items, only: %i[index new edit create update destroy]

@@ -1,0 +1,51 @@
+<% result = estimate.calculation %>
+<h2 class="mb-3 font-bold">集計（税抜）</h2>
+
+<dl class="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2">
+  <dt>直接費</dt>
+  <dd class="text-right"><%= yen_text(result.direct) %></dd>
+  <dt>諸経費（<%= percent_text(estimate.overhead_rate) %>）</dt>
+  <dd class="text-right"><%= yen_text(result.overhead) %></dd>
+  <dt class="font-bold">原価</dt>
+  <dd class="text-right font-bold"><%= yen_text(result.cost) %></dd>
+</dl>
+
+<hr class="my-4 border-neutral-border">
+
+<p class="text-sm text-slate-400">利益率 <%= percent_text(estimate.margin_rate) %>（<%= margin_basis_label(estimate.margin_basis) %>）</p>
+<p id="estimate-price" class="text-3xl font-bold text-primary"><%= yen_text(result.price) %></p>
+<p class="text-sm text-slate-400">
+  売価。端数は<%= number_with_delimiter(estimate.rounding_unit) %>円単位で<%= rounding_mode_label(estimate.rounding_mode) %>
+</p>
+
+<hr class="my-4 border-neutral-border">
+
+<dl class="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2">
+  <dt>利益</dt>
+  <dd class="text-right"><%= yen_text(result.profit) %></dd>
+  <dt>売価に対する利益率</dt>
+  <dd class="text-right"><%= percent_text(result.margin_on_sales, precision: 2) %></dd>
+  <dt>原価に対する利益率</dt>
+  <dd class="text-right"><%= percent_text(result.margin_on_cost, precision: 2) %></dd>
+</dl>
+
+<% if result.target_met %>
+  <p id="estimate-target" class="mt-4 text-sm text-primary" role="status">目標の利益率を満たしています</p>
+<% else %>
+  <p id="estimate-target" class="mt-4 text-sm text-yellow-400" role="status">
+    丸めた結果、目標の利益率（<%= percent_text(estimate.margin_rate) %>）を下回っています。
+    端数の単位や処理を、見積の設定で見直してください。
+  </p>
+<% end %>
+
+<% subtotals = category_subtotals(result) %>
+<% if subtotals.any? %>
+  <hr class="my-4 border-neutral-border">
+  <h3 class="mb-2 text-sm font-bold">区分ごとの直接費</h3>
+  <dl class="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-sm">
+    <% subtotals.each do |name, amount| %>
+      <dt class="text-slate-400"><%= name %></dt>
+      <dd class="text-right"><%= yen_text(amount) %></dd>
+    <% end %>
+  </dl>
+<% end %>

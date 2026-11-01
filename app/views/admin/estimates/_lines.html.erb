@@ -1,0 +1,10 @@
+<div id="estimate_lines" class="space-y-2">
+  <% lines = estimate.estimate_lines.includes(:cost_category) %>
+  <% if lines.empty? %>
+    <p class="text-slate-400">明細はまだありません。下のフォームで、単価マスタの項目を足してください。</p>
+  <% else %>
+    <% lines.each do |line| %>
+      <%= render "admin/estimate_lines/line", estimate: estimate, line: line %>
+    <% end %>
+  <% end %>
+</div>

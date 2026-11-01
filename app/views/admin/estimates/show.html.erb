@@ -1,0 +1,55 @@
+<div class="mx-auto max-w-5xl px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold"><%= @estimate.name %></h1>
+    <p class="mt-1 text-sm text-slate-400">
+      面積 <%= area_text(@estimate.area) %> ・ <%= terms_text(@estimate) %>
+    </p>
+    <div class="mt-2 flex flex-wrap items-center gap-4">
+      <%= link_to "名前・面積を編集", edit_admin_estimate_path(@estimate) %>
+      <%= link_to "見積の一覧", admin_estimates_path %>
+      <%= button_to "この見積を削除", admin_estimate_path(@estimate), method: :delete,
+          form: { data: { turbo_confirm: "「#{@estimate.name}」を削除しますか？明細も消えます。" } },
+          class: "text-sm underline" %>
+    </div>
+  </div>
+
+  <% if notice.present? %>
+    <p class="mb-4 text-primary"><%= notice %></p>
+  <% end %>
+  <% if alert.present? %>
+    <p class="mb-4 text-red-500" role="alert"><%= alert %></p>
+  <% end %>
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div class="min-w-0">
+      <h2 class="mb-3 text-lg font-bold">明細</h2>
+      <%= render "admin/estimates/lines", estimate: @estimate %>
+
+      <section class="mt-6">
+        <h3 class="mb-2 font-bold">明細を足す</h3>
+        <% options = cost_item_options(@cost_categories) %>
+        <% if options.empty? %>
+          <p>先に<%= link_to "単価マスタに項目を登録", admin_cost_items_path %>してください。</p>
+        <% else %>
+          <%= form_with scope: :estimate_line, url: admin_estimate_estimate_lines_path(@estimate),
+              class: "flex flex-wrap items-end gap-2" do |form| %>
+            <div class="min-w-[14rem] flex-1">
+              <%= form.label :cost_item_id, "項目" %>
+              <%= form.select :cost_item_id, grouped_options_for_select(options), {}, class: "w-full" %>
+            </div>
+            <div class="w-24">
+              <%= form.label :quantity, "数量" %>
+              <%= form.text_field :quantity, value: 1, inputmode: :decimal, class: "w-full text-right" %>
+            </div>
+            <%= form.submit "明細に追加", class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+          <% end %>
+          <p id="add_line_error" class="mt-2 text-sm text-red-500" role="alert"></p>
+        <% end %>
+      </section>
+    </div>
+
+    <aside id="estimate_summary" class="rounded-xl border border-neutral-border p-4 lg:sticky lg:top-4 lg:self-start">
+      <%= render "admin/estimates/summary", estimate: @estimate %>
+    </aside>
+  </div>
+</div>
