@@ -14,6 +14,9 @@ class Estimate < ApplicationRecord
   # 空(nil)は許す（取り込んでいない見積）。取り込むときは、下で必須にする
   enum :area_source_kind, { measured: 0, estimated: 1 }, prefix: true, validate: { allow_nil: true }
 
+  # 元請けに出すときの形式。breakdown = 項目別の内訳 / area_price = ㎡単価
+  enum :submission_format, { breakdown: 0, area_price: 1 }, prefix: true, validate: true, default: :breakdown
+
   belongs_to :organization
   belongs_to :work_area, optional: true
   has_many :estimate_lines, -> { order(:id) }, dependent: :destroy, inverse_of: :estimate

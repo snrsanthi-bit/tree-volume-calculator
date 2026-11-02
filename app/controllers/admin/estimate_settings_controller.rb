@@ -26,7 +26,8 @@ module Admin
     def estimate_setting_params
       params.expect(
         estimate_setting: %i[overhead_rate margin_rate margin_basis rounding_unit rounding_mode
-                             area_price_rounding_unit area_input_unit tax_rate tax_rounding_mode number_prefix]
+                             area_price_rounding_unit area_input_unit tax_rate tax_rounding_mode number_prefix
+                             issuer_name issuer_address issuer_phone submission_note]
       )
     end
   end

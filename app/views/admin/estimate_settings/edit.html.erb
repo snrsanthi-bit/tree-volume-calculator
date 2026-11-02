@@ -84,6 +84,35 @@
       </p>
     </div>
 
+    <fieldset class="mb-6 rounded-xl border border-neutral-border p-4">
+      <legend class="px-2 font-bold">提出書に載せる自社の情報</legend>
+      <p class="mb-4 text-sm text-slate-400">
+        元請けに出す見積書（提出画面）に載ります。見積ごとではなく、会社で1つです。
+      </p>
+
+      <div class="mb-4">
+        <%= form.label :issuer_name, "社名" %>
+        <%= form.text_field :issuer_name, maxlength: 50, class: "w-full" %>
+        <p class="mt-2 text-sm text-slate-400">空欄のときは、組織の名前「<%= current_user.organization.name %>」を使います。</p>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :issuer_address, "住所" %>
+        <%= form.text_field :issuer_address, maxlength: 100, class: "w-full" %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :issuer_phone, "電話番号" %>
+        <%= form.text_field :issuer_phone, maxlength: 20, inputmode: :tel, class: "w-full" %>
+      </div>
+
+      <div>
+        <%= form.label :submission_note, "備考（提出書の下に載せる文章）" %>
+        <%= form.text_area :submission_note, rows: 4, maxlength: 500, class: "w-full" %>
+        <p class="mt-2 text-sm text-slate-400">例: 有効期限、支払条件、お見積りに含まれないもの。</p>
+      </div>
+    </fieldset>
+
     <%= form.submit "設定を保存", class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
   <% end %>
 
