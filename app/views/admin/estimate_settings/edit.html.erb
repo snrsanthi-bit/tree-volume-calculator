@@ -54,6 +54,23 @@
     </div>
 
     <div class="mb-4">
+      <%= form.label :tax_rate, "消費税率（%）" %>
+      <%= form.text_field :tax_rate, inputmode: :decimal, required: true, class: "w-full" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :tax_rounding_mode, "消費税の端数の処理" %>
+      <%= form.select :tax_rounding_mode, tax_rounding_mode_options, {}, class: "w-full" %>
+      <p class="mt-2 text-sm text-slate-400">利益の計算は税抜で行い、消費税は売価（税抜）にかけて出します。見積を作った時点の値が、その見積に残ります。</p>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :number_prefix, "見積番号の頭の文字" %>
+      <%= form.text_field :number_prefix, maxlength: 10, class: "w-full" %>
+      <p class="mt-2 text-sm text-slate-400">例: 「見積-」なら 見積-0001。作成済みの見積の番号は変わりません。</p>
+    </div>
+
+    <div class="mb-4">
       <%= form.label :area_input_unit, "面積を入力するときの単位（初期値）" %>
       <%= form.select :area_input_unit, area_input_unit_options, {}, class: "w-full" %>
       <p class="mt-2 text-sm text-slate-400">見積の面積を入力する画面で、最初に選ばれている単位です。保存はどちらも㎡です。</p>

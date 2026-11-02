@@ -1,4 +1,5 @@
 <% result = estimate.calculation %>
+<% tax = estimate.tax_for(result.price) %>
 <h2 class="mb-3 font-bold">集計（税抜）</h2>
 
 <dl class="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2">
@@ -15,8 +16,15 @@
 <p class="text-sm text-slate-400">利益率 <%= percent_text(estimate.margin_rate) %>（<%= margin_basis_label(estimate.margin_basis) %>）</p>
 <p id="estimate-price" class="text-3xl font-bold text-primary"><%= yen_text(result.price) %></p>
 <p class="text-sm text-slate-400">
-  売価。端数は<%= number_with_delimiter(estimate.rounding_unit) %>円単位で<%= rounding_mode_label(estimate.rounding_mode) %>
+  売価（税抜）。端数は<%= number_with_delimiter(estimate.rounding_unit) %>円単位で<%= rounding_mode_label(estimate.rounding_mode) %>
 </p>
+
+<dl class="mt-3 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1">
+  <dt>消費税（<%= percent_text(estimate.tax_rate) %>）</dt>
+  <dd id="estimate-tax" class="text-right"><%= yen_text(tax) %></dd>
+  <dt class="font-bold">売価（税込）</dt>
+  <dd id="estimate-total" class="text-right font-bold"><%= yen_text(result.price + tax) %></dd>
+</dl>
 
 <hr class="my-4 border-neutral-border">
 

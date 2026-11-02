@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_02_010000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_03_000100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,12 +53,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_010000) do
     t.integer "area_input_unit", default: 0, null: false
     t.decimal "area_price_rounding_unit", precision: 4, scale: 1, default: "1.0", null: false
     t.datetime "created_at", null: false
+    t.integer "last_estimate_number", default: 0, null: false
     t.integer "margin_basis", default: 0, null: false
     t.decimal "margin_rate", precision: 5, scale: 2, default: "30.0", null: false
+    t.string "number_prefix", default: "見積-", null: false
     t.bigint "organization_id", null: false
     t.decimal "overhead_rate", precision: 5, scale: 2, default: "0.0", null: false
     t.integer "rounding_mode", default: 0, null: false
     t.integer "rounding_unit", default: 1000, null: false
+    t.decimal "tax_rate", precision: 5, scale: 2, default: "10.0", null: false
+    t.integer "tax_rounding_mode", default: 2, null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_estimate_settings_on_organization_id", unique: true
   end
@@ -68,16 +72,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_010000) do
     t.boolean "area_from_map", default: false, null: false
     t.decimal "area_price_rounding_unit", precision: 4, scale: 1, null: false
     t.integer "area_source_kind"
+    t.string "client_name"
     t.datetime "created_at", null: false
     t.integer "margin_basis", null: false
     t.decimal "margin_rate", precision: 5, scale: 2, null: false
     t.string "name", null: false
+    t.integer "number", null: false
+    t.string "number_prefix", default: "見積-", null: false
     t.bigint "organization_id", null: false
     t.decimal "overhead_rate", precision: 5, scale: 2, null: false
     t.integer "rounding_mode", null: false
     t.integer "rounding_unit", null: false
+    t.decimal "tax_rate", precision: 5, scale: 2, default: "10.0", null: false
+    t.integer "tax_rounding_mode", default: 2, null: false
     t.datetime "updated_at", null: false
     t.bigint "work_area_id"
+    t.index ["organization_id", "number"], name: "index_estimates_on_organization_id_and_number", unique: true
     t.index ["organization_id"], name: "index_estimates_on_organization_id"
     t.index ["work_area_id"], name: "index_estimates_on_work_area_id"
   end

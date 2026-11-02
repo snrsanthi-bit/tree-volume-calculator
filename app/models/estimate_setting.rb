@@ -12,6 +12,17 @@ class EstimateSetting < ApplicationRecord
 
   validates :organization_id, uniqueness: true
 
+  # 会社の次の見積番号を返す（1から。削除しても、使った番号は戻らない）。
+  # 同時に作られても重複しないよう、設定の行をロックして数える。
+  def self.next_estimate_number(organization)
+    setting = self.for(organization)
+
+    setting.with_lock do
+      setting.update!(last_estimate_number: setting.last_estimate_number + 1)
+      setting.last_estimate_number
+    end
+  end
+
   # 会社の設定を返す。まだなければ、初期値で作る。
   def self.for(organization)
     find_or_create_by!(organization: organization)

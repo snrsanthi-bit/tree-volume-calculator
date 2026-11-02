@@ -28,6 +28,10 @@ module Admin
       [['㎡', 'm2'], ['ha', 'ha']]
     end
 
+    def tax_rounding_mode_options
+      EstimateSetting.tax_rounding_modes.keys.map { |mode| [rounding_mode_label(mode), mode] }
+    end
+
     def rounding_mode_options
       EstimateSetting.rounding_modes.keys.map { |mode| [rounding_mode_label(mode), mode] }
     end

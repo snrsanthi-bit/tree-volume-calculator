@@ -52,7 +52,8 @@ module Admin
     def terms_text(estimate)
       "利益率 #{percent_text(estimate.margin_rate)}（#{margin_basis_label(estimate.margin_basis)}）、" \
         "諸経費率 #{percent_text(estimate.overhead_rate)}、" \
-        "売価の端数は#{number_with_delimiter(estimate.rounding_unit)}円単位で#{rounding_mode_label(estimate.rounding_mode)}"
+        "売価の端数は#{number_with_delimiter(estimate.rounding_unit)}円単位で#{rounding_mode_label(estimate.rounding_mode)}、" \
+        "消費税 #{percent_text(estimate.tax_rate)}（端数は#{rounding_mode_label(estimate.tax_rounding_mode)}）"
     end
 
     # 区分ごとの直接費（区分の並び順）

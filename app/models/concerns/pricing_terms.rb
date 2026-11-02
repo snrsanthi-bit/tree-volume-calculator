@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
-# 見積の条件（利益率・諸経費率・端数）。
+# 見積の条件（利益率・諸経費率・端数・消費税・見積番号の接頭辞）。
 # 会社の設定（EstimateSetting）と、見積ごとのコピー（Estimate）が、同じ項目と同じ検証を持つ。
 module PricingTerms
   extend ActiveSupport::Concern
 
   # 会社の設定から見積へコピーする項目
-  FIELDS = %w[overhead_rate margin_rate margin_basis rounding_unit rounding_mode area_price_rounding_unit].freeze
+  FIELDS = %w[overhead_rate margin_rate margin_basis rounding_unit rounding_mode area_price_rounding_unit
+              tax_rate tax_rounding_mode number_prefix].freeze
   ROUNDING_UNITS = [1, 10, 100, 1000].freeze
   # ㎡単価（売価 ÷ 面積）の端数の単位（円）
   AREA_PRICE_ROUNDING_UNITS = [BigDecimal('0.1'), BigDecimal(1), BigDecimal(10)].freeze
@@ -19,10 +20,15 @@ module PricingTerms
     # ceil = 切り上げ / round = 四捨五入 / floor = 切り捨て
     enum :rounding_mode, { ceil: 0, round: 1, floor: 2 }, prefix: true, validate: true, default: :ceil
 
-    normalize_numeric_input :overhead_rate, :margin_rate, :rounding_unit, :area_price_rounding_unit
+    # 消費税の端数の処理（切り捨てが標準）
+    enum :tax_rounding_mode, { ceil: 0, round: 1, floor: 2 }, prefix: :tax_rounding, validate: true, default: :floor
+
+    normalize_numeric_input :overhead_rate, :margin_rate, :rounding_unit, :area_price_rounding_unit, :tax_rate
 
     validates :overhead_rate, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
     validates :margin_rate, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 999 }
+    validates :tax_rate, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
+    validates :number_prefix, length: { maximum: 10 }
     validates :rounding_unit, inclusion: { in: ROUNDING_UNITS }
     validates :area_price_rounding_unit, inclusion: { in: AREA_PRICE_ROUNDING_UNITS }
     validate :margin_rate_below_100_on_sales
