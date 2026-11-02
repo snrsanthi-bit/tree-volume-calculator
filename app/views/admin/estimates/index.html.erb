@@ -8,13 +8,18 @@
     <p class="mb-4 text-red-500" role="alert"><%= alert %></p>
   <% end %>
 
+  <%= form_with url: admin_estimates_path, method: :get, class: "mb-4 flex gap-2" do |form| %>
+    <%= form.search_field :q, value: @query, placeholder: "番号・現場名・宛名で探す", "aria-label": "見積を探す", class: "flex-1" %>
+    <%= form.submit "探す", name: nil, class: "px-4 py-2 rounded-lg border border-neutral-border" %>
+  <% end %>
+
   <div class="mb-4">
     <%= link_to "見積を作る", new_admin_estimate_path,
         class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
   </div>
 
   <% if @estimates.empty? %>
-    <p>見積はまだありません。</p>
+    <p><%= @query.present? ? "「#{@query}」に合う見積はありません。" : "見積はまだありません。" %></p>
   <% else %>
     <ul id="estimate-list" class="space-y-2">
       <% @estimates.each do |estimate| %>
@@ -22,10 +27,18 @@
           <div>
             <%= link_to estimate.name, admin_estimate_path(estimate), class: "font-bold" %>
             <p class="text-sm text-slate-400">
-              <%= estimate_date(estimate) %> ・ 明細<%= estimate.estimate_lines.size %>件 ・ 面積 <%= area_text(estimate.area) %>
+              <%= estimate.number_label %>
+              <% if estimate.client_name.present? %> ・ <%= estimate.client_name %><% end %>
+              ・ <%= estimate_date(estimate) %> ・ 明細<%= estimate.estimate_lines.size %>件 ・ 面積 <%= area_text(estimate.area) %>
             </p>
           </div>
-          <p class="font-bold"><%= yen_text(estimate.calculation.price) %></p>
+          <% price = estimate.calculation.price %>
+          <p class="text-right font-bold">
+            <%= yen_text(price) %><span class="text-sm font-normal text-slate-400">（税抜）</span>
+            <span class="block text-sm font-normal text-slate-400">
+              <%= yen_text(price + estimate.tax_for(price)) %>（税込）
+            </span>
+          </p>
         </li>
       <% end %>
     </ul>

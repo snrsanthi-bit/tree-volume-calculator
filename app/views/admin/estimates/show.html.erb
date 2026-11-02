@@ -1,6 +1,10 @@
 <div class="mx-auto max-w-5xl px-4 py-8">
   <div class="mb-6">
+    <p id="estimate-number" class="text-sm text-slate-400"><%= @estimate.number_label %></p>
     <h1 class="text-2xl font-bold"><%= @estimate.name %></h1>
+    <% if @estimate.client_name.present? %>
+      <p id="estimate-client" class="text-sm text-slate-400">宛名: <%= @estimate.client_name %></p>
+    <% end %>
     <p class="mt-1 text-sm text-slate-400">
       面積 <%= area_text(@estimate.area) %> ・ <%= terms_text(@estimate) %>
     </p>

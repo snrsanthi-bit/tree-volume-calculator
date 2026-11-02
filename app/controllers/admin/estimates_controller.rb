@@ -8,7 +8,8 @@ module Admin
     before_action :set_work_areas, only: %i[show new create]
 
     def index
-      @estimates = estimates.includes(:estimate_lines).order(id: :desc)
+      @query = params[:q].to_s.strip
+      @estimates = estimates.search(@query).includes(:estimate_lines).order(id: :desc)
     end
 
     def show
@@ -68,6 +69,7 @@ module Admin
       @area_unit = Estimate::AREA_UNITS.include?(attributes[:area_unit]) ? attributes[:area_unit] : 'm2'
 
       estimate.name = attributes[:name]
+      estimate.client_name = attributes[:client_name] if attributes.key?(:client_name)
       estimate.assign_area(attributes[:area], attributes[:area_unit]) if attributes.key?(:area)
     end
 
@@ -81,7 +83,7 @@ module Admin
     end
 
     def estimate_params
-      params.expect(estimate: %i[name area area_unit])
+      params.expect(estimate: %i[name client_name area area_unit])
     end
   end
 end

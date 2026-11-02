@@ -24,16 +24,29 @@ class Estimate < ApplicationRecord
   validates :area, numericality: { greater_than: 0, less_than_or_equal_to: MAX_AREA }, allow_nil: true
   validates :area, presence: true, if: -> { @area_imported }
   validates :area_source_kind, presence: true, if: -> { @area_imported }
+  validates :client_name, length: { maximum: 100 }
   validate :work_area_belongs_to_organization
   validate :area_unit_must_be_known
 
   before_save :clear_area_from_map, if: :area_changed?
+  before_create :assign_number
 
   # 会社の今の設定をコピーして、新しい見積を作る（まだ保存しない）
   def self.build_for(organization, attributes = {})
     setting = EstimateSetting.for(organization)
 
     organization.estimates.new(setting.slice(*PricingTerms::FIELDS).merge(attributes))
+  end
+
+  # 番号・現場名・宛名で探す。数字だけ（または「見積-0012」）なら、その番号の見積も出す
+  def self.search(query)
+    query = query.to_s.strip
+    return all if query.blank?
+
+    term = "%#{sanitize_sql_like(query)}%"
+    found = where(arel_table[:name].matches(term).or(arel_table[:client_name].matches(term)))
+    number = query[/\A\D*(\d+)\z/, 1]
+    number ? found.or(where(number: number.to_i)) : found
   end
 
   # 入力された面積を、㎡にして入れる。unit が 'ha' なら、haとして受け取って㎡にする。
@@ -67,7 +80,21 @@ class Estimate < ApplicationRecord
     EstimateCalculator.call(lines:, settings: to_calculator_settings)
   end
 
+  # 見積番号の表示（例: 見積-0001）。接頭辞は、作成時点のものを持つ
+  def number_label
+    "#{number_prefix}#{number.to_s.rjust(4, '0')}" if number
+  end
+
+  # 売価（税抜）に対する消費税額。税率と端数の処理は、作成時点のものを使う
+  def tax_for(price)
+    ConsumptionTax.call(amount: price, rate: tax_rate, mode: tax_rounding_mode)
+  end
+
   private
+
+  def assign_number
+    self.number ||= EstimateSetting.next_estimate_number(organization)
+  end
 
   # 取り込み以外で面積が変わったら、取り込んだ値ではなくなる
   def clear_area_from_map
