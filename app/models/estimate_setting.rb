@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# 会社ごとの見積の設定（利益率・諸経費率・端数）。会社に1つ。
+# 会社ごとの見積の設定（利益率・諸経費率・端数・消費税）と、提出書に載せる自社の情報。会社に1つ。
 # 項目と検証は PricingTerms にある（見積ごとのコピー Estimate と共通）。
 class EstimateSetting < ApplicationRecord
   include PricingTerms
@@ -11,6 +11,13 @@ class EstimateSetting < ApplicationRecord
   enum :area_input_unit, { m2: 0, ha: 1 }, prefix: true, validate: true, default: :m2
 
   validates :organization_id, uniqueness: true
+
+  # 提出書に載せる自社の情報。空欄は nil にそろえる（社名が空なら、組織の名前を使う）
+  normalizes :issuer_name, :issuer_address, :issuer_phone, :submission_note, with: ->(value) { value.strip.presence }
+  validates :issuer_name, length: { maximum: 50 }
+  validates :issuer_address, length: { maximum: 100 }
+  validates :issuer_phone, length: { maximum: 20 }
+  validates :submission_note, length: { maximum: 500 }
 
   # 会社の次の見積番号を返す（1から。削除しても、使った番号は戻らない）。
   # 同時に作られても重複しないよう、設定の行をロックして数える。

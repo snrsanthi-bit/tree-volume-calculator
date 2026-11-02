@@ -38,6 +38,10 @@ ja:
         tax_rate: "消費税率"
         tax_rounding_mode: "消費税の端数の処理"
         number_prefix: "見積番号の頭の文字"
+        issuer_name: "社名"
+        issuer_address: "住所"
+        issuer_phone: "電話番号"
+        submission_note: "備考"
       cost_category:
         name: "区分の名前"
       cost_item:
@@ -55,6 +59,7 @@ ja:
         tax_rounding_mode: "消費税の端数の処理"
         number_prefix: "見積番号の頭の文字"
         area_source_kind: "取り込む面積の種類"
+        submission_format: "提出の形式"
         overhead_rate: "諸経費率"
         margin_rate: "利益率"
         margin_basis: "利益率の定義"

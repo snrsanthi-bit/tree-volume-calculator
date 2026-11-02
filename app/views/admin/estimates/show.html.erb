@@ -12,6 +12,7 @@
       <p id="estimate-area-source" class="mt-1 text-sm text-slate-400"><%= area_source_text(@estimate) %></p>
     <% end %>
     <div class="mt-2 flex flex-wrap items-center gap-4">
+      <%= link_to "提出画面（元請けに出す見積書）", admin_estimate_submission_path(@estimate), class: "font-bold" %>
       <%= link_to "名前・面積を編集", edit_admin_estimate_path(@estimate) %>
       <%= link_to "見積の一覧", admin_estimates_path %>
       <%= button_to "この見積を削除", admin_estimate_path(@estimate), method: :delete,
@@ -31,7 +32,8 @@
 
   <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
     <div class="min-w-0">
-      <h2 class="mb-3 text-lg font-bold">明細</h2>
+      <h2 class="mb-1 text-lg font-bold">明細</h2>
+      <p class="mb-3 text-sm text-slate-400">単価は、税抜の金額で入れてください（消費税は、売価にかけて出します）。</p>
       <%= render "admin/estimates/lines", estimate: @estimate %>
 
       <section class="mt-6">

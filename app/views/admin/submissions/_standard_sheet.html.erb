@@ -1,0 +1,86 @@
+<%# 標準の書式。内容（submission）だけを見て作る。別の書式を足すときは、同じ submission を受け取る partial を増やす %>
+<% with_quantity = submission.format == :area_price %>
+<article id="submission-sheet"
+         class="mx-auto my-4 w-full max-w-[210mm] bg-white p-[15mm] text-[13px] leading-relaxed text-black shadow print:my-0 print:max-w-none print:shadow-none">
+  <h1 class="mb-8 text-center text-2xl font-bold tracking-[0.5em]">御見積書</h1>
+
+  <div class="mb-6 flex justify-between gap-6">
+    <div class="flex-1">
+      <% if submission.client_name.present? %>
+        <p id="submission-client" class="inline-block border-b border-black pb-1 text-lg">
+          <%= submission.client_name %> 御中
+        </p>
+      <% end %>
+      <p class="mt-4">件名: <span id="submission-site"><%= submission.site_name %></span></p>
+      <p class="mt-4 text-sm">下記のとおり、御見積申し上げます。</p>
+    </div>
+
+    <div class="text-right">
+      <p>見積番号: <span id="submission-number"><%= submission.number_label %></span></p>
+      <p>見積日: <span id="submission-date"><%= submission_date_text(submission.issued_on) %></span></p>
+      <div id="submission-issuer" class="mt-4">
+        <p class="font-bold"><%= submission.issuer.name %></p>
+        <% if submission.issuer.address.present? %>
+          <p><%= submission.issuer.address %></p>
+        <% end %>
+        <% if submission.issuer.phone.present? %>
+          <p>TEL <%= submission.issuer.phone %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-6 flex items-baseline justify-between border-b-2 border-black pb-2">
+    <span class="font-bold">御見積金額（税込）</span>
+    <span id="submission-total" class="text-2xl font-bold"><%= yen_text(submission.total) %></span>
+  </div>
+
+  <table id="submission-rows" class="mb-4 w-full border-collapse">
+    <thead>
+      <tr class="border-y border-black">
+        <th class="py-2 text-left font-bold">項目</th>
+        <% if with_quantity %>
+          <th class="py-2 text-right font-bold">数量</th>
+          <th class="py-2 pl-2 text-left font-bold">単位</th>
+          <th class="py-2 text-right font-bold">単価（円）</th>
+        <% end %>
+        <th class="py-2 text-right font-bold">金額（税抜）</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% submission.rows.each do |row| %>
+        <tr class="border-b border-slate-400">
+          <td class="py-2"><%= row.name %></td>
+          <% if with_quantity %>
+            <td class="py-2 text-right"><%= area_number_text(row.quantity) %></td>
+            <td class="py-2 pl-2"><%= row.unit %></td>
+            <td class="py-2 text-right"><%= unit_price_text(row.unit_price) %></td>
+          <% end %>
+          <td class="py-2 text-right"><%= yen_text(row.amount) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <dl class="ml-auto mb-6 grid w-64 grid-cols-[1fr_auto] gap-x-4 gap-y-1">
+    <dt>小計（税抜）</dt>
+    <dd id="submission-price" class="text-right"><%= yen_text(submission.price) %></dd>
+    <dt>消費税（<%= percent_text(submission.tax_rate) %>）</dt>
+    <dd id="submission-tax" class="text-right"><%= yen_text(submission.tax) %></dd>
+    <dt class="font-bold">合計（税込）</dt>
+    <dd class="text-right font-bold"><%= yen_text(submission.total) %></dd>
+  </dl>
+
+  <% if submission.area_price && submission.area_price.difference != 0 %>
+    <p id="submission-area-price-note" class="mb-4 text-xs">
+      ※ ㎡単価は端数を丸めて表示しているため、単価 × 面積と金額に差が出ることがあります。
+    </p>
+  <% end %>
+
+  <% if submission.note.present? %>
+    <section id="submission-note" class="border-t border-slate-400 pt-3">
+      <p class="mb-1 font-bold">備考</p>
+      <p class="whitespace-pre-line"><%= submission.note %></p>
+    </section>
+  <% end %>
+</article>

@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     end
     resources :estimates, only: %i[index show new create edit update destroy] do
       resources :estimate_lines, path: 'lines', only: %i[create update destroy]
+      resource :submission, only: %i[show update]
     end
     resource :estimate_setting, only: %i[edit update]
     resources :cost_categories, only: %i[index edit create update destroy]

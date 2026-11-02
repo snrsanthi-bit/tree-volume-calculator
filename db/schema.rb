@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_03_000100) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_04_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,6 +53,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_000100) do
     t.integer "area_input_unit", default: 0, null: false
     t.decimal "area_price_rounding_unit", precision: 4, scale: 1, default: "1.0", null: false
     t.datetime "created_at", null: false
+    t.string "issuer_address"
+    t.string "issuer_name"
+    t.string "issuer_phone"
     t.integer "last_estimate_number", default: 0, null: false
     t.integer "margin_basis", default: 0, null: false
     t.decimal "margin_rate", precision: 5, scale: 2, default: "30.0", null: false
@@ -61,6 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_000100) do
     t.decimal "overhead_rate", precision: 5, scale: 2, default: "0.0", null: false
     t.integer "rounding_mode", default: 0, null: false
     t.integer "rounding_unit", default: 1000, null: false
+    t.text "submission_note"
     t.decimal "tax_rate", precision: 5, scale: 2, default: "10.0", null: false
     t.integer "tax_rounding_mode", default: 2, null: false
     t.datetime "updated_at", null: false
@@ -83,6 +87,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_000100) do
     t.decimal "overhead_rate", precision: 5, scale: 2, null: false
     t.integer "rounding_mode", null: false
     t.integer "rounding_unit", null: false
+    t.integer "submission_format", default: 0, null: false
     t.decimal "tax_rate", precision: 5, scale: 2, default: "10.0", null: false
     t.integer "tax_rounding_mode", default: 2, null: false
     t.datetime "updated_at", null: false

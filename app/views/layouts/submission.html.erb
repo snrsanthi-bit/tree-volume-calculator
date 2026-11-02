@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title><%= content_for(:title).presence || "見積書" %> | TreeCalculation</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= javascript_importmap_tags %>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#11d442",
+              "background-dark": "#102215"
+            }
+          }
+        }
+      }
+    </script>
+
+    <%# 提出書は、画面でも印刷でも白い紙の見た目にする。余白は紙の側で取る（@page の余白を0にすると、ブラウザの日付やURLが印刷されない） %>
+    <style>
+      @page { size: A4; margin: 0; }
+      body {
+        font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Noto Sans CJK JP", sans-serif;
+      }
+      @media print {
+        html, body { background: #fff !important; }
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen bg-slate-200 text-black">
+    <%= yield %>
+  </body>
+</html>

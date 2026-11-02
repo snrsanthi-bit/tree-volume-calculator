@@ -1,0 +1,68 @@
+<% content_for :title, "見積書 #{@submission.number_label}" %>
+
+<%# 画面の操作（印刷しない）。元請けに出す内容は、下の _standard_sheet だけ %>
+<div class="print:hidden mx-auto max-w-[210mm] px-4 pt-6">
+  <div class="mb-3 flex flex-wrap items-center gap-4">
+    <%= link_to "← 見積に戻る", admin_estimate_path(@estimate), class: "underline" %>
+    <%= link_to "見積の設定", edit_admin_estimate_setting_path, class: "underline" %>
+  </div>
+
+  <% if notice.present? %>
+    <p class="mb-3 text-green-700"><%= notice %></p>
+  <% end %>
+  <% if alert.present? %>
+    <p class="mb-3 text-red-600" role="alert"><%= alert %></p>
+  <% end %>
+
+  <div class="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="提出の形式">
+    <span class="text-sm">提出の形式:</span>
+    <% Estimate.submission_formats.each_key do |submission_format| %>
+      <% selected = @estimate.submission_format == submission_format %>
+      <%= button_to submission_format_label(submission_format), admin_estimate_submission_path(@estimate),
+          method: :patch, params: { estimate: { submission_format: submission_format } },
+          form: { class: "inline" }, class: format_button_class(selected), "aria-pressed": selected.to_s %>
+    <% end %>
+
+    <% unless @submission.problem %>
+      <button type="button" data-controller="print" data-action="print#print"
+              class="ml-auto px-4 py-2 rounded-lg bg-primary text-background-dark font-bold">
+        印刷する / PDFで保存
+      </button>
+    <% end %>
+  </div>
+
+  <% unless @submission.problem %>
+    <p class="mb-3 text-sm text-slate-600">
+      PDF にするには、印刷画面の「送信先」を「PDFに保存」にしてください。
+      内容は、下の紙の部分だけが印刷されます。
+    </p>
+  <% end %>
+
+  <% if @submission.client_name.blank? %>
+    <p id="submission-warning-client" class="mb-2 text-sm text-yellow-700">
+      宛名が入っていません。<%= link_to "見積の編集", edit_admin_estimate_path(@estimate), class: "underline" %>で入力できます。
+    </p>
+  <% end %>
+  <% if @submission.issuer.address.blank? || @submission.issuer.phone.blank? %>
+    <p id="submission-warning-issuer" class="mb-2 text-sm text-yellow-700">
+      自社の住所か電話番号が入っていません。<%= link_to "見積の設定", edit_admin_estimate_setting_path, class: "underline" %>で入力できます。
+    </p>
+  <% end %>
+  <% if @submission.area_price %>
+    <p id="submission-area-price-check" class="mb-2 text-sm text-slate-600">
+      確認: ㎡単価 <%= unit_price_text(@submission.area_price.unit_price) %>円 × 面積
+      <%= area_number_text(@submission.area_price.area) %>㎡ = <%= yen_text(@submission.area_price.product) %>
+      （<%= area_price_gap_text(@submission.area_price) %>）
+    </p>
+  <% end %>
+</div>
+
+<% if @submission.problem %>
+  <div class="print:hidden mx-auto mt-4 max-w-[210mm] px-4">
+    <p id="submission-problem" class="rounded-lg border border-yellow-600 bg-white p-4" role="alert">
+      <%= @submission.problem %>
+    </p>
+  </div>
+<% else %>
+  <%= render "admin/submissions/standard_sheet", submission: @submission %>
+<% end %>
