@@ -6,6 +6,8 @@
     あとで<%= link_to "見積の設定", edit_admin_estimate_setting_path %>を変えても、作成済みの見積は変わりません。
   </p>
 
+  <%= render "admin/estimates/area_sources", estimate_id: "new", work_areas: @work_areas, open: true %>
+
   <%= render "form", estimate: @estimate, submit_label: "作成して明細を足す" %>
 
   <div class="mt-6"><%= link_to "見積の一覧に戻る", admin_estimates_path %></div>

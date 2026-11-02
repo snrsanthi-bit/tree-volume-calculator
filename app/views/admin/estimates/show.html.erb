@@ -4,6 +4,9 @@
     <p class="mt-1 text-sm text-slate-400">
       面積 <%= area_text(@estimate.area) %> ・ <%= terms_text(@estimate) %>
     </p>
+    <% if area_source_text(@estimate) %>
+      <p id="estimate-area-source" class="mt-1 text-sm text-slate-400"><%= area_source_text(@estimate) %></p>
+    <% end %>
     <div class="mt-2 flex flex-wrap items-center gap-4">
       <%= link_to "名前・面積を編集", edit_admin_estimate_path(@estimate) %>
       <%= link_to "見積の一覧", admin_estimates_path %>
@@ -19,6 +22,8 @@
   <% if alert.present? %>
     <p class="mb-4 text-red-500" role="alert"><%= alert %></p>
   <% end %>
+
+  <%= render "admin/estimates/area_sources", estimate_id: @estimate.id, work_areas: @work_areas %>
 
   <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
     <div class="min-w-0">

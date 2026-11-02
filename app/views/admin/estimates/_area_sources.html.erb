@@ -1,0 +1,23 @@
+<%# locals: (estimate_id:, work_areas:, open: false) %>
+<%# 面積を作業範囲の地積から入れる入口。地積は作業範囲の地図の画面で確認して、そこで見積に取り込む %>
+<details id="area-sources" class="mb-6 rounded-xl border border-neutral-border p-4" <%= "open" if open %>>
+  <summary class="cursor-pointer font-bold">作業範囲の地積から面積を入れる（任意）</summary>
+  <p class="mt-2 text-sm text-slate-400">
+    作業範囲の画面で地積を確認して、見積に取り込みます。面積は手入力でも構いません。
+  </p>
+
+  <% if work_areas.any? %>
+    <ul class="mt-3 space-y-1">
+      <% work_areas.each do |work_area| %>
+        <li><%= link_to "「#{work_area.name}」の地積を確認して取り込む", work_area_path(work_area, estimate_id: estimate_id) %></li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-3 text-sm">作業範囲はまだありません。</p>
+  <% end %>
+
+  <p class="mt-3">
+    <%= link_to "作業範囲を地図で新しく作る", new_work_area_path(estimate_id: estimate_id) %>
+    <span class="text-sm text-slate-400">（保存すると、取り込みの画面に戻ります）</span>
+  </p>
+</details>

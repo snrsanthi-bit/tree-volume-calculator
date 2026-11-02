@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   # 会社の管理者(admin)だけが使える、自社の作業者の管理画面
   namespace :admin do
     root to: "users#index"
+    resources :area_imports, only: :create
     resources :users, only: %i[index new create edit update] do
       member { post :invitation }
     end

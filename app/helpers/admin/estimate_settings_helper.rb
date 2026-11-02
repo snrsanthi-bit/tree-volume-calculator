@@ -24,6 +24,10 @@ module Admin
       end
     end
 
+    def area_input_unit_options
+      [['㎡', 'm2'], ['ha', 'ha']]
+    end
+
     def rounding_mode_options
       EstimateSetting.rounding_modes.keys.map { |mode| [rounding_mode_label(mode), mode] }
     end
