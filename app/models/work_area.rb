@@ -6,6 +6,8 @@ class WorkArea < ApplicationRecord
   LENGTH_KEYS = %w[estimated_length measured_length].freeze
 
   belongs_to :organization
+  # 作業範囲が消えても、取り込んだ見積は残す（面積の値も残る）
+  has_many :estimates, dependent: :nullify
 
   validates :name, presence: true
   validates :coordinates, presence: true

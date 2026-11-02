@@ -95,11 +95,19 @@ function updateAreas(triangles) {
       : "実測面積：未入力の辺、または三角形にならない辺があります";
   }
 
+  // 見積への取り込み（area-import）が読む。計算できていないときは空
+  if (measuredElement) {
+    measuredElement.dataset.total = measured.complete ? measured.total.toFixed(2) : "";
+  }
+
   if (estimatedElement) {
+    estimatedElement.dataset.total = estimated.complete ? estimated.total.toFixed(2) : "";
     estimatedElement.textContent = estimated.complete
       ? `概算面積：${formatArea(estimated.total)}`
       : "概算面積：計算できません";
   }
+
+  document.dispatchEvent(new CustomEvent("survey:areas-updated"));
 
   const details = mode() === "show" ? measured.details : estimated.details;
 

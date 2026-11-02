@@ -34,6 +34,7 @@ ja:
         rounding_unit: "端数の単位"
         rounding_mode: "端数の処理"
         area_price_rounding_unit: "㎡単価の端数の単位"
+        area_input_unit: "面積の入力単位"
       cost_category:
         name: "区分の名前"
       cost_item:
@@ -44,6 +45,8 @@ ja:
       estimate:
         name: "現場名"
         area: "面積"
+        work_area: "作業範囲"
+        area_source_kind: "取り込む面積の種類"
         overhead_rate: "諸経費率"
         margin_rate: "利益率"
         margin_basis: "利益率の定義"

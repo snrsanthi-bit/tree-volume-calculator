@@ -24,6 +24,8 @@
     地図をクリックして作業範囲を指定してください。
   </p>
 
+  <%# 見積の画面から来たときは、保存後に取り込み先として選ぶ見積を引き継ぐ（タブごとに別々に持つ） %>
+  <%= hidden_field_tag :estimate_id, @return_estimate_id if @return_estimate_id %>
   <%= form.hidden_field :coordinates, value: "[]" %>
   <%= form.hidden_field :survey_data, value: (@work_area.survey_data || {}).to_json, id: "work-area-survey-data" %>
 

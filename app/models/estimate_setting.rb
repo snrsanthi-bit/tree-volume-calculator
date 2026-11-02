@@ -7,6 +7,9 @@ class EstimateSetting < ApplicationRecord
 
   belongs_to :organization
 
+  # 見積の面積を入力するときの単位の初期値。保存はどちらも㎡（見積ごとにコピーはしない）
+  enum :area_input_unit, { m2: 0, ha: 1 }, prefix: true, validate: true, default: :m2
+
   validates :organization_id, uniqueness: true
 
   # 会社の設定を返す。まだなければ、初期値で作る。

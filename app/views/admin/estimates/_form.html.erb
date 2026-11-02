@@ -13,9 +13,22 @@
   </div>
 
   <div class="mb-6">
-    <%= form.label :area, "面積（㎡）" %>
-    <%= form.text_field :area, inputmode: :decimal, class: "w-full" %>
-    <p class="mt-1 text-sm text-slate-400">任意です。㎡単価で提出するときに使います。</p>
+    <%= label_tag "estimate_area", "面積" %>
+    <div class="flex items-center gap-2">
+      <%= text_field_tag "estimate[area]", area_input_value(estimate.area, @area_unit), id: "estimate_area",
+          inputmode: :decimal, class: "w-full text-right" %>
+      <%= select_tag "estimate[area_unit]", options_for_select(area_unit_options, @area_unit),
+          id: "estimate_area_unit", "aria-label": "面積の単位" %>
+    </div>
+    <p class="mt-1 text-sm text-slate-400">
+      手で入力した面積が正です。任意で、㎡単価で提出するときに使います。保存は㎡で、単位を変えても同じ面積です（1ha = 10,000㎡）。
+    </p>
+    <% if estimate.area.present? %>
+      <p class="mt-1 text-sm text-slate-400">いま保存されている面積: <%= area_text(estimate.area) %></p>
+    <% end %>
+    <% if area_source_text(estimate) %>
+      <p class="mt-1 text-sm text-slate-400"><%= area_source_text(estimate) %>（面積を変えると、取り込んだ値の表示は外れます）</p>
+    <% end %>
   </div>
 
   <%= form.submit submit_label, class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>

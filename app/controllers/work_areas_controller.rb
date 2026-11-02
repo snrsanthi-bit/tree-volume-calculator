@@ -2,6 +2,7 @@
 
 class WorkAreasController < ApplicationController
   include RoleAuthorization
+  include EstimateImportTarget
 
   before_action :authenticate_user!
   # 運営(operator)は作業範囲を扱わない / 作業地点・範囲の作成と編集は管理者(admin)だけ
@@ -19,7 +20,11 @@ class WorkAreasController < ApplicationController
     end
   end
 
-  def show; end
+  # 管理者には、実測の地積を取り込める見積の一覧を渡す
+  def show
+    @estimates = current_user.admin? ? current_user.organization.estimates.order(id: :desc) : Estimate.none
+    @import_estimate_id = import_estimate_selection
+  end
 
   def new
     @work_area = current_user.organization.work_areas.new
@@ -31,7 +36,7 @@ class WorkAreasController < ApplicationController
     @work_area = current_user.organization.work_areas.new(work_area_params)
 
     if @work_area.save
-      redirect_to work_area_path(@work_area), notice: t('.success')
+      redirect_to work_area_path(@work_area, estimate_id: @return_estimate_id), notice: t('.success')
     else
       flash.now[:alert] = "保存に失敗しました: #{@work_area.errors.full_messages.join(', ')}"
       render :new, status: :unprocessable_content

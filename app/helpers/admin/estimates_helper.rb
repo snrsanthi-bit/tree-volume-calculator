@@ -16,10 +16,36 @@ module Admin
       "#{number_with_precision(value, precision:, strip_insignificant_zeros: true)}%"
     end
 
+    # 面積の表示。㎡と ha を併記する（例: 8,420㎡（0.842ha））
     def area_text(area)
       return '未入力' if area.nil?
 
-      "#{number_with_precision(area, precision: 2, strip_insignificant_zeros: true, delimiter: ',')}㎡"
+      square_meters = number_with_precision(area, precision: 2, strip_insignificant_zeros: true, delimiter: ',')
+      hectares = number_with_precision(area / Estimate::SQUARE_METERS_PER_HECTARE, precision: 6,
+                                                                                   strip_insignificant_zeros: true)
+      "#{square_meters}㎡（#{hectares}ha）"
+    end
+
+    # 入力欄に出す面積。選んだ単位（m2 / ha）に直す。㎡は小数2桁、haは小数6桁まで正確に戻せる
+    def area_input_value(area, unit)
+      return if area.nil?
+
+      value = unit.to_s == 'ha' ? area / Estimate::SQUARE_METERS_PER_HECTARE : area
+      number_with_precision(value, precision: 6, strip_insignificant_zeros: true)
+    end
+
+    def area_unit_options
+      [%w[㎡ m2], %w[ha ha]]
+    end
+
+    # 取り込んだ値のままのとき、取り込み元を説明する
+    def area_source_text(estimate)
+      return unless estimate.area_from_map
+
+      kind = estimate.area_source_kind_estimated? ? '概算地積（現場で測る前の、地図上の概算）' : '実測地積'
+      return "作業範囲「#{estimate.work_area.name}」の#{kind}から取り込んだ値" if estimate.work_area
+
+      "作業範囲の#{kind}から取り込んだ値（作業範囲は削除されています）"
     end
 
     # 見積にコピーされている条件（利益率・諸経費率・端数）の説明

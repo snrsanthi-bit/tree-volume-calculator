@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_01_150100) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_02_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_150100) do
   end
 
   create_table "estimate_settings", force: :cascade do |t|
+    t.integer "area_input_unit", default: 0, null: false
     t.decimal "area_price_rounding_unit", precision: 4, scale: 1, default: "1.0", null: false
     t.datetime "created_at", null: false
     t.integer "margin_basis", default: 0, null: false
@@ -64,7 +65,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_150100) do
 
   create_table "estimates", force: :cascade do |t|
     t.decimal "area", precision: 12, scale: 2
+    t.boolean "area_from_map", default: false, null: false
     t.decimal "area_price_rounding_unit", precision: 4, scale: 1, null: false
+    t.integer "area_source_kind"
     t.datetime "created_at", null: false
     t.integer "margin_basis", null: false
     t.decimal "margin_rate", precision: 5, scale: 2, null: false
@@ -74,7 +77,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_150100) do
     t.integer "rounding_mode", null: false
     t.integer "rounding_unit", null: false
     t.datetime "updated_at", null: false
+    t.bigint "work_area_id"
     t.index ["organization_id"], name: "index_estimates_on_organization_id"
+    t.index ["work_area_id"], name: "index_estimates_on_work_area_id"
   end
 
   create_table "organizations", force: :cascade do |t|
@@ -117,6 +122,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_150100) do
   add_foreign_key "estimate_lines", "estimates"
   add_foreign_key "estimate_settings", "organizations"
   add_foreign_key "estimates", "organizations"
+  add_foreign_key "estimates", "work_areas", on_delete: :nullify
   add_foreign_key "users", "organizations"
   add_foreign_key "work_areas", "organizations"
 end

@@ -36,6 +36,37 @@
   <p id="survey-area-estimated" class="text-sm text-slate-300"></p>
 </div>
 
+<% if current_user.admin? %>
+  <section
+    class="mt-6 p-4 rounded-xl border border-neutral-border"
+    data-controller="area-import"
+    data-action="survey:areas-updated@document->area-import#update"
+  >
+    <h2 class="mb-2 font-bold">見積に取り込む</h2>
+    <%= form_with scope: :area_import, url: admin_area_imports_path,
+          data: { turbo_confirm: "選んだ面積を取り込みます。既存の見積を選んだ場合は、その見積の面積を上書きします。よろしいですか？" },
+          class: "flex flex-wrap items-end gap-2" do |form| %>
+        <%= form.hidden_field :work_area_id, value: @work_area.id %>
+        <%= form.hidden_field :area, data: { area_import_target: "area" } %>
+        <div>
+          <%= form.label :kind, "取り込む面積" %>
+          <%= form.select :kind, [["実測面積", "measured"], ["概算面積（地図上）", "estimated"]], {},
+              data: { area_import_target: "kind", action: "change->area-import#choose" } %>
+        </div>
+        <div class="min-w-[12rem] flex-1">
+          <%= form.label :estimate_id, "取り込み先の見積" %>
+          <%= form.select :estimate_id,
+              options_for_select([["＋ 新しい見積を作る（名前: #{@work_area.name}）", ""]] + @estimates.map { |e| [e.name, e.id.to_s] },
+                                 @import_estimate_id),
+              {}, class: "w-full" %>
+        </div>
+        <%= form.submit "この面積を取り込む", disabled: true, data: { area_import_target: "submit" },
+            class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold disabled:opacity-40" %>
+      <% end %>
+      <p class="mt-2 text-sm text-slate-400" data-area-import-target="message" aria-live="polite"></p>
+  </section>
+<% end %>
+
 <div class="mt-4 flex flex-wrap items-center gap-3">
   <button
     type="button"
