@@ -1,20 +1,34 @@
-<h1>作業範囲一覧</h1>
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">作業範囲一覧</h1>
 
-<% if current_user.admin? %>
-  <%= link_to "作業範囲を新規作成", new_work_area_path %>
-<% end %>
+  <% if current_user.admin? %>
+    <div class="mb-4">
+      <%= link_to "作業範囲を新規作成", new_work_area_path,
+          class: "inline-block px-4 py-2 rounded-lg bg-primary text-background-dark font-bold" %>
+    </div>
+  <% end %>
 
-<% if @work_areas.any? %>
-  <ul>
-    <% @work_areas.each do |work_area| %>
-      <li>
-        <%= link_to work_area.name, work_area_path(work_area) %>
-        <% if current_user.admin? %>
-          <%= link_to "編集", edit_work_area_path(work_area) %>
-        <% end %>
-      </li>
+  <% if @work_areas.any? %>
+    <ul id="work-area-list" class="space-y-2">
+      <% @work_areas.each do |work_area| %>
+        <li class="flex items-center justify-between gap-3 p-3 rounded-lg border border-neutral-border">
+          <div class="min-w-0">
+            <%= link_to work_area.name, work_area_path(work_area), class: "font-bold break-words" %>
+            <p class="text-sm text-slate-400">
+              更新 <%= work_area.updated_at.in_time_zone("Asia/Tokyo").strftime("%Y/%m/%d") %>
+            </p>
+          </div>
+          <% if current_user.admin? %>
+            <%= link_to "編集", edit_work_area_path(work_area),
+                class: "shrink-0 px-3 py-2 rounded-lg border border-neutral-border" %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>作業範囲はまだ登録されていません。</p>
+    <% unless current_user.admin? %>
+      <p class="mt-2 text-sm text-slate-400">管理者が作業範囲を登録すると、ここに表示されます。</p>
     <% end %>
-  </ul>
-<% else %>
-  <p>作業範囲はまだ登録されていません。</p>
-<% end %>
+  <% end %>
+</div>
