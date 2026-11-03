@@ -1,33 +1,46 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <h1 class="mb-6 text-2xl font-bold">作業範囲の新規作成</h1>
 
-<h1>作業範囲の新規作成</h1>
+  <% if @work_area.errors.any? %>
+    <div class="mb-4 rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-400" role="alert">
+      <% @work_area.errors.full_messages.each do |message| %>
+        <p><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
 
+  <%= form_with model: @work_area do |form| %>
+    <div class="mb-4">
+      <%= form.label :name, "作業範囲名", class: "mb-1 block text-sm font-bold" %>
+      <%= form.text_field :name, required: true,
+          class: "w-full rounded-lg border border-neutral-border bg-transparent px-3 py-2" %>
+    </div>
 
-<%= form_with model: @work_area do |form| %>
-  <div>
-    <%= form.label :name, "作業範囲名" %>
-    <%= form.text_field :name, required: true %>
-  </div>
+    <div
+      id="map"
+      class="mb-3 h-96 w-full rounded-xl"
+      data-map-bounds="japan"
+      data-work-area-coordinates="<%= (@work_area.coordinates || []).to_json %>"
+      data-debug-coordinates="<%= @work_area.coordinates.to_json %>"
+    ></div>
 
-  <div
-    id="map"
-    class="w-full h-96 rounded-xl mb-6"
-    data-map-bounds="japan"
-    data-work-area-coordinates="<%= (@work_area.coordinates || []).to_json %>"
-    data-debug-coordinates="<%= @work_area.coordinates.to_json %>"
-  ></div>
+    <div class="mb-6 space-y-1 text-sm">
+      <p id="work-area-vertex-count" class="font-bold">頂点数：0点</p>
+      <p id="work-area-message" class="text-slate-400">
+        地図をクリックして作業範囲を指定してください。
+      </p>
+    </div>
 
-  <p id="work-area-vertex-count">頂点数：0点</p>
-  <p id="work-area-message">
-    地図をクリックして作業範囲を指定してください。
-  </p>
+    <%# 見積の画面から来たときは、保存後に取り込み先として選ぶ見積を引き継ぐ（タブごとに別々に持つ） %>
+    <%= hidden_field_tag :estimate_id, @return_estimate_id if @return_estimate_id %>
+    <%= form.hidden_field :coordinates, value: "[]" %>
+    <%= form.hidden_field :survey_data, value: (@work_area.survey_data || {}).to_json, id: "work-area-survey-data" %>
 
-  <%# 見積の画面から来たときは、保存後に取り込み先として選ぶ見積を引き継ぐ（タブごとに別々に持つ） %>
-  <%= hidden_field_tag :estimate_id, @return_estimate_id if @return_estimate_id %>
-  <%= form.hidden_field :coordinates, value: "[]" %>
-  <%= form.hidden_field :survey_data, value: (@work_area.survey_data || {}).to_json, id: "work-area-survey-data" %>
-
-  <%= form.submit "作業範囲を保存" %>
-<% end %>
-
-<%= link_to "一覧に戻る", work_areas_path %>
-
+    <div class="flex flex-wrap gap-3">
+      <%= form.submit "作業範囲を保存",
+          class: "cursor-pointer rounded-lg bg-primary px-4 py-2 font-bold text-background-dark hover:opacity-80" %>
+      <%= link_to "一覧に戻る", work_areas_path,
+          class: "rounded-lg border border-neutral-border px-4 py-2 hover:bg-neutral-dark" %>
+    </div>
+  <% end %>
+</div>

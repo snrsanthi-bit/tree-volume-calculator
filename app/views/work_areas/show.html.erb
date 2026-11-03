@@ -1,51 +1,54 @@
-<div class="mb-6">
-  <h1 class="text-2xl font-bold">作業範囲詳細</h1>
-  <div class="mt-3 h-1 w-16 rounded-full bg-blue-500"></div>
-</div>
+<div class="mx-auto max-w-3xl px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold">作業範囲詳細</h1>
+  </div>
 
-<p class="mb-4 text-lg">
-  作業範囲名：<%= @work_area.name %>
-</p>
+  <p class="mb-4 text-lg">
+    作業範囲名：<%= @work_area.name %>
+  </p>
 
-<div
-  id="map"
-  class="w-full h-96 rounded-xl mb-6"
-  data-map-bounds="japan"
-  data-work-area-coordinates="<%= @work_area.coordinates.to_json %>"
-  data-map-mode="show"
-></div>
+  <%# 辺の長さを入力している間も地図が見えるよう、地図と説明は画面上部に固定する %>
+  <div class="sticky top-0 z-10 bg-background-dark pb-2 pt-1">
+    <div
+      id="map"
+      class="mb-2 h-44 w-full rounded-xl sm:h-72"
+      data-map-bounds="japan"
+      data-work-area-coordinates="<%= @work_area.coordinates.to_json %>"
+      data-map-mode="show"
+    ></div>
 
-<p id="work-area-vertex-count">
-  頂点数：<%= @work_area.coordinates.length %>点
-</p>
+    <p id="work-area-vertex-count" class="text-sm font-bold">
+      頂点数：<%= @work_area.coordinates.length %>点
+    </p>
 
-<p class="mt-2 text-sm text-slate-400">
-  現場で測った長さを、各辺に入力してください（入力欄の薄い数字は地図からの概算です）。
-</p>
+    <p class="mt-1 text-sm text-slate-400">
+      現場で測った長さを、各辺に入力してください（入力欄の薄い数字は地図からの概算です）。
+    </p>
+  </div>
 
-<div
-  id="triangle-list"
-  class="space-y-6 mt-4"
-  data-survey-cards="show"
-  data-measurements-url="<%= measurements_work_area_path(@work_area) %>"
-  data-survey-data="<%= (@work_area.survey_data || {}).to_json %>"
-></div>
+  <div
+    id="triangle-list"
+    class="mt-4 space-y-6"
+    data-survey-cards="show"
+    data-measurements-url="<%= measurements_work_area_path(@work_area) %>"
+    data-survey-data="<%= (@work_area.survey_data || {}).to_json %>"
+  ></div>
 
-<div class="mt-6 p-6 bg-primary/10 rounded-xl border border-primary/30 space-y-2">
-  <p id="survey-area-measured" class="text-xl font-bold text-primary"></p>
-  <p id="survey-area-estimated" class="text-sm text-slate-300"></p>
-</div>
+  <div class="mt-6 space-y-2 rounded-xl border border-primary/30 bg-primary/10 p-6">
+    <p id="survey-area-measured" class="text-xl font-bold text-primary"></p>
+    <p id="survey-area-estimated" class="text-sm text-slate-300"></p>
+  </div>
 
-<% if current_user.admin? %>
-  <section
-    class="mt-6 p-4 rounded-xl border border-neutral-border"
-    data-controller="area-import"
-    data-action="survey:areas-updated@document->area-import#update"
-  >
-    <h2 class="mb-2 font-bold">見積に取り込む</h2>
-    <%= form_with scope: :area_import, url: admin_area_imports_path,
-          data: { turbo_confirm: "選んだ面積を取り込みます。既存の見積を選んだ場合は、その見積の面積を上書きします。よろしいですか？" },
-          class: "flex flex-wrap items-end gap-2" do |form| %>
+  <% if current_user.admin? %>
+    <section
+      class="mt-6 rounded-xl border border-neutral-border p-4"
+      data-controller="area-import"
+      data-action="survey:areas-updated@document->area-import#update"
+    >
+      <h2 class="mb-2 font-bold">見積に取り込む</h2>
+      <%= form_with scope: :area_import, url: admin_area_imports_path,
+            data: { turbo_confirm: "選んだ面積を取り込みます。既存の見積を選んだ場合は、その見積の面積を上書きします。よろしいですか？" },
+            class: "flex flex-wrap items-end gap-2" do |form| %>
         <%= form.hidden_field :work_area_id, value: @work_area.id %>
         <%= form.hidden_field :area, data: { area_import_target: "area" } %>
         <div>
@@ -64,26 +67,27 @@
             class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold disabled:opacity-40" %>
       <% end %>
       <p class="mt-2 text-sm text-slate-400" data-area-import-target="message" aria-live="polite"></p>
-  </section>
-<% end %>
-
-<div class="mt-4 flex flex-wrap items-center gap-3">
-  <button
-    type="button"
-    id="survey-save-button"
-    class="px-4 py-2 rounded-lg bg-primary text-background-dark font-bold hover:opacity-80"
-  >
-    実測値を保存
-  </button>
-  <p id="survey-save-message" class="text-sm" aria-live="polite"></p>
-</div>
-
-<div class="mt-6 flex flex-wrap gap-3">
-  <%= link_to "一覧に戻る", work_areas_path,
-      class: "px-4 py-2 rounded-lg border border-neutral-border hover:bg-neutral-dark" %>
-
-  <% if current_user.admin? %>
-    <%= link_to "編集する", edit_work_area_path(@work_area),
-        class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold hover:opacity-80" %>
+    </section>
   <% end %>
+
+  <div class="mt-4 flex flex-wrap items-center gap-3">
+    <button
+      type="button"
+      id="survey-save-button"
+      class="px-4 py-2 rounded-lg bg-primary text-background-dark font-bold hover:opacity-80"
+    >
+      実測値を保存
+    </button>
+    <p id="survey-save-message" class="text-sm" aria-live="polite"></p>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-3">
+    <%= link_to "一覧に戻る", work_areas_path,
+        class: "px-4 py-2 rounded-lg border border-neutral-border hover:bg-neutral-dark" %>
+
+    <% if current_user.admin? %>
+      <%= link_to "編集する", edit_work_area_path(@work_area),
+          class: "px-4 py-2 rounded-lg bg-primary text-background-dark font-bold hover:opacity-80" %>
+    <% end %>
+  </div>
 </div>
