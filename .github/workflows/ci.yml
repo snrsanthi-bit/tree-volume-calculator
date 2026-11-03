@@ -1,17 +1,38 @@
+name: CI
+
 on:
   pull_request:
   push:
     branches:
       - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  rubocop:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bundle exec rubocop
+
+  rspec:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     env:
       RAILS_ENV: test
       PGHOST: localhost
       PGUSER: postgres
       PGPASSWORD: postgres
       PGPORT: 5432
-
     services:
       postgres:
         image: postgres:16
@@ -26,27 +47,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
-    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
-
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
       - run: bundle exec rails db:prepare
-      - run: |
-          pwd
-          git rev-parse HEAD
-          echo "=== rubocop configs ==="
-          find /home/runner -name ".rubocop.yml" -o -name ".rubocop_todo.yml" 2>/dev/null
-          echo "=== repository search ==="
-          grep -Rni "rubocop-discourse" . --exclude-dir=.git --exclude-dir=vendor --exclude-dir=tmp || true
-          echo "=== local config ==="
-          cat .rubocop.yml
-          echo "=== rubocop version ==="
-          bundle exec rubocop --version
-
-      - run: bundle exec rubocop --config .rubocop.yml
       - run: bundle exec rspec
-
