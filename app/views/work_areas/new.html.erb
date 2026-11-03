@@ -1,9 +1,6 @@
 
 <h1>作業範囲の新規作成</h1>
 
-<% if flash[:alert].present? %>
-  <p class="text-red-500"><%= flash[:alert] %></p>
-<% end %>
 
 <%= form_with model: @work_area do |form| %>
   <div>

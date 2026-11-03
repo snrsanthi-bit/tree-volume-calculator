@@ -1,0 +1,11 @@
+<%# 画面の上に出すお知らせ。成功は notice（緑）、失敗は alert（赤）。画面ごとには出さず、ここで1か所に出す %>
+<% if notice.present? || alert.present? %>
+  <div class="max-w-xl mx-auto px-4 pt-4">
+    <% if notice.present? %>
+      <p class="mb-2 rounded-lg border border-primary/50 bg-primary/10 px-4 py-3 text-primary" role="status"><%= notice %></p>
+    <% end %>
+    <% if alert.present? %>
+      <p class="mb-2 rounded-lg border border-red-500/50 bg-red-500/10 px-4 py-3 text-red-400" role="alert"><%= alert %></p>
+    <% end %>
+  </div>
+<% end %>

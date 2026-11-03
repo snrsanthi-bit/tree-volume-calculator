@@ -81,3 +81,6 @@ group :test do
   gem 'selenium-webdriver'
   gem 'simplecov', require: false
 end
+
+gem 'devise-i18n', '~> 1.16'
+gem 'rails-i18n', '~> 8.1'

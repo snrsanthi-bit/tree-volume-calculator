@@ -11,9 +11,9 @@ RSpec.describe '管理者によるアカウント作成と招待', type: :system
 
   def login(user, password)
     visit new_user_session_path
-    fill_in 'Email', with: user.email
-    fill_in 'Password', with: password
-    click_button 'Log in'
+    fill_in 'メールアドレス', with: user.email
+    fill_in 'パスワード', with: password
+    click_button 'ログイン'
   end
 
   def logout

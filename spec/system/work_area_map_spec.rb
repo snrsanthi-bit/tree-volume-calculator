@@ -86,9 +86,9 @@ RSpec.describe '作業範囲の地図操作', type: :system do
     driven_by :firefox_japan
 
     visit new_user_session_path
-    fill_in 'Email', with: user.email
-    fill_in 'Password', with: 'password123'
-    click_button 'Log in'
+    fill_in 'メールアドレス', with: user.email
+    fill_in 'パスワード', with: 'password123'
+    click_button 'ログイン'
 
     visit edit_work_area_path(work_area)
     wait_for_proposal
