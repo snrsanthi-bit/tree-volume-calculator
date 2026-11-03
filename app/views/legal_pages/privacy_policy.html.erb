@@ -18,7 +18,7 @@
 
     <h3 class="mb-2 font-semibold">1. ユーザー名</h3>
     <p class="mb-5 leading-7">
-      利用者がアカウント登録時に設定するユーザー名を取得します。
+      アカウントの発行時に設定されるユーザー名を取得します。
       ユーザー名として本名を使用するか、ニックネーム等を使用するかは、
       利用者の判断によるものとします。
     </p>
@@ -29,15 +29,35 @@
       メールアドレスを取得します。
     </p>
 
-    <h3 class="mb-2 font-semibold">3. 認証に必要な情報</h3>
+    <h3 class="mb-2 font-semibold">3. 所属する組織の名称</h3>
     <p class="mb-5 leading-7">
-      アカウントの認証および安全な管理に必要な情報を取得します。
+      会社・組合等の単位でデータを管理するため、利用者が所属する組織の名称を取得します。
     </p>
 
-    <h3 class="mb-2 font-semibold">4. サービス運用上必要な情報</h3>
+    <h3 class="mb-2 font-semibold">4. 認証に必要な情報</h3>
+    <p class="mb-5 leading-7">
+      アカウントの認証および安全な管理に必要な情報を取得します。
+      パスワードは、元の文字列が分からない形（暗号化した形）で保存します。
+    </p>
+
+    <h3 class="mb-2 font-semibold">5. 利用者が入力する業務上の情報</h3>
+    <p class="mb-5 leading-7">
+      作業範囲（地図上の位置、測量した長さ）や、見積の内容（現場名、宛名、金額、単価など）等、
+      利用者が本サービスに入力する情報を保存します。
+    </p>
+
+    <h3 class="mb-2 font-semibold">6. 現在地</h3>
+    <p class="mb-5 leading-7">
+      地図に現在地を表示するため、ブラウザの位置情報の機能を利用することがあります。
+      位置情報の利用は、ブラウザが利用者に確認し、利用者が許可した場合に限ります。
+      取得した現在地は、地図の表示のために利用者のブラウザの中でのみ使用し、
+      本サービスのサーバーには送信せず、保存もしません。
+    </p>
+
+    <h3 class="mb-2 font-semibold">7. サービス運用上必要な情報</h3>
     <p class="leading-7">
-      本サービスの提供、障害対応、不正利用の防止その他の運営に必要な情報を
-      取得することがあります。
+      本サービスの提供、障害対応、不正利用の防止その他の運営に必要な情報
+      （アクセスの日時、IPアドレス、エラーの記録など）を取得することがあります。
     </p>
   </section>
 
@@ -50,7 +70,7 @@
 
     <ol class="list-decimal space-y-2 pl-6 leading-7">
       <li>アカウントの管理</li>
-      <li>本サービスの提供および維持</li>
+      <li>本サービスの提供および維持（利用者が入力した情報の保存、表示および出力を含みます。）</li>
       <li>本サービスに関する連絡</li>
       <li>不正利用の防止および対応</li>
       <li>サービスの改善</li>
@@ -61,21 +81,27 @@
   <section class="mb-10">
     <h2 class="mb-5 text-xl font-bold">第4条（外部サービスの利用）</h2>
 
-    <h3 class="mb-2 font-semibold">1. Sentry</h3>
-    <p class="mb-5 leading-7">
-      本サービスで発生したエラーの監視および障害調査のために利用しています。
+    <h3 class="mb-2 font-semibold">1. 運営のために利用するサービス</h3>
+    <p class="mb-2 leading-7">
+      本サービスは、運営のために次のサービスを利用しています。
     </p>
+    <ul class="mb-5 list-disc space-y-2 pl-6 leading-7">
+      <li>Sentry：本サービスで発生したエラーの監視および障害調査</li>
+      <li>Neon：本サービスのデータを保存するデータベース</li>
+      <li>Render：本サービスを提供するためのアプリケーションのホスティング</li>
+    </ul>
 
-    <h3 class="mb-2 font-semibold">2. Neon</h3>
-    <p class="mb-5 leading-7">
-      本サービスのデータを保存するデータベースとして利用しています。
+    <h3 class="mb-2 font-semibold">2. 画面の表示のために利用するサービス</h3>
+    <p class="mb-2 leading-7">
+      本サービスの画面を表示するため、利用者のブラウザは、次の外部のサービスから、地図の画像、文字、画面の部品等を取得します。
+      このとき、利用者のIPアドレスやブラウザの情報、表示している地図の範囲等が、取得先に送られることがあります。
     </p>
-
-    <h3 class="mb-2 font-semibold">3. Render</h3>
-    <p class="leading-7">
-      本サービスを提供するためのアプリケーションのホスティングサービスとして
-      利用しています。
-    </p>
+    <ul class="list-disc space-y-2 pl-6 leading-7">
+      <li>OpenStreetMap等：地図の画像</li>
+      <li>Google Fonts：文字およびアイコン</li>
+      <li>Leaflet等の配信元（unpkg）：地図を表示するための部品</li>
+      <li>Tailwind CSSの配信元：画面のデザインを整えるための部品</li>
+    </ul>
   </section>
 
   <section class="mb-10">
@@ -88,7 +114,19 @@
   </section>
 
   <section class="mb-10">
-    <h2 class="mb-5 text-xl font-bold">第6条（安全管理）</h2>
+    <h2 class="mb-5 text-xl font-bold">第6条（組織内での情報の取扱い）</h2>
+
+    <p class="mb-4 leading-7">
+      利用者が所属する組織の管理者は、その組織のデータ（所属する利用者の氏名、メールアドレス、利用者が入力した記録など）を閲覧および編集することができます。
+    </p>
+    <p class="leading-7">
+      本サービスの運営者は、サービスの提供、保守、障害への対応、または法令に基づく場合を除き、
+      組織の業務データ（見積、実測記録など）を閲覧しません。
+    </p>
+  </section>
+
+  <section class="mb-10">
+    <h2 class="mb-5 text-xl font-bold">第7条（安全管理）</h2>
 
     <p class="leading-7">
       本サービスは、取得した情報について、漏えい、紛失、改ざん、
@@ -97,25 +135,50 @@
   </section>
 
   <section class="mb-10">
-    <h2 class="mb-5 text-xl font-bold">第7条（開示・訂正・削除等）</h2>
+    <h2 class="mb-5 text-xl font-bold">第8条（保存期間）</h2>
 
     <p class="leading-7">
-      利用者から自己の個人情報について、開示、訂正、削除等の申し出があった場合は、
-      適切に対応します。
+      取得した情報は、サービスの提供に必要な期間、保存します。
+      アカウントまたは組織の利用が終了した場合は、終了から30日間保存した後、削除します。
     </p>
   </section>
 
   <section class="mb-10">
-    <h2 class="mb-5 text-xl font-bold">第8条（Cookie等）</h2>
+    <h2 class="mb-5 text-xl font-bold">第9条（開示・訂正・削除等）</h2>
 
     <p class="leading-7">
-      本サービスでは、サービスの提供および利用状況の確認等のため、
-      Cookie等の技術を利用することがあります。
+      利用者から自己の個人情報について、開示、訂正、削除等の申し出があった場合は、
+      本人であることを確認した上で、適切に対応します。
+      申し出は、第11条の窓口までご連絡ください。
+    </p>
+  </section>
+
+  <section class="mb-10">
+    <h2 class="mb-5 text-xl font-bold">第10条（Cookie等）</h2>
+
+    <p class="mb-4 leading-7">
+      本サービスでは、次の目的で、Cookie等の技術を利用します。
+    </p>
+    <ul class="mb-4 list-disc space-y-2 pl-6 leading-7">
+      <li>ログイン中の状態を保つため（セッション）</li>
+      <li>ログインしたままの状態を保つため（有効期間は最長2週間です。ログアウトすると無効になります。）</li>
+    </ul>
+    <p class="leading-7">
+      ブラウザの設定でCookieを無効にすると、本サービスにログインできなくなることがあります。
+    </p>
+  </section>
+
+  <section class="mb-10">
+    <h2 class="mb-5 text-xl font-bold">第11条（お問い合わせ窓口）</h2>
+
+    <p class="leading-7">
+      個人情報の取扱いに関するお問い合わせは、次のメールアドレスにご連絡ください。<br>
+      <span class="font-semibold">treecalculationguanliyong@gmail.com</span>
     </p>
   </section>
 
   <section>
-    <h2 class="mb-5 text-xl font-bold">第9条（プライバシーポリシーの変更）</h2>
+    <h2 class="mb-5 text-xl font-bold">第12条（プライバシーポリシーの変更）</h2>
 
     <p class="leading-7">
       本サービスは、必要に応じて本プライバシーポリシーを変更することがあります。
@@ -125,5 +188,7 @@
       変更後のプライバシーポリシーは、本サービス上で公表した時点から
       適用されるものとします。
     </p>
+
+    <p class="mt-8 text-sm text-slate-400">最終改定：2026年11月</p>
   </section>
 </div>
