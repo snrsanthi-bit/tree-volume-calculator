@@ -21,12 +21,6 @@
     </div>
   </div>
 
-  <% if notice.present? %>
-    <p class="mb-4 text-primary"><%= notice %></p>
-  <% end %>
-  <% if alert.present? %>
-    <p class="mb-4 text-red-500" role="alert"><%= alert %></p>
-  <% end %>
 
   <%= render "admin/estimates/area_sources", estimate_id: @estimate.id, work_areas: @work_areas %>
 

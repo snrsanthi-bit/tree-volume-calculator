@@ -23,10 +23,10 @@ RSpec.describe '認証', type: :system do
   def login(user)
     visit new_user_session_path
 
-    fill_in 'Email', with: user.email
-    fill_in 'Password', with: 'password123'
+    fill_in 'メールアドレス', with: user.email
+    fill_in 'パスワード', with: 'password123'
 
-    click_button 'Log in'
+    click_button 'ログイン'
   end
 
   describe 'ログイン' do
@@ -113,9 +113,9 @@ RSpec.describe '認証', type: :system do
       user = create_user
 
       visit new_user_session_path
-      fill_in 'Email', with: user.email
-      fill_in 'Password', with: 'password123'
-      click_button 'Log in'
+      fill_in 'メールアドレス', with: user.email
+      fill_in 'パスワード', with: 'password123'
+      click_button 'ログイン'
 
       find('button[aria-label="メニュー"]').click
       click_button 'ログアウト'

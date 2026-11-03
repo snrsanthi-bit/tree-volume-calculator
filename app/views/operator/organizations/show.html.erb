@@ -2,9 +2,6 @@
   <h1 class="mb-2 text-2xl font-bold"><%= @organization.name %></h1>
   <p class="mb-6"><%= link_to "組織名を変更", edit_operator_organization_path(@organization) %></p>
 
-  <% if notice.present? %>
-    <p class="mb-4 text-primary"><%= notice %></p>
-  <% end %>
 
   <%= render "shared/invitation_box" %>
 

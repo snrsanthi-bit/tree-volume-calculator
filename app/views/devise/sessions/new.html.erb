@@ -1,19 +1,26 @@
-<h2>Log in</h2>
-
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <p><%= f.label :email %></p>
-    <p><%= f.email_field :email, autofocus: true, autocomplete: "email" %></p>
+<div class="max-w-sm mx-auto px-4 py-10">
+  <div class="flex items-center justify-center gap-2 mb-8">
+    <span class="material-symbols-outlined text-primary text-3xl">forest</span>
+    <h2 class="text-2xl font-bold tracking-tight">ログイン</h2>
   </div>
 
-  <div class="field">
-    <p><%= f.label :password %></p>
-    <p><%= f.password_field :password, autocomplete: "current-password" %></p>
-  </div>
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name),
+                         html: { class: "space-y-5 bg-neutral-dark/40 p-6 rounded-xl border border-neutral-border" }) do |f| %>
+    <div>
+      <%= f.label :email, "メールアドレス", class: "block text-slate-300 font-medium mb-2" %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", inputmode: "email",
+                                class: "w-full h-14 px-4 text-lg focus:ring-2 focus:ring-primary" %>
+    </div>
 
-  <%= f.hidden_field :remember_me, value: "1" %>
+    <div>
+      <%= f.label :password, "パスワード", class: "block text-slate-300 font-medium mb-2" %>
+      <%= f.password_field :password, autocomplete: "current-password",
+                                      class: "w-full h-14 px-4 text-lg focus:ring-2 focus:ring-primary" %>
+    </div>
 
-  <div class="actions">
-    <%= f.submit "Log in" %>
-  </div>
-<% end %>
+    <%= f.hidden_field :remember_me, value: "1" %>
+
+    <%= f.submit "ログイン",
+                 class: "w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-4 rounded-lg text-lg shadow-lg transition-colors" %>
+  <% end %>
+</div>
