@@ -2,9 +2,17 @@
 
 ## 1. サービス概要
 
-TreeCalculationは、林業現場で行う材積・地積の計算から、作業地点や計算履歴の記録までを一元管理する林業現場向けWebアプリです。
+TreeCalculationは、林業現場で行う材積・地積の計算から、作業範囲の登録、見積（原価計算）の作成・提出までを一元管理する林業向けWebアプリです。
 
-林業現場作業員が「その場で計算できる」だけでなく、「どこで、どれだけ作業したか」を後から確認できるようにすることで、現場での計算・記録作業の負担を減らします。
+林業現場作業員が「その場で計算できる」だけでなく、作業した範囲の面積や、見積の内容を、あとから確認・提出できるようにすることで、現場での計算・記録作業の負担を減らします。
+
+### 現在できること
+
+* **計算ツール**（ログイン不要）：直径・高さから材積を計算。三角形の辺から地積を計算し、複数の三角形を合算して㎡・haで表示
+* **作業範囲**：地図上で作業範囲を指定・保存し、三角分割で測量した地積を記録
+* **見積（原価計算）**：区分・単価マスタから明細を積み上げ、諸経費・利益率・消費税を含めた売価を計算（会社の管理者のみ）
+* **提出画面**：元請けに出す見積書を、項目別の内訳または㎡単価で表示。原価・利益率は載せず、ブラウザの印刷からPDFにできる
+* **アカウント**：会社・組合ごとのアカウント管理、運営・管理者・作業者の権限の分離
 
 ## 2. このアイデアはどこから生まれたか
 
@@ -104,7 +112,7 @@ TreeCalculationは、林業現場で行う材積・地積の計算から、作�
 
 そのため、単純な計算機能だけでは既存の手段を置き換える理由が弱いと考えています。
 
-そこで、計算結果を保存し、現場・作業地点・日付などと紐付けることで、「計算するためだけのアプリ」から「現場の記録を残すためのアプリ」にすることを目指します。
+そこで、計算結果を保存し、現場・作業範囲・日付などと紐付けることで、「計算するためだけのアプリ」から「現場の記録を残すためのアプリ」にすることを目指します。
 
 ### 4-4. ユーザーがサービスを導入して利用するまでのイメージ
 
@@ -112,7 +120,7 @@ TreeCalculationは、林業現場で行う材積・地積の計算から、作�
 
 最初の利用では、複雑な設定を必要とせず、計算機能だけでも利用できるようにします。
 
-その後、計算結果の保存や作業地点の登録などを利用することで、「前回の計算を確認したい」「今日の作業実績を確認したい」といった場面でも使うようになることを想定しています。
+その後、計算結果の保存や作業範囲の登録などを利用することで、「前回の計算を確認したい」「今日の作業実績を確認したい」といった場面でも使うようになることを想定しています。
 
 将来的に会社単位で利用する場合は、会社・組合ごとにアカウントを管理し、管理者と作業者で利用できる機能を分けることも検討しています。
 
@@ -182,51 +190,63 @@ Timberlog 材積計算
 
 ## 7. このアプリで実現すること
 
+凡例：✅ 実装済み / ➖ 見送り
+
 ### MVPで作る機能
 
-* 材積計算
-* 地積計算
-* 複数三角形による面積合算
-* ㎡ / ha表示
-* レスポンシブ対応
-* バリデーション・エラー処理
-* 使い方説明
-* 基本的なテスト・CI環境
-
-現在のアプリには材積計算と地積計算が実装されており、地積については複数三角形の面積を合算して㎡・haで表示する構成になっています。
+* ✅ 材積計算
+* ✅ 地積計算
+* ✅ 複数三角形による面積合算
+* ✅ ㎡ / ha表示
+* ✅ レスポンシブ対応
+* ✅ バリデーション・エラー処理
+* ✅ 使い方説明
+* ✅ 基本的なテスト・CI環境
 
 ### 本リリースで作る機能
 
 ### 認証・利用基盤
 
-* ログイン機能
-* 会社・組合単位でのアカウント管理
-* 管理者・作業者などの権限管理
-* 利用規約・プライバシーポリシー
+* ✅ ログイン機能
+* ✅ 会社・組合単位でのアカウント管理
+* ✅ 管理者・作業者などの権限管理
+* ✅ 利用規約・プライバシーポリシー
+
+### 見積（原価計算）
+
+* ✅ 区分・単価マスタの登録（会社ごと）
+* ✅ 見積の作成と明細の追加・数量・単価の変更
+* ✅ 諸経費率・利益率・消費税・端数処理（会社ごとの既定値を、見積ごとにコピーして保持）
+* ✅ 見積番号（会社ごとの通し番号）
+* ✅ 作業範囲の地積（概算・実測）を見積に取り込む
+* ✅ 提出画面（項目別の内訳 / ㎡単価、PDFは印刷から）
+* ✅ 権限テスト（運営・作業者は見積に入れない）
 
 ### 現場管理
 
-* マップ表示
-* マップ上で作業地点を登録
-* 作業範囲をマップ上で指定
-* マップポイントの修正
-* マップ上の概算地積と計算結果の紐付け
-* 計算履歴の保存
-
-### 業務記録
-
-* 日別の材積・本数管理
-* 会社・組合ごとの材積表登録
-* 出荷判定・在庫管理
+* ✅ マップ表示
+* ✅ 作業範囲をマップ上で指定
+* ✅ 概算地積と計算結果の紐付け（作業範囲から見積へ取り込み）
+* ➖ 作業地点の登録：作業範囲に一本化したため見送り
+* ➖ マップポイントの修正：仕様変更により見送り
 
 ### 公開・運用
 
-* 独自ドメイン・SSL
-* OGP
-* RSpec
-* RuboCop
-* GitHub ActionsによるCI
-* 本リリース前の総合チェック
+* ✅ 独自ドメイン・SSL
+* ➖ OGP：社内向けのアプリで、SNSで共有される場面がほぼないと判断したため見送り
+* ✅ RSpec
+* ✅ RuboCop
+* ✅ GitHub ActionsによるCI（`main` は `rubocop` と `rspec` が通らないとマージできない）
+* ✅ 本リリース前の総合チェック
+
+### 後回しにしているもの
+
+実際に使っている人から話を聞いたところ、現時点では必要性が低そうなため、本リリースには入れていません。使ってもらいながらフィードバックを集め、必要と分かった時点で実装します（「9. 今後の展開・発展の方向性」も参照）。
+
+* 計算履歴の保存
+* 日別の材積・本数管理
+* 会社・組合ごとの材積表登録
+* 出荷判定・在庫管理
 
 ## 8. このアプリの懸念点とその対策
 
@@ -255,7 +275,7 @@ Timberlog 材積計算
 ### 機能追加の方向性
 
 * GPSを利用した測量
-* 作業地点・作業範囲の管理
+* 作業範囲の作成精度の向上（地図上で指定した形に、より近い範囲を作れるようにする）
 * 材積・本数の履歴管理
 * 材積表の会社・組合ごとの登録
 * 出荷判定
@@ -263,7 +283,7 @@ Timberlog 材積計算
 * 管理者・作業者それぞれに合わせた画面・権限
 * 将来的なオフライン利用
 
-現在の開発計画でも、マップAPI導入から作業地点・作業範囲、計算履歴、日別材積・本数、材積表、出荷判定・在庫管理へ段階的に発展させる予定です。
+今後は、計算履歴や日別材積・本数の管理など、現場で蓄積される情報を業務記録として活用できる機能へ発展させる予定です。
 
 ### UI・体験の改善
 
@@ -279,20 +299,21 @@ Timberlog 材積計算
 
 ## 10. 技術スタック
 
-### 10-1. 使用予定の技術
+### 10-1. 使用している技術
 
-* フレームワーク：Ruby on Rails
-* 言語：Ruby
+* フレームワーク：Ruby on Rails 8.1
+* 言語：Ruby 3.4
 * DB：PostgreSQL
 * CSS：Tailwind CSS
-* JavaScript：Hotwire（Turbo）
+* JavaScript：Hotwire（Turbo / Stimulus）
 * 認証：Devise
-* コンテナ：Docker
+* エラー監視：Sentry
 * CI：GitHub Actions
 * デプロイ：Render
 * 地図機能：Map API
 * テスト：RSpec
 * 静的解析：RuboCop
+* コンテナ：未導入（商業化・チーム開発の段階で導入を検討）
 
 ### 10-2. 技術選定の比較検討
 
@@ -303,6 +324,7 @@ Timberlog 材積計算
 | Vue.js          | 不採用    | 今回のサービスではRails + Hotwireで必要なUIを実現できると判断                  |
 | PostgreSQL      | 採用     | Railsとの組み合わせで利用経験があり、業務データの保存にも適している                     |
 | Hotwire / Turbo | 採用     | Railsを中心とした構成を維持しながら、ページ全体を頻繁に再読み込みせずインタラクティブなUIを実現できるため |
+| Docker          | 今回は不採用 | 個人開発では、導入と維持に割く時間を機能の開発に回したいため。商業化・チーム開発の段階で導入を検討する |
 
 ### 今回チャレンジしたい点
 
@@ -334,6 +356,135 @@ Timberlog 材積計算
 
 本リリース前に新しい技術を増やしすぎることで、Issueの見積もりや開発期間が不明瞭になることを避け、まずは現在の技術スタックでTreeCalculationを完成させることを優先します。
 
-ER図
-[![Image from Gyazo](https://i.gyazo.com/7d08b392790fb81b335231ceb51cd360.png)](https://gyazo.com/7d08b392790fb81b335231ceb51cd360)
+## 11. ER図
 
+```mermaid
+erDiagram
+  organizations ||--o{ users : "所属"
+  organizations ||--o{ work_areas : "持つ"
+  organizations ||--o{ cost_categories : "持つ"
+  organizations ||--o{ cost_items : "持つ"
+  organizations ||--o{ estimates : "持つ"
+  organizations ||--o| estimate_settings : "持つ"
+  cost_categories ||--o{ cost_items : "区分"
+  cost_categories ||--o{ estimate_lines : "区分"
+  estimates ||--o{ estimate_lines : "明細"
+  work_areas |o--o{ estimates : "地積の取り込み元"
+
+  organizations {
+    bigint id PK
+    string name
+    datetime deactivated_at "停止日時"
+  }
+  users {
+    bigint id PK
+    bigint organization_id FK
+    string email UK
+    string name
+    integer role "運営・管理者・作業者"
+  }
+  work_areas {
+    bigint id PK
+    bigint organization_id FK
+    string name
+    jsonb coordinates "作業範囲の頂点"
+    jsonb survey_data "測量データ"
+  }
+  cost_categories {
+    bigint id PK
+    bigint organization_id FK
+    string name "会社内で一意"
+    integer position
+  }
+  cost_items {
+    bigint id PK
+    bigint organization_id FK
+    bigint cost_category_id FK
+    string name
+    string unit
+    integer unit_price "税抜"
+  }
+  estimate_settings {
+    bigint id PK
+    bigint organization_id FK
+    decimal margin_rate "利益率"
+    decimal overhead_rate "諸経費率"
+    decimal tax_rate
+    integer rounding_unit "端数の単位"
+    string number_prefix
+    integer last_estimate_number
+    string issuer_name "提出書の自社情報"
+    text submission_note
+  }
+  estimates {
+    bigint id PK
+    bigint organization_id FK
+    bigint work_area_id FK "削除時は空に"
+    integer number "会社ごとの通し番号"
+    string name
+    string client_name
+    decimal area
+    boolean area_from_map
+    integer area_source_kind "概算か実測か"
+    decimal margin_rate "設定からコピー"
+    decimal overhead_rate "設定からコピー"
+    decimal tax_rate "設定からコピー"
+    integer submission_format "内訳か㎡単価か"
+  }
+  estimate_lines {
+    bigint id PK
+    bigint estimate_id FK
+    bigint cost_category_id FK
+    string name "追加時の値をコピー"
+    string unit
+    decimal quantity
+    integer unit_price
+  }
+```
+
+* 見積の明細（`estimate_lines`）は、追加した時点の名前・単位・単価を**コピー**して持つ。あとから単価マスタ（`cost_items`）を変えても、作成済みの見積は変わらない（外部キーも持たない）
+* 見積（`estimates`）は、作成した時点の利益率・諸経費率・消費税・端数処理を、会社の設定（`estimate_settings`）から**コピー**して持つ
+* 見積に取り込んだ作業範囲（`work_areas`）を削除しても、見積は残る（`work_area_id` が空になり、取り込んだ地積の値は保持される）
+* すべてのデータは `organization_id`（会社・組合）に紐づき、他社のデータは見えない
+
+## 12. ロールと権限（現状）
+
+運営＝サービス全体の管理 / 管理者＝所属する会社・組合の管理 / 作業者＝現場での実測入力
+
+| 機能 | 運営 | 管理者 | 作業者 | 未ログイン |
+| --- | :---: | :---: | :---: | :---: |
+| 材積・地積の計算 | ○ | ○ | ○ | ○ |
+| 地図の閲覧・現在地の確認 | ○ | ○ | ○ | △（作業範囲は非表示） |
+| 作業範囲の登録（地積） | ー | ○ | ー | ー |
+| 実測入力（地積・材積） | ー | ー | ○ | ー |
+| 見積・区分・単価マスタ・見積設定・提出画面 | ー | ○ | ー | ー |
+| 社内アカウントの管理 | ー | ○ | ー | ー |
+| 組織・管理者アカウントの管理 | ○ | ー | ー | ー |
+
+* 原価・利益率は、管理者以外には表示されません
+* 提出画面（元請けに出す見積書）には、原価・利益率・諸経費・直接費を載せません
+
+## 13. 開発
+
+### セットアップ
+
+```bash
+bundle install
+bin/rails db:prepare
+bin/rails server
+```
+
+Ruby 3.4、PostgreSQL が必要です。
+
+### テストと静的解析
+
+```bash
+bundle exec rspec
+bundle exec rubocop
+```
+
+システムテストは Firefox を使います。
+
+### CI
+
+GitHub Actions で `rubocop` と `rspec` の2つのジョブを実行します。`main` は、どちらも通らないとマージできません。
