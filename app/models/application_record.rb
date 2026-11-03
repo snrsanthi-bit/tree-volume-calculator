@@ -3,3 +3,4 @@
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
 end
+x = 1
