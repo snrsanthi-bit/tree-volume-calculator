@@ -82,5 +82,5 @@ group :test do
   gem 'simplecov', require: false
 end
 
-gem "rails-i18n", "~> 8.1"
-gem "devise-i18n", "~> 1.16"
+gem 'devise-i18n', '~> 1.16'
+gem 'rails-i18n', '~> 8.1'
