@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
+abort('The Rails environment is running in production mode!') if Rails.env.production?
 # Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
 # that will avoid rails generators crashing because migrations haven't been run yet
 # return unless Rails.env.test?
@@ -64,30 +66,26 @@ RSpec.configure do |config|
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
 end
-def firefox_driver(app, lat:, lng:)
+# 位置情報を、指定した座標に固定した Firefox の設定
+def firefox_options(lat:, lng:)
   options = Selenium::WebDriver::Firefox::Options.new
-  options.add_argument("-headless")
+  options.add_argument('-headless')
+  geo_preferences(lat, lng).each { |name, value| options.add_preference(name, value) }
+  options
+end
 
-  mock_location = {
-    location: {
-      lat: lat,
-      lng: lng
-    },
-    accuracy: 10.0
-  }.to_json
+def geo_preferences(lat, lng)
+  mock_location = { location: { lat: lat, lng: lng }, accuracy: 10.0 }.to_json
 
-  options.add_preference(
-    "geo.provider.network.url",
-    "data:application/json,#{mock_location}"
-  )
-  options.add_preference("geo.prompt.testing", true)
-  options.add_preference("geo.prompt.testing.allow", true)
+  {
+    'geo.provider.network.url' => "data:application/json,#{mock_location}",
+    'geo.prompt.testing' => true,
+    'geo.prompt.testing.allow' => true
+  }
+end
 
-  Capybara::Selenium::Driver.new(
-    app,
-    browser: :firefox,
-    options: options
-  )
+def firefox_driver(app, lat:, lng:)
+  Capybara::Selenium::Driver.new(app, browser: :firefox, options: firefox_options(lat: lat, lng: lng))
 end
 
 Capybara.register_driver :firefox_japan do |app|
@@ -99,7 +97,7 @@ Capybara.register_driver :firefox_abroad do |app|
 end
 
 Capybara.javascript_driver = :firefox_japan
-Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+Rails.root.glob('spec/support/**/*.rb').each { |f| require f }
 RSpec.configure do |config|
   config.include SystemHelpers, type: :system
   config.include Devise::Test::IntegrationHelpers, type: :request
