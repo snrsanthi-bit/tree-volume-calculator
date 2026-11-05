@@ -1,6 +1,15 @@
 <div class="mx-auto max-w-3xl px-4 py-8">
   <h1 class="mb-6 text-2xl font-bold">作業範囲の新規作成</h1>
 
+  <details class="mb-4 rounded-lg border border-neutral-border p-3 text-sm">
+    <summary class="cursor-pointer font-bold">使い方</summary>
+    <ol class="mt-2 list-decimal space-y-1 pl-5 text-slate-300">
+      <li>作業範囲名を入力します。</li>
+      <li>地図をクリックして、範囲の角になる点を順に指定します。</li>
+      <li>「作業範囲を保存」を押すと、詳細画面で辺の長さを入力できます。</li>
+    </ol>
+  </details>
+
   <% if @work_area.errors.any? %>
     <div class="mb-4 rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-400" role="alert">
       <% @work_area.errors.full_messages.each do |message| %>

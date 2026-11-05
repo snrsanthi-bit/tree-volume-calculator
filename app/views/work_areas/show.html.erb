@@ -1,11 +1,21 @@
 <div class="mx-auto max-w-3xl px-4 py-8">
   <div class="mb-6">
     <h1 class="text-2xl font-bold">作業範囲詳細</h1>
+    <div class="mt-3 h-1 w-16 rounded-full bg-blue-500"></div>
   </div>
 
   <p class="mb-4 text-lg">
     作業範囲名：<%= @work_area.name %>
   </p>
+
+  <details class="mb-4 rounded-lg border border-neutral-border p-3 text-sm">
+    <summary class="cursor-pointer font-bold">使い方</summary>
+    <ol class="mt-2 list-decimal space-y-1 pl-5 text-slate-300">
+      <li>現場で測った長さを、各辺に入力します（薄い数字は、地図からの概算です）。</li>
+      <li>入力すると、実測面積が下に表示されます。</li>
+      <li>「実測値を保存」を押すと、入力した長さが保存されます。</li>
+    </ol>
+  </details>
 
   <%# 辺の長さを入力している間も地図が見えるよう、地図と説明は画面上部に固定する %>
   <div class="sticky top-0 z-10 bg-background-dark pb-2 pt-1">
