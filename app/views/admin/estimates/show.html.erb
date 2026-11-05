@@ -1,5 +1,6 @@
 <div class="mx-auto max-w-5xl px-4 py-8">
   <div class="mb-6">
+    <%= link_to "← 見積の一覧", admin_estimates_path, class: "mb-2 inline-block text-sm text-slate-400 underline" %>
     <p id="estimate-number" class="text-sm text-slate-400"><%= @estimate.number_label %></p>
     <h1 class="text-2xl font-bold"><%= @estimate.name %></h1>
     <% if @estimate.client_name.present? %>
@@ -11,16 +12,28 @@
     <% if area_source_text(@estimate) %>
       <p id="estimate-area-source" class="mt-1 text-sm text-slate-400"><%= area_source_text(@estimate) %></p>
     <% end %>
-    <div class="mt-2 flex flex-wrap items-center gap-4">
-      <%= link_to "提出画面（元請けに出す見積書）", admin_estimate_submission_path(@estimate), class: "font-bold" %>
-      <%= link_to "名前・面積を編集", edit_admin_estimate_path(@estimate) %>
-      <%= link_to "見積の一覧", admin_estimates_path %>
+    <div class="mt-4 flex flex-wrap items-center gap-2">
+      <%= link_to "提出画面", admin_estimate_submission_path(@estimate),
+          class: "rounded-lg bg-primary px-4 py-2 font-bold text-background-dark hover:opacity-80" %>
+      <%= link_to "名前・面積を編集", edit_admin_estimate_path(@estimate),
+          class: "rounded-lg border border-neutral-border px-4 py-2 hover:bg-neutral-dark" %>
       <%= button_to "この見積を削除", admin_estimate_path(@estimate), method: :delete,
-          form: { data: { turbo_confirm: "「#{@estimate.name}」を削除しますか？明細も消えます。" } },
-          class: "text-sm underline" %>
+          form: { class: "ml-auto", data: { turbo_confirm: "「#{@estimate.name}」を削除しますか？明細も消えます。" } },
+          class: "text-sm text-red-400 underline" %>
     </div>
+    <p class="mt-2 text-xs text-slate-400">提出画面では、元請けに出す見積書を確認して、印刷や PDF にできます。</p>
   </div>
 
+  <details class="mb-4 rounded-lg border border-neutral-border p-3 text-sm">
+    <summary class="cursor-pointer font-bold">使い方</summary>
+    <ol class="mt-2 list-decimal space-y-1 pl-5 text-slate-300">
+      <li>現場名・宛名・面積を入れます。面積は、作業範囲の地積から入れることもできます（任意）。</li>
+      <li>項目と数量を選んで、明細を足します。単価は税抜で入れます。追加した時点の単価がその見積に残るので、あとで単価マスタを変えても、作成済みの明細は変わりません。</li>
+      <li>右の集計で、原価・売価（税抜）・消費税・税込の金額を確認します。原価と利益は、管理者だけに表示されます。</li>
+      <li>目標の利益率を下回ると、黄色の注意が出ます。見積の設定で、端数の単位や処理を見直してください。</li>
+      <li>金額が決まったら、提出画面で、元請けに出す見積書を作ります。</li>
+    </ol>
+  </details>
 
   <%= render "admin/estimates/area_sources", estimate_id: @estimate.id, work_areas: @work_areas %>
 

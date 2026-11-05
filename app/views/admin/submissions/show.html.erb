@@ -7,6 +7,17 @@
     <%= link_to "見積の設定", edit_admin_estimate_setting_path, class: "underline" %>
   </div>
 
+  <%# 使い方は画面の操作の一部。印刷しない（print:hidden の中） %>
+  <details class="mb-3 rounded-lg border border-slate-300 bg-white p-3 text-sm text-slate-700">
+    <summary class="cursor-pointer font-bold">使い方</summary>
+    <ol class="mt-2 list-decimal space-y-1 pl-5">
+      <li>「提出の形式」で、元請けに出す書き方を選びます。選ぶと、下の紙の内容が切り替わります。</li>
+      <li>黄色の注意が出ているときは、宛名や自社の住所・電話番号を入れてください。社名・住所・電話番号・備考は、見積の設定で変えられます。</li>
+      <li>「印刷する / PDFで保存」を押します。PDF にするには、印刷画面の「送信先」を「PDFに保存」にします。</li>
+      <li>印刷されるのは、下の紙の部分だけです。</li>
+    </ol>
+  </details>
+
   <% if notice.present? %>
     <p class="mb-3 text-green-700"><%= notice %></p>
   <% end %>
