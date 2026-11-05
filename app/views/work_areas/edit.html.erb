@@ -1,6 +1,17 @@
 <div class="mx-auto max-w-3xl px-4 py-8">
   <h1 class="mb-6 text-2xl font-bold">作業範囲の編集</h1>
 
+  <details class="mb-4 rounded-lg border border-neutral-border p-3 text-sm">
+    <summary class="cursor-pointer font-bold">使い方</summary>
+    <ol class="mt-2 list-decimal space-y-1 pl-5 text-slate-300">
+      <li>外周点・補助点・補助線のボタンで、地図に追加するものを切り替えます（選んでいるボタンに色が付きます）。</li>
+      <li>地図をクリックして、点を追加します。</li>
+      <li>消したい点を選んで、キーボードの D キーを押すと削除できます。点を消すと、その点につながる線も消えます。</li>
+      <li>外周点を消すと、三角形の分け方が自動で作り直されます（線を自分で編集したあとは、作り直されません）。実測値が入っている線が消えるときは、確認が表示されます。</li>
+      <li>「変更を保存」を押すと反映されます。辺の長さは、詳細画面で入力します。</li>
+    </ol>
+  </details>
+
   <% if @work_area.errors.any? %>
     <div class="mb-4 rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-400" role="alert">
       <% @work_area.errors.full_messages.each do |message| %>
