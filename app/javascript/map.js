@@ -8,6 +8,7 @@ import {
   nextNumericId,
   pairKey,
   pointInPolygon,
+  outlineOf,
   round1,
   snapshotProposed
 } from "survey_model";
@@ -188,9 +189,10 @@ function initializeMap() {
 
     if (isShow) return;
 
-    const analysis = analyze(state.points, state.lines);
-    const ring = (analysis.outline
-      ? analysis.outline.map(pointById)
+    // 外周は補助線の影響を受けない形で導出する（補助線が交差していても外周の形は変わらない）
+    const outline = outlineOf(state.points, state.lines);
+    const ring = (outline
+      ? outline.map(pointById)
       : state.points.filter((p) => p.origin === "input")
     ).map((p) => [p.lat, p.lng]);
 
@@ -332,11 +334,11 @@ function initializeMap() {
   }
 
   function isInsideOutline(latlng) {
-    const analysis = analyze(state.points, state.lines);
+    const outline = outlineOf(state.points, state.lines);
 
-    if (!analysis.outline) return false;
+    if (!outline) return false;
 
-    return pointInPolygon(latlng, analysis.outline.map(pointById));
+    return pointInPolygon(latlng, outline.map(pointById));
   }
 
   function addAuxiliaryPoint(latlng) {

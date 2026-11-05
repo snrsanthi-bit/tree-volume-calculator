@@ -415,3 +415,18 @@ export function computeArea(triangles, lines, field = "measured_length") {
 
   return { complete, total: complete ? total : null, details };
 }
+
+// 外周の点の並びを返す。補助線（worker）と補助点は外周を変えないので、
+// まず補助を除いた点と線で導出する。補助線を引いている途中で線が交差するなど、
+// 全体の判定が失敗しても、外周の形と「内側かどうか」の判定が崩れないようにするため。
+// 補助を除いて導出できないとき（手で線を編集した後など）は、全体から導出する。
+export function outlineOf(points, lines) {
+  const base = analyze(
+    points.filter((p) => p.origin !== "worker"),
+    lines.filter((l) => l.origin !== "worker")
+  );
+
+  if (base.outline) return base.outline;
+
+  return analyze(points, lines).outline;
+}
